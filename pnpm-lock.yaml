@@ -2408,8 +2408,8 @@ packages:
   vfile@6.0.3:
     resolution: {integrity: sha512-KzIbH/9tXat2u30jf+smMwFCsno4wHVdNmzFyL+T/L3UGqqk6JKfVqOFOZEpZSHADH1k40ab6NUIXZq422ov3Q==}
 
-  vite@6.2.2:
-    resolution: {integrity: sha512-yW7PeMM+LkDzc7CgJuRLMW2Jz0FxMOsVJ8Lv3gpgW9WLcb9cTW+121UEr1hvmfR7w3SegR5ItvYyzVz1vxNJgQ==}
+  vite@6.2.6:
+    resolution: {integrity: sha512-9xpjNl3kR4rVDZgPNdTL0/c6ao4km69a/2ihNQbcANz8RuCOK3hQBmLSJf3bRKVQjVMda+YvizNE8AwvogcPbw==}
     engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
     hasBin: true
     peerDependencies:
@@ -2778,7 +2778,7 @@ snapshots:
       astro: 5.5.2(@netlify/blobs@8.1.1)(rollup@4.35.0)(typescript@5.8.2)(yaml@2.7.0)
       esbuild: 0.25.1
       tinyglobby: 0.2.12
-      vite: 6.2.2(yaml@2.7.0)
+      vite: 6.2.6(yaml@2.7.0)
     transitivePeerDependencies:
       - '@types/node'
       - encoding
@@ -3576,8 +3576,8 @@ snapshots:
       unist-util-visit: 5.0.0
       unstorage: 1.15.0(@netlify/blobs@8.1.1)
       vfile: 6.0.3
-      vite: 6.2.2(yaml@2.7.0)
-      vitefu: 1.0.6(vite@6.2.2(yaml@2.7.0))
+      vite: 6.2.6(yaml@2.7.0)
+      vitefu: 1.0.6(vite@6.2.6(yaml@2.7.0))
       xxhash-wasm: 1.1.0
       yargs-parser: 21.1.1
       yocto-spinner: 0.2.1
@@ -5559,7 +5559,7 @@ snapshots:
       '@types/unist': 3.0.3
       vfile-message: 4.0.2
 
-  vite@6.2.2(yaml@2.7.0):
+  vite@6.2.6(yaml@2.7.0):
     dependencies:
       esbuild: 0.25.1
       postcss: 8.5.3
@@ -5568,9 +5568,9 @@ snapshots:
       fsevents: 2.3.3
       yaml: 2.7.0
 
-  vitefu@1.0.6(vite@6.2.2(yaml@2.7.0)):
+  vitefu@1.0.6(vite@6.2.6(yaml@2.7.0)):
     optionalDependencies:
-      vite: 6.2.2(yaml@2.7.0)
+      vite: 6.2.6(yaml@2.7.0)
 
   volar-service-css@0.0.62(@volar/language-service@2.4.12):
     dependencies:
