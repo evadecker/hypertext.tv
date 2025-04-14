@@ -2,14 +2,14 @@
 import "../styles/index.css";
 
 interface Props {
-  title: string;
+	title: string;
 }
 
 const { title } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const pageTitle =
-  Astro.url.pathname === "/" ? title : `${title} | Hypertext TV`;
+	Astro.url.pathname === "/" ? title : `${title} | Hypertext TV`;
 ---
 
 <!doctype html>
@@ -22,6 +22,7 @@ const pageTitle =
 		<link rel="sitemap" href="/sitemap-index.xml" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{pageTitle}</title>
+		<meta name="description" content="What’s on the internet today?" />
 		<link
 			rel="preload"
 			href="/fonts/BetterVCR-latin.woff2"
@@ -43,6 +44,7 @@ const pageTitle =
 			type="font/woff2"
 			crossorigin
 		/>
+		<link rel="preconnect" href="https://cdn.usefathom.com" />
 		<script>
 			import * as Fathom from "fathom-client";
 			Fathom.load("EPXKTQED");

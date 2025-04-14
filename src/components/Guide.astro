@@ -59,19 +59,17 @@ const currentTime = new Date();
                 {blocks.map(
                   ({ title, span, continuesBefore, continuesAfter }) => (
                     <td colspan={span}>
-                      <a
-                        href={`/ch/${channel.slug}`}
-                        class="program-info"
-                        data-empty={!title}
-                      >
-                        <span
-                          class="program-contents"
-                          data-continues-before={continuesBefore}
-                          data-continues-after={continuesAfter}
-                        >
-                          {title}
-                        </span>
-                      </a>
+                      <div class="program-info" data-empty={!title}>
+                        {title && (
+                          <a
+                            class="program-contents"
+                            data-continues-before={continuesBefore}
+                            data-continues-after={continuesAfter}
+                          >
+                            {title}
+                          </a>
+                        )}
+                      </div>
                     </td>
                   ),
                 )}
@@ -276,8 +274,6 @@ const currentTime = new Date();
   }
 
   .program-info {
-    display: block;
-    text-decoration: none;
     background: linear-gradient(to top, rgb(0, 0, 197), rgb(0, 0, 128));
     color: #eeeeee;
     text-shadow: 0 2px 1px rgba(0, 0, 0, 0.5);
@@ -329,6 +325,8 @@ const currentTime = new Date();
   }
 
   .program-contents {
+    display: block;
+    text-decoration: none;
     display: flex;
     align-items: center;
     height: 100%;
