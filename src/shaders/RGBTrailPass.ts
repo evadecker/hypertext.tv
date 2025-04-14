@@ -2,18 +2,26 @@ import {
   GLSL3,
   HalfFloatType,
   MeshBasicMaterial,
-  ShaderMaterial,
+  type Texture,
+  type TextureDataType,
   WebGLRenderTarget,
+  type WebGLRenderer,
 } from "three";
-import { FullScreenQuad, Pass } from "three/addons/postprocessing/Pass.js";
+import { FullScreenQuad } from "three/addons/postprocessing/Pass.js";
+import { ShaderPass } from "three/addons/postprocessing/ShaderPass.js";
 import vertexShader from "./rgbtrail.vert?raw";
 
-export class RGBTrailPass extends Pass {
+export class RGBTrailPass extends ShaderPass {
+  frames: {
+    target: WebGLRenderTarget;
+    quad: FullScreenQuad;
+  }[];
+  comp: {
+    target: WebGLRenderTarget;
+    quad: FullScreenQuad;
+  };
+
   constructor() {
-    super();
-
-    this.uniforms = { frames: { value: null } };
-
     const echoes = [
       ["r", "g", "b", "a"],
       // Red
@@ -58,45 +66,83 @@ export class RGBTrailPass extends Pass {
       }
     `;
 
-    const shader = new ShaderMaterial({
-      uniforms: this.uniforms,
+    const shader = {
+      uniforms: {
+        frames: { value: null },
+      },
       vertexShader,
       fragmentShader,
-      glslVersion: GLSL3,
-    });
+    };
 
-    const params = [0, 0, { type: HalfFloatType }];
+    super(shader);
+
+    this.material.glslVersion = GLSL3;
+
+    const params: [number, number, { type: TextureDataType }] = [
+      0,
+      0,
+      { type: HalfFloatType },
+    ];
 
     this.comp = {
       target: new WebGLRenderTarget(...params),
-      quad: new FullScreenQuad(shader),
+      quad: new FullScreenQuad(this.material),
     };
 
     this.frames = Array(echoes.length)
-      .fill()
+      .fill(null)
       .map(() => ({
         target: new WebGLRenderTarget(...params),
         quad: new FullScreenQuad(new MeshBasicMaterial({ transparent: true })),
       }));
   }
 
-  render(renderer, writeBuffer, readBuffer) {
-    this.frames.unshift(this.frames.pop());
+  render(
+    renderer: WebGLRenderer,
+    writeBuffer: WebGLRenderTarget | null,
+    readBuffer: { texture: Texture | null },
+  ) {
+    // Update frame buffers
+    // biome-ignore lint/style/noNonNullAssertion: Array is always available
+    this.frames.unshift(this.frames.pop()!);
 
     renderer.setRenderTarget(this.frames[0].target);
-    this.frames[0].quad.material.map = readBuffer.texture;
+    (this.frames[0].quad.material as MeshBasicMaterial).map =
+      readBuffer.texture;
     this.frames[0].quad.render(renderer);
 
-    this.uniforms.frames.value = this.frames.map(
+    // Update uniforms
+    this.material.uniforms.frames.value = this.frames.map(
       (frame) => frame.target.texture,
     );
 
-    renderer.setRenderTarget(writeBuffer);
-    this.comp.quad.render(renderer);
+    // Render final composition
+    if (this.renderToScreen) {
+      renderer.setRenderTarget(null);
+      this.fsQuad.render(renderer);
+    } else {
+      renderer.setRenderTarget(writeBuffer);
+      if (this.clear) renderer.clear();
+      this.fsQuad.render(renderer);
+    }
   }
 
-  setSize(width, height) {
+  setSize(width: number, height: number) {
     this.comp.target.setSize(width, height);
-    for (const frame of this.frames) frame.target.setSize(width, height);
+    for (const frame of this.frames) {
+      frame.target.setSize(width, height);
+    }
+  }
+
+  dispose() {
+    this.comp.target.dispose();
+    this.comp.quad.dispose();
+
+    for (const frame of this.frames) {
+      frame.target.dispose();
+      frame.quad.dispose();
+    }
+
+    super.dispose();
   }
 }
