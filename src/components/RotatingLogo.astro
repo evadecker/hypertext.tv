@@ -14,7 +14,6 @@
   import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
   import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
   import { RGBTrailPass } from "../shaders/RGBTrailPass";
-  import { GridHelper } from "three";
   import { DragControls } from "three/examples/jsm/Addons.js";
 
   const svg = `<svg width="199" height="71" viewBox="0 0 199 71" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -28,7 +27,9 @@
     // Three.js setup
     // ----------------------
 
-    const scene = new THREE.Scene();
+    const scene = new THREE.Scene(); // Exponential fog for depth effect
+    scene.fog = new THREE.FogExp2(0x000000, 0.0015);
+
     const camera = new THREE.PerspectiveCamera(
       100,
       canvas.clientWidth / canvas.clientHeight,
@@ -50,6 +51,60 @@
     renderer.toneMappingExposure = 1.2;
     canvas.appendChild(renderer.domElement);
 
+    // ----------------------
+    // Starfield
+    // ----------------------
+
+    // Create a group for all stars
+    const starField = new THREE.Group();
+    scene.add(starField);
+
+    // Star parameters
+    const starCount = 500;
+    const starSpeed = 12;
+    const minStarSize = 0.5;
+    const maxStarSize = 2;
+    const starDepth = 2400; // How far the stars travel
+    const centerAvoidanceRadius = 100; // Radius around center to avoid stars
+
+    // Create star material
+    const starMaterial = new THREE.MeshPhysicalMaterial({
+      color: "white",
+      emissive: "white",
+      emissiveIntensity: 10,
+      transparent: true,
+    });
+
+    // Create stars
+    const stars: THREE.Mesh[] = [];
+    for (let i = 0; i < starCount; i++) {
+      // Random star size between min and max
+      const randomSize =
+        minStarSize + Math.random() * (maxStarSize - minStarSize);
+
+      // Create a small sphere for each star
+      const geometry = new THREE.SphereGeometry(randomSize, 8, 8);
+      const star = new THREE.Mesh(geometry, starMaterial);
+
+      // Random position within a wide area, avoiding center
+      let x, y, z;
+      let distanceFromCenter;
+
+      // Keep generating positions until we find one outside the center avoidance radius
+      do {
+        x = (Math.random() - 0.5) * 1000;
+        y = (Math.random() - 0.5) * 1000;
+        z = -Math.random() * starDepth; // Start at random distances
+
+        // Calculate distance from center in x-y plane
+        distanceFromCenter = Math.sqrt(x * x + y * y);
+      } while (distanceFromCenter < centerAvoidanceRadius);
+
+      star.position.set(x, y, z);
+      starField.add(star);
+      stars.push(star);
+    }
+
     const composer = new EffectComposer(renderer);
 
     const resize = () => {
@@ -64,22 +119,6 @@
     window.addEventListener("resize", resize);
 
     // ----------------------
-    // Grid background
-    // ----------------------
-
-    // Create a more customized grid
-    const size = 3000;
-    const divisions = 69; // Lol
-    const mainColor = "white"; // Color of main grid lines
-    const secondaryColor = "white"; // Color of secondary grid lines
-
-    const grid = new GridHelper(size, divisions, mainColor, secondaryColor);
-    grid.position.set(0, -40, 0);
-    grid.material.transparent = true;
-    grid.material.opacity = 0.003; // Make grid semi-transparent
-
-    scene.add(grid);
-
     // SVG Logo
     // ----------------------
 
@@ -94,6 +133,8 @@
 
     const material = new THREE.MeshPhysicalMaterial({
       color: "white",
+      emissive: "white",
+      emissiveIntensity: 2,
       reflectivity: 1,
       metalness: 1,
       roughness: 0.15,
@@ -199,6 +240,46 @@
     svgGroup.rotation.y = Math.PI / 7;
 
     function animate() {
+      // Move stars toward camera
+      stars.forEach((star) => {
+        // Calculate current distance from center in x-y plane
+        const distanceFromCenter = Math.sqrt(
+          star.position.x * star.position.x + star.position.y * star.position.y,
+        );
+
+        // Apply slight outward drift for stars near the center
+        if (distanceFromCenter < centerAvoidanceRadius * 2) {
+          // Calculate direction vector from center to star
+          const dirX = star.position.x / distanceFromCenter;
+          const dirY = star.position.y / distanceFromCenter;
+
+          // Apply outward drift (stronger when closer to center)
+          const driftStrength =
+            (1 - distanceFromCenter / (centerAvoidanceRadius * 2)) * 0.5;
+          star.position.x += dirX * driftStrength;
+          star.position.y += dirY * driftStrength;
+        }
+
+        star.position.z += starSpeed;
+
+        // Reset stars that have passed the camera
+        if (star.position.z > 400) {
+          // Reset position, avoiding center
+          let newX, newY;
+          let distanceFromCenter;
+
+          do {
+            newX = (Math.random() - 0.5) * 1000;
+            newY = (Math.random() - 0.5) * 1000;
+            distanceFromCenter = Math.sqrt(newX * newX + newY * newY);
+          } while (distanceFromCenter < centerAvoidanceRadius);
+
+          star.position.z = -starDepth;
+          star.position.x = newX;
+          star.position.y = newY;
+        }
+      });
+
       // Normalize rotation to 0-2π range
       const normalizedRotation = svgGroup.rotation.y % (Math.PI * 2);
 
@@ -227,6 +308,12 @@
   .rotating-logo {
     width: 100%;
     height: 100%;
+    background: radial-gradient(
+      ellipse 80% 300% at 50% 120%,
+      blue,
+      black,
+      black
+    );
   }
 
   #canvas {

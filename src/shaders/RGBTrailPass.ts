@@ -1,74 +1,89 @@
 import {
   GLSL3,
   HalfFloatType,
-  MeshBasicMaterial,
   type Texture,
   type TextureDataType,
   WebGLRenderTarget,
   type WebGLRenderer,
 } from "three";
-import { FullScreenQuad } from "three/addons/postprocessing/Pass.js";
 import { ShaderPass } from "three/addons/postprocessing/ShaderPass.js";
 import vertexShader from "./rgbtrail.vert?raw";
 
 export class RGBTrailPass extends ShaderPass {
-  frames: {
-    target: WebGLRenderTarget;
-    quad: FullScreenQuad;
-  }[];
-  comp: {
-    target: WebGLRenderTarget;
-    quad: FullScreenQuad;
-  };
+  private oldTarget: WebGLRenderTarget;
+  private newTarget: WebGLRenderTarget;
 
   constructor() {
-    const echoes = [
-      ["r", "g", "b", "a"],
-      // Red
-      ["2.0", "0.0", "0.0", "0.8 * a"],
-      // Green
-      ["0.0", "2.0", "0.0", "0.6 * a"],
-      // Blue
-      ["0.0", "0.0", "2.0", "0.4 * a"],
-      ["0.0", "0.0", "2.0", "0.3 * a"],
-      ["0.0", "0.0", "2.0", "0.2 * a"],
-      ["0.0", "0.0", "2.0", "0.1 * a"],
-    ].map(([r, g, b, a], i) => ({ r, g, b, a, i }));
-
     const fragmentShader = `
       #include <common>
 
-      uniform sampler2D frames[${echoes.length}];
+      uniform sampler2D tOld;
+      uniform sampler2D tNew;
+      uniform float damp;
+      
       in vec2 xy;
       out vec4 outputPixel;
 
-      vec4 blend(vec4 bg, vec4 fg) {
-        vec4 result = mix(bg, fg, fg.a);
-        result = max(bg, result);
-        return result;
+      // Function to create a tighter falloff, similar to the Shadertoy example
+      float tighten(float x) {
+        return pow(1.0 - clamp(x, 0.0, 1.0), 8.0);
+      }
+
+      vec4 when_gt(vec4 x, float y) {
+        return max(sign(x - y), 0.0);
       }
 
       void main() {
-        outputPixel = vec4(0.0);
-        ${echoes
-          .map(
-            ({ r, g, b, a, i }) => `
-        {
-          vec4 pixel = texture(frames[${i}], xy);
-          pixel.r = ${r.replace("r", "pixel.r")};
-          pixel.g = ${g.replace("g", "pixel.g")};
-          pixel.b = ${b.replace("b", "pixel.b")};
-          pixel.a = ${a.replace("a", "pixel.a")};
-          outputPixel = blend(outputPixel, pixel);
-        }`,
-          )
-          .join("\n")}
+        vec4 texelOld = texture(tOld, xy);
+        vec4 texelNew = texture(tNew, xy);
+        
+        // Check if there's new content
+        bool hasNewContent = texelNew.r > 0.01 || texelNew.g > 0.01 || texelNew.b > 0.01;
+        
+        if (hasNewContent) {
+          // For new content, preserve the original color and set alpha to 1.0
+          outputPixel = vec4(texelNew.rgb, 1.0);
+        } else {
+          // For existing trail, apply damping with a tighter falloff
+          vec4 damped = texelOld * damp;
+          
+          // Apply visibility threshold with tighter falloff
+          float visibility = max(damped.r, max(damped.g, damped.b));
+          float tightVisibility = tighten(1.0 - visibility);
+          damped *= vec4(tightVisibility);
+          
+          // Check if the pixel is still visible
+          if (damped.a > 0.01) {
+            // Use the alpha value to determine the color
+            // As alpha decreases, we transition from colors to transparent
+            float alpha = damped.a;
+            
+            if (alpha > 0.65) {
+              // Red phase
+              outputPixel = vec4(1.0, 0.0, 0.0, alpha);
+            } else if (alpha > 0.5) {
+              // Green phase
+              outputPixel = vec4(0.0, 1.0, 0.0, alpha);
+            } else if (alpha > 0.1) {
+              // Blue phase
+              outputPixel = vec4(0.0, 0.0, 1.0, alpha);
+            } else {
+              // Fading out
+              outputPixel = vec4(0.0, 0.0, 0.0, alpha);
+            }
+          } else {
+            // Fully faded out
+            outputPixel = vec4(0.0, 0.0, 0.0, 0.0);
+          }
+        }
       }
     `;
 
     const shader = {
       uniforms: {
-        frames: { value: null },
+        tOld: { value: null },
+        tNew: { value: null },
+        damp: { value: 0.96 }, // Higher value = longer trail
       },
       vertexShader,
       fragmentShader,
@@ -84,17 +99,9 @@ export class RGBTrailPass extends ShaderPass {
       { type: HalfFloatType },
     ];
 
-    this.comp = {
-      target: new WebGLRenderTarget(...params),
-      quad: new FullScreenQuad(this.material),
-    };
-
-    this.frames = Array(echoes.length)
-      .fill(null)
-      .map(() => ({
-        target: new WebGLRenderTarget(...params),
-        quad: new FullScreenQuad(new MeshBasicMaterial({ transparent: true })),
-      }));
+    // Create two render targets for ping-pong buffering
+    this.oldTarget = new WebGLRenderTarget(...params);
+    this.newTarget = new WebGLRenderTarget(...params);
   }
 
   render(
@@ -102,21 +109,15 @@ export class RGBTrailPass extends ShaderPass {
     writeBuffer: WebGLRenderTarget | null,
     readBuffer: { texture: Texture | null },
   ) {
-    // Update frame buffers
-    // biome-ignore lint/style/noNonNullAssertion: Array is always available
-    this.frames.unshift(this.frames.pop()!);
-
-    renderer.setRenderTarget(this.frames[0].target);
-    (this.frames[0].quad.material as MeshBasicMaterial).map =
-      readBuffer.texture;
-    this.frames[0].quad.render(renderer);
-
     // Update uniforms
-    this.material.uniforms.frames.value = this.frames.map(
-      (frame) => frame.target.texture,
-    );
-
-    // Render final composition
+    this.material.uniforms.tNew.value = readBuffer.texture;
+    this.material.uniforms.tOld.value = this.oldTarget.texture;
+    
+    // Render to new target
+    renderer.setRenderTarget(this.newTarget);
+    this.fsQuad.render(renderer);
+    
+    // Render to output buffer
     if (this.renderToScreen) {
       renderer.setRenderTarget(null);
       this.fsQuad.render(renderer);
@@ -125,24 +126,21 @@ export class RGBTrailPass extends ShaderPass {
       if (this.clear) renderer.clear();
       this.fsQuad.render(renderer);
     }
+    
+    // Swap buffers for next frame
+    const temp = this.oldTarget;
+    this.oldTarget = this.newTarget;
+    this.newTarget = temp;
   }
 
   setSize(width: number, height: number) {
-    this.comp.target.setSize(width, height);
-    for (const frame of this.frames) {
-      frame.target.setSize(width, height);
-    }
+    this.oldTarget.setSize(width, height);
+    this.newTarget.setSize(width, height);
   }
 
   dispose() {
-    this.comp.target.dispose();
-    this.comp.quad.dispose();
-
-    for (const frame of this.frames) {
-      frame.target.dispose();
-      frame.quad.dispose();
-    }
-
+    this.oldTarget.dispose();
+    this.newTarget.dispose();
     super.dispose();
   }
 }
