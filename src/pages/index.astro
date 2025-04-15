@@ -184,10 +184,10 @@ const currentTime = new Date();
   thead {
     --chrome: linear-gradient(
       to bottom,
-      #e2e2e2 0%,
-      #dbdbdb 50%,
-      #d1d1d1 51%,
-      #fefefe 100%
+      #d5d5d5 0%,
+      #e2e2e2 50%,
+      #bebebe 51%,
+      #dddddd 100%
     );
 
     tr {
@@ -205,7 +205,7 @@ const currentTime = new Date();
       z-index: 1;
 
       &:not(:last-child) {
-        border-right: 1px solid rgba(0, 0, 0, 0.25);
+        border-right: 1.5px solid rgba(0, 0, 0, 0.25);
         box-shadow: inset -1.5px 0 0 rgba(255, 255, 255, 1);
       }
     }
@@ -225,7 +225,7 @@ const currentTime = new Date();
   }
 
   .channel-info {
-    background: linear-gradient(to top, rgb(153, 25, 25), rgb(77, 9, 9));
+    background: linear-gradient(to top, rgb(153, 51, 25), rgb(77, 33, 9));
     color: rgb(226, 208, 48);
     text-shadow: 0 2px 1px rgba(0, 0, 0, 0.5);
     height: 100%;
@@ -295,7 +295,7 @@ const currentTime = new Date();
   }
 
   .program-info {
-    background: linear-gradient(to top, rgb(8, 8, 229), rgb(32, 32, 51));
+    background: linear-gradient(to top, rgb(96, 8, 229), rgb(41, 36, 53));
     color: #eeeeee;
     text-shadow: 0 2px 1px rgba(0, 0, 0, 0.5);
     font-weight: bold;
@@ -364,7 +364,7 @@ const currentTime = new Date();
       padding-left: 1rem;
 
       &::before {
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='rgba(171, 197, 255, 0.5)'%3E%3Cpath d='M8.3685 12L13.1162 3.03212L14.8838 3.9679L10.6315 12L14.8838 20.0321L13.1162 20.9679L8.3685 12Z'%3E%3C/path%3E%3C/svg%3E");
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='rgba(255, 255, 255, 0.5)'%3E%3Cpath d='M8.3685 12L13.1162 3.03212L14.8838 3.9679L10.6315 12L14.8838 20.0321L13.1162 20.9679L8.3685 12Z'%3E%3C/path%3E%3C/svg%3E");
         left: 0;
       }
     }
@@ -373,7 +373,7 @@ const currentTime = new Date();
       padding-right: 1rem;
 
       &::after {
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='rgba(171, 197, 255, 0.5)'%3E%3Cpath d='M15.6315 12L10.8838 3.03212L9.11622 3.9679L13.3685 12L9.11622 20.0321L10.8838 20.9679L15.6315 12Z'%3E%3C/path%3E%3C/svg%3E");
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='rgba(255, 255, 255, 0.5)'%3E%3Cpath d='M15.6315 12L10.8838 3.03212L9.11622 3.9679L13.3685 12L9.11622 20.0321L10.8838 20.9679L15.6315 12Z'%3E%3C/path%3E%3C/svg%3E");
         right: 0;
       }
     }

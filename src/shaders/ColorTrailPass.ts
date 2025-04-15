@@ -9,7 +9,7 @@ import {
 import { ShaderPass } from "three/addons/postprocessing/ShaderPass.js";
 import vertexShader from "./rgbtrail.vert?raw";
 
-export class RGBTrailPass extends ShaderPass {
+export class ColorTrailPass extends ShaderPass {
   private oldTarget: WebGLRenderTarget;
   private newTarget: WebGLRenderTarget;
 
@@ -58,15 +58,18 @@ export class RGBTrailPass extends ShaderPass {
             // As alpha decreases, we transition from colors to transparent
             float alpha = damped.a;
             
-            if (alpha > 0.65) {
-              // Red phase
-              outputPixel = vec4(1.0, 0.0, 0.0, alpha);
-            } else if (alpha > 0.4) {
-              // Green phase
-              outputPixel = vec4(0.0, 1.0, 0.0, alpha);
-            } else if (alpha > 0.1) {
-              // Blue phase
-              outputPixel = vec4(0.0, 0.0, 1.0, alpha);
+            if (alpha > 0.8) {
+              // Yellow
+              outputPixel = vec4(1.0, 0.45, 0.05, alpha);
+            } else if (alpha > 0.65) {
+              // Orange
+              outputPixel = vec4(1.0, 0.1, 0.15, alpha);
+            } else if (alpha > 0.5) {
+              // Pink
+              outputPixel = vec4(0.85, 0.15, 0.55, alpha);
+            } else if (alpha > 0.3) {
+              // Purple
+              outputPixel = vec4(0.25, 0.1, 0.5, alpha);
             } else {
               // Fading out
               outputPixel = vec4(0.0, 0.0, 0.0, alpha);
@@ -83,7 +86,7 @@ export class RGBTrailPass extends ShaderPass {
       uniforms: {
         tOld: { value: null },
         tNew: { value: null },
-        damp: { value: 0.95 }, // Higher value = longer trail
+        damp: { value: 0.99 }, // Higher value = longer trail
       },
       vertexShader,
       fragmentShader,
