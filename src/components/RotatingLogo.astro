@@ -11,8 +11,11 @@
   import { SVGLoader } from "three/addons/loaders/SVGLoader.js";
   import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
   import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+  import { RenderPixelatedPass } from "three/addons/postprocessing/RenderPixelatedPass.js";
   import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
   import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+  import { LUTPass } from "three/addons/postprocessing/LUTPass.js";
+  import { LUTCubeLoader } from "three/addons/loaders/LUTCubeLoader.js";
   import { RGBTrailPass } from "../shaders/RGBTrailPass";
   import { DragControls } from "three/examples/jsm/Addons.js";
 
@@ -27,7 +30,7 @@
     // Three.js setup
     // ----------------------
 
-    const scene = new THREE.Scene(); // Exponential fog for depth effect
+    const scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2(0x000000, 0.0015);
 
     const camera = new THREE.PerspectiveCamera(
@@ -43,11 +46,11 @@
     const renderer = new THREE.WebGLRenderer({
       powerPreference: "low-power",
       alpha: true,
-      antialias: true,
+      antialias: false,
       preserveDrawingBuffer: true,
     });
     renderer.setAnimationLoop(animate);
-    renderer.toneMapping = THREE.ReinhardToneMapping;
+    renderer.toneMapping = THREE.NoToneMapping;
     renderer.toneMappingExposure = 1.2;
     canvas.appendChild(renderer.domElement);
 
@@ -207,6 +210,23 @@
     scene.add(bottomDirectionalLight);
 
     // ----------------------
+    // LUT Setup
+    // ----------------------
+
+    // Create a Lookup Table
+    const lutPass = new LUTPass({
+      lut: undefined,
+      intensity: 1.0,
+    });
+
+    // Load the LUT .cube file
+    const lutLoader = new LUTCubeLoader();
+    lutLoader.load("/luts/film.cube", (result) => {
+      lutPass.lut = result.texture3D;
+      lutPass.enabled = true;
+    });
+
+    // ----------------------
     // Postprocessing
     // ----------------------
 
@@ -223,6 +243,7 @@
     composer.addPass(renderPass);
     composer.addPass(rgbTrailPass);
     composer.addPass(bloomPass);
+    composer.addPass(lutPass);
     composer.addPass(outputPass);
 
     // ----------------------
@@ -238,6 +259,11 @@
 
     // Begin animation rotated off center
     svgGroup.rotation.y = Math.PI / 7;
+
+    let clock = new THREE.Clock();
+    let delta = 0;
+    // Intentionally run at 30 fps
+    let interval = 1 / 30;
 
     function animate() {
       // Move stars toward camera
@@ -299,7 +325,11 @@
 
       svgGroup.rotation.y -= rotationSpeed;
 
-      composer.render();
+      delta += clock.getDelta();
+      if (delta > interval) {
+        composer.render();
+        delta = delta % interval;
+      }
     }
   }
 </script>

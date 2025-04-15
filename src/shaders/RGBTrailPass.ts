@@ -61,7 +61,7 @@ export class RGBTrailPass extends ShaderPass {
             if (alpha > 0.65) {
               // Red phase
               outputPixel = vec4(1.0, 0.0, 0.0, alpha);
-            } else if (alpha > 0.5) {
+            } else if (alpha > 0.4) {
               // Green phase
               outputPixel = vec4(0.0, 1.0, 0.0, alpha);
             } else if (alpha > 0.1) {
@@ -83,7 +83,7 @@ export class RGBTrailPass extends ShaderPass {
       uniforms: {
         tOld: { value: null },
         tNew: { value: null },
-        damp: { value: 0.96 }, // Higher value = longer trail
+        damp: { value: 0.95 }, // Higher value = longer trail
       },
       vertexShader,
       fragmentShader,

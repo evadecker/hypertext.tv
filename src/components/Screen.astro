@@ -381,6 +381,10 @@ const { channelId, channelName }: Props = Astro.props;
       linear-gradient(to right, transparent 80%, rgba(0, 0, 0, 0.1) 10%);
     background-size: 3px 3px;
 
+    @media (width < 600px) {
+      background-size: 2px 2px;
+    }
+
     &[data-active="false"] {
       display: none;
     }

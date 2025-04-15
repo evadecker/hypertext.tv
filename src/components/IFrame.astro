@@ -65,6 +65,7 @@ const { src }: Props = Astro.props;
 
   if (iframe) {
     iframe.addEventListener("load", () => {
+      iframe.classList.add("loaded");
       // Remove background static
       canvas.remove();
     });
@@ -77,7 +78,10 @@ const { src }: Props = Astro.props;
     height: 100%;
     display: block;
     border: none;
-    background: #000000;
+
+    &.loaded {
+      background: #ffffff;
+    }
   }
 
   #static {

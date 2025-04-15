@@ -1,7 +1,7 @@
 interface InfiniteScrollOptions {
   /**
    * The speed of the scroll in pixels per second.
-   * If not provided, the scroll will be disabled.
+   * @default 40
    */
   scrollSpeed?: number | null;
 
@@ -27,6 +27,7 @@ export function infiniteScrollLoop(
   target.appendChild(cloned);
 
   const threshold = Math.floor(container.clientHeight * 0.1);
+  const mobileSlowdownFactor = 0.6;
 
   const handleScroll = () => {
     const contentHeight = content.clientHeight;
@@ -59,19 +60,33 @@ export function infiniteScrollLoop(
     });
     container.addEventListener("touchend", handleTouchEnd, { passive: true });
 
+    // Detect if the device is mobile
+    const isMobile =
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent,
+      );
+
     function animate(currentTime: number) {
       if (!scrollSpeed) return;
       const deltaTime = currentTime - lastTime;
       lastTime = currentTime;
 
       if (!isPaused) {
-        const targetScrollPerSecond = scrollSpeed;
+        // Apply mobile slowdown factor if on a mobile device
+        const effectiveScrollSpeed = isMobile
+          ? scrollSpeed * mobileSlowdownFactor
+          : scrollSpeed;
+        const targetScrollPerSecond = effectiveScrollSpeed;
         const scrollAmount = (targetScrollPerSecond * deltaTime) / 1000;
+        
+        // Accumulate fractional pixels
         totalScrolled += scrollAmount;
-
+        
+        // Only apply scroll when we have at least 1 pixel to scroll
         if (totalScrolled >= 1) {
-          container.scrollBy(0, Math.floor(totalScrolled));
-          totalScrolled -= Math.floor(totalScrolled);
+          const pixelsToScroll = Math.floor(totalScrolled);
+          container.scrollBy(0, pixelsToScroll);
+          totalScrolled -= pixelsToScroll;
         }
       }
 
