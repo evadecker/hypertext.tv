@@ -16,16 +16,27 @@ const pageTitle =
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>{pageTitle}</title>
+		<link rel="preconnect" href="https://cdn.usefathom.com" />
+		<script>
+			import * as Fathom from "fathom-client";
+			Fathom.load("EPXKTQED");
+		</script>
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="canonical" href={canonicalURL} />
 		<link rel="sitemap" href="/sitemap-index.xml" />
 		<meta name="generator" content={Astro.generator} />
-		<title>{pageTitle}</title>
-		<meta name="description" content="What’s on the internet today?" />
-		<meta property="og:image" content="/og.png" />
+		<meta
+			name="description"
+			content="Daily programming for the handmade web. Airing now."
+		/>
+		<meta property="og:image" content="/assets/og.png" />
 		<meta property="og:title" content={pageTitle} />
-		<meta property="og:description" content="What’s on the internet today?" />
+		<meta
+			property="og:description"
+			content="Daily programming for the handmade web. Airing now."
+		/>
 		<meta property="og:url" content={canonicalURL} />
 		<meta property="og:type" content="website" />
 		<link
@@ -49,11 +60,6 @@ const pageTitle =
 			type="font/woff2"
 			crossorigin
 		/>
-		<link rel="preconnect" href="https://cdn.usefathom.com" />
-		<script>
-			import * as Fathom from "fathom-client";
-			Fathom.load("EPXKTQED");
-		</script>
 	</head>
 	<body>
 		<slot />
