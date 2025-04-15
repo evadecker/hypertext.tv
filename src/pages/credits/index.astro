@@ -2,10 +2,14 @@
 import Rainbow from "@components/Rainbow.astro";
 import Television from "@components/Television.astro";
 import Layout from "@layouts/Layout.astro";
-import BuiltWith from "./_sections/BuiltWith.astro";
+import { GET } from "../api/contributors.json";
 import Featuring from "./_sections/Featuring.astro";
 import Fonts from "./_sections/Fonts.astro";
 import Intro from "./_sections/Intro.astro";
+import Thanks from "./_sections/Thanks.astro";
+
+const response = await GET(Astro);
+const contributors = await response.json();
 ---
 
 <Layout title="Credits">
@@ -19,9 +23,9 @@ import Intro from "./_sections/Intro.astro";
     <div id="credits">
       <div class="credits-content">
         <Intro />
-        <Featuring />
+        <Featuring contributors={contributors} />
         <Fonts />
-        <BuiltWith />
+        <Thanks />
       </div>
     </div>
     <Rainbow />
@@ -29,7 +33,7 @@ import Intro from "./_sections/Intro.astro";
 </Layout>
 
 <script>
-  import { infiniteScrollLoop } from "../../utils/infiniteScroll";
+  import { infiniteScrollLoop } from "@utils/infiniteScroll";
 
   const wrapper = document.getElementById("credits");
   const content = wrapper?.querySelector(".credits-content") as HTMLElement;
