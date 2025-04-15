@@ -224,7 +224,7 @@
     });
 
     const lutLoader = new LUTCubeLoader();
-    lutLoader.load("/luts/vintage-3.cube", (result) => {
+    lutLoader.load("/luts/vintage.cube", (result) => {
       lutPass.lut = result.texture3D;
       lutPass.enabled = true;
     });
