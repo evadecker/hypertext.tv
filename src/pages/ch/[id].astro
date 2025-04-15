@@ -17,16 +17,11 @@ const { name } = channel.data;
 
 const response = await GET(Astro);
 const activeProgram: ActiveProgram = await response.json();
+const { program } = activeProgram;
 ---
 
 <Layout title={name}>
   <Television activeProgram={activeProgram} channelId={id} channelName={name}>
-    {
-      activeProgram?.program ? (
-        <IFrame src={activeProgram.program.url} />
-      ) : (
-        <NoSchedule />
-      )
-    }
+    {program ? <IFrame src={program.url} /> : <NoSchedule />}
   </Television>
 </Layout>

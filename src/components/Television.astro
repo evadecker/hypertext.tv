@@ -1,7 +1,7 @@
 ---
 import type { ActiveProgram } from "@types";
 import Controls from "./Controls.astro";
-import Screen from "./Screen.astro";
+import Menu from "./Menu.astro";
 
 interface Props {
   channelId: string;
@@ -13,11 +13,112 @@ const { activeProgram, channelId, channelName } = Astro.props;
 ---
 
 <main class="television">
-  <Screen channelId={channelId} channelName={channelName}>
-    <slot />
-  </Screen>
+  <div class="screen" data-power="on">
+    <div class="screen-blur" data-brightness="0" data-color="0" data-tint="0">
+    </div>
+    <div class="scanlines" data-active="true"></div>
+    <div class="channel-number">CH {channelId ?? "??"}</div>
+    <div class="channel-name">{channelName}</div>
+    <div class="screen-content" data-horizontal="0" data-vertical="0">
+      <Menu />
+      <slot />
+    </div>
+  </div>
   <Controls activeProgram={activeProgram} channelId={channelId} />
 </main>
+
+<script>
+  function setAttributeOnElement(
+    selector: string,
+    attribute: string,
+    value: string,
+  ): void {
+    const element = document.querySelector(selector);
+    if (element) element.setAttribute(attribute, value);
+  }
+
+  function initializeFromLocalStorage(
+    selector: string,
+    attribute: string,
+    defaultValue: string = "0",
+  ): void {
+    const savedValue = localStorage.getItem(attribute) || defaultValue;
+    setAttributeOnElement(selector, attribute, savedValue);
+  }
+
+  function createEventListener(
+    eventName: string,
+    selector: string,
+    attribute: string,
+    detailProperty?: string,
+  ): void {
+    document.addEventListener(eventName, ((e: CustomEvent) => {
+      // Use the specified detail property or fall back to the attribute name without 'data-' prefix
+      const propertyName = detailProperty || attribute.replace("data-", "");
+      const value = e.detail[propertyName];
+      setAttributeOnElement(selector, attribute, value);
+    }) as EventListener);
+  }
+
+  const settings = [
+    {
+      event: "scanlineToggle",
+      selector: ".scanlines",
+      attribute: "data-active",
+      defaultValue: "true",
+      detailProperty: "enabled",
+    },
+    {
+      event: "brightnessChange",
+      selector: ".screen-blur",
+      attribute: "data-brightness",
+      detailProperty: "brightness",
+    },
+    {
+      event: "colorChange",
+      selector: ".screen-blur",
+      attribute: "data-color",
+      detailProperty: "color",
+    },
+    {
+      event: "tintChange",
+      selector: ".screen-blur",
+      attribute: "data-tint",
+      detailProperty: "tint",
+    },
+    {
+      event: "horizontalChange",
+      selector: ".screen-content",
+      attribute: "data-horizontal",
+      defaultValue: "0",
+      detailProperty: "horizontal",
+    },
+    {
+      event: "verticalChange",
+      selector: ".screen-content",
+      attribute: "data-vertical",
+      defaultValue: "0",
+      detailProperty: "vertical",
+    },
+  ];
+
+  settings.forEach((setting) => {
+    initializeFromLocalStorage(
+      setting.selector,
+      setting.attribute,
+      setting.defaultValue,
+    );
+  });
+
+  settings.forEach((setting) => {
+    createEventListener(
+      setting.event,
+      setting.selector,
+      setting.attribute,
+      setting.detailProperty,
+    );
+  });
+</script>
 
 <style>
   .television {
@@ -29,5 +130,340 @@ const { activeProgram, channelId, channelName } = Astro.props;
     justify-content: center;
     position: fixed;
     inset: 0;
+  }
+
+  @keyframes scanline {
+    0% {
+      transform: translate3d(0, -20vh, 0) skewY(1deg);
+    }
+
+    40%,
+    100% {
+      transform: translate3d(0, 100vh, 0) skewY(1deg);
+    }
+  }
+
+  @keyframes power-off {
+    68% {
+      transform: scale(1, 0.01);
+    }
+    99% {
+      transform: scale(0, 0.001);
+    }
+    100% {
+      transform: scale(0, 0);
+    }
+  }
+
+  @keyframes power-on {
+    0% {
+      opacity: 0;
+      filter: grayscale(100%);
+    }
+    100% {
+      opacity: 1;
+      filter: grayscale(0%);
+    }
+  }
+
+  .screen {
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    position: relative;
+    overflow: hidden;
+    will-change: transform;
+    background: #000000;
+
+    &[data-booting="true"] {
+      animation: power-on 6s 10ms ease-out both;
+    }
+
+    &[data-powering-off="true"] {
+      animation: power-off 300ms 20ms ease both;
+    }
+
+    &[data-power="off"] {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* CRT screen edges */
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      pointer-events: none;
+      background:
+        /* Top and bottom */
+        radial-gradient(
+          ellipse 250% 50%,
+          rgba(0, 0, 0, 0) 0%,
+          rgba(0, 0, 0, 0) 95%,
+          rgba(0, 0, 0, 0.1) 96%,
+          rgba(0, 0, 0, 1) 99%
+        ),
+        /* Left and right */
+          radial-gradient(
+            ellipse 50% 250%,
+            rgba(0, 0, 0, 0) 0%,
+            rgba(0, 0, 0, 0) 95%,
+            rgba(0, 0, 0, 0.1) 96%,
+            rgba(0, 0, 0, 1) 99%
+          ),
+        /* Corners */
+          radial-gradient(
+            farthest-corner,
+            rgba(0, 0, 0, 0) 93%,
+            rgba(0, 0, 0, 0.1) 94%,
+            rgba(0, 0, 0, 0.9) 96%
+          );
+    }
+  }
+
+  .screen-content {
+    /* Default values */
+    --horizontal: 0;
+    --vertical: 0;
+
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    transform: scaleX(var(--horizontal)) scaleY(var(--vertical));
+
+    &[data-horizontal="-3"] {
+      --horizontal: 94%;
+    }
+
+    &[data-horizontal="-2"] {
+      --horizontal: 96%;
+    }
+
+    &[data-horizontal="-1"] {
+      --horizontal: 98%;
+    }
+
+    &[data-horizontal="0"] {
+      --horizontal: 100%;
+    }
+
+    &[data-horizontal="1"] {
+      --horizontal: 102%;
+    }
+
+    &[data-horizontal="2"] {
+      --horizontal: 104%;
+    }
+
+    &[data-horizontal="3"] {
+      --horizontal: 106%;
+    }
+
+    &[data-vertical="-3"] {
+      --vertical: 94%;
+    }
+
+    &[data-vertical="-2"] {
+      --vertical: 96%;
+    }
+
+    &[data-vertical="-1"] {
+      --vertical: 98%;
+    }
+
+    &[data-vertical="0"] {
+      --vertical: 100%;
+    }
+
+    &[data-vertical="1"] {
+      --vertical: 102%;
+    }
+
+    &[data-vertical="2"] {
+      --vertical: 104%;
+    }
+
+    &[data-vertical="3"] {
+      --vertical: 106%;
+    }
+  }
+
+  .screen-blur {
+    /* Default values */
+    --brightness: 1;
+    --saturation: 1;
+    --tint: 0deg;
+
+    content: "";
+    position: absolute;
+    inset: 0;
+    backdrop-filter: blur(0.5px) brightness(var(--brightness))
+      saturate(var(--saturation)) hue-rotate(var(--tint));
+    pointer-events: none;
+    border-radius: 0.5em;
+    z-index: 3;
+    overflow: hidden;
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.2) 0%,
+      rgba(255, 255, 255, 0.08) 10%,
+      transparent 30%,
+      transparent 60%,
+      rgba(0, 0, 0, 0.08) 90%,
+      rgba(0, 0, 0, 0.2) 100%
+    );
+
+    /* Brightness */
+    &[data-brightness="-3"] {
+      --brightness: 0.3;
+    }
+    &[data-brightness="-2"] {
+      --brightness: 0.5;
+    }
+    &[data-brightness="-1"] {
+      --brightness: 0.7;
+    }
+    &[data-brightness="0"] {
+      --brightness: 1;
+    }
+    &[data-brightness="1"] {
+      --brightness: 1.5;
+    }
+    &[data-brightness="2"] {
+      --brightness: 2;
+    }
+    &[data-brightness="3"] {
+      --brightness: 3;
+    }
+
+    /* Saturation */
+    &[data-color="-3"] {
+      --saturation: 0;
+    }
+    &[data-color="-2"] {
+      --saturation: 0.5;
+    }
+    &[data-color="-1"] {
+      --saturation: 0.7;
+    }
+    &[data-color="0"] {
+      --saturation: 1;
+    }
+    &[data-color="1"] {
+      --saturation: 1.2;
+    }
+    &[data-color="2"] {
+      --saturation: 1.5;
+    }
+    &[data-color="3"] {
+      --saturation: 2;
+    }
+
+    /* Tint */
+    &[data-tint="-3"] {
+      --tint: -90deg;
+    }
+    &[data-tint="-2"] {
+      --tint: -60deg;
+    }
+    &[data-tint="-1"] {
+      --tint: -30deg;
+    }
+    &[data-tint="0"] {
+      --tint: 0deg;
+    }
+    &[data-tint="1"] {
+      --tint: 15deg;
+    }
+    &[data-tint="2"] {
+      --tint: 30deg;
+    }
+    &[data-tint="3"] {
+      --tint: 45deg;
+    }
+  }
+
+  .scanlines {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    overflow: hidden;
+    pointer-events: none;
+    background-image: linear-gradient(
+        to bottom,
+        transparent 60%,
+        rgba(0, 0, 0, 0.7) 10%
+      ),
+      linear-gradient(to right, transparent 80%, rgba(0, 0, 0, 0.1) 10%);
+    background-size: 3px 3px;
+
+    @media (width < 600px) {
+      background-size: 2px 2px;
+    }
+
+    &[data-active="false"] {
+      display: none;
+    }
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      background: radial-gradient(
+        circle,
+        rgba(255, 255, 255, 0.1),
+        transparent
+      );
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      width: 100%;
+      background-image: linear-gradient(
+        to bottom,
+        transparent 60%,
+        rgba(0, 0, 0, 0.04) 10%
+      );
+      background-size: 3px 3px;
+      opacity: 1;
+      height: 5vh;
+      animation: scanline 17s linear infinite -6s;
+    }
+  }
+
+  @keyframes disappear {
+    0% {
+      opacity: 1;
+    }
+
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .channel-number,
+  .channel-name {
+    position: absolute;
+    top: 5vh;
+    font-size: clamp(24px, 4vw, 40px);
+    color: lime;
+    text-shadow:
+      0.06em 0 0.01em rgba(0, 0, 0, 0.9),
+      -0.1em 0 0.1em rgba(0, 255, 0, 0.5);
+    font-family: "Better VCR", monospace;
+    animation: disappear 3s step-end forwards;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .channel-number {
+    left: max(5vw, 24px);
+  }
+
+  .channel-name {
+    right: max(5vw, 24px);
   }
 </style>

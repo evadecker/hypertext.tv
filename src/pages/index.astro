@@ -1,5 +1,5 @@
 ---
-import Guide from "@components/Guide.astro";
+import RotatingLogo from "@components/RotatingLogo.astro";
 import Television from "@components/Television.astro";
 import Layout from "@layouts/Layout.astro";
 import type { ActiveProgram, GuideData } from "@types";
@@ -14,6 +14,9 @@ const activeProgram: ActiveProgram = {
 // Fetch guide data from the API
 const response = await GET(Astro);
 const guideData: GuideData = await response.json();
+const { timeBlocks, channels } = guideData;
+
+const currentTime = new Date();
 ---
 
 <Layout title="Hypertext TV">
@@ -22,6 +25,357 @@ const guideData: GuideData = await response.json();
     channelId={channelId}
     channelName={channelName}
   >
-    <Guide guideData={guideData} />
+    <main class="guide">
+      <header>
+        <RotatingLogo />
+      </header>
+      <section id="contents">
+        <div class="container">
+          <table>
+            <colgroup>
+              <col />
+              <col />
+              <col />
+              <col />
+            </colgroup>
+            <thead>
+              <tr>
+                <th>
+                  <time datetime={currentTime.toISOString()} id="current-time">
+                    {currentTime.toLocaleTimeString()}
+                  </time>
+                </th>
+                {
+                  timeBlocks.map((block: string) => (
+                    <th class="time-block">
+                      <time datetime={block}>
+                        {new Date(block).toLocaleTimeString([], {
+                          hour: "numeric",
+                          minute: "2-digit",
+                        })}
+                      </time>
+                    </th>
+                  ))
+                }
+              </tr>
+            </thead>
+            <tbody>
+              {
+                channels.map(({ channel, blocks }) => (
+                  <tr>
+                    <th>
+                      <a class="channel-info" href={`/ch/${channel.slug}`}>
+                        <span class="channel-number">{channel.slug}</span>
+                        <span class="channel-name">{channel.name}</span>
+                      </a>
+                    </th>
+                    {blocks.map(
+                      ({ title, span, continuesBefore, continuesAfter }) => (
+                        <td colspan={span}>
+                          <div class="program-info" data-empty={!title}>
+                            {title && (
+                              <a
+                                class="program-contents"
+                                data-continues-before={continuesBefore}
+                                data-continues-after={continuesAfter}
+                              >
+                                {title}
+                              </a>
+                            )}
+                          </div>
+                        </td>
+                      ),
+                    )}
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
   </Television>
 </Layout>
+
+<script>
+  import { infiniteScrollLoop } from "../utils/infiniteScroll";
+
+  const updateCurrentTime = () => {
+    const currentTimeElement = document.getElementById("current-time");
+    if (currentTimeElement) {
+      const now = new Date();
+      currentTimeElement.textContent = now.toLocaleTimeString();
+    }
+  };
+
+  setInterval(updateCurrentTime, 1000);
+
+  const timeBlocks = document.querySelectorAll(".time-block time");
+
+  // Convert server time to local time
+  timeBlocks.forEach((timeElement) => {
+    const serverTime = new Date(timeElement.getAttribute("datetime") || "");
+    timeElement.textContent = serverTime.toLocaleTimeString([], {
+      hour: "numeric",
+      minute: "2-digit",
+    });
+  });
+
+  const container = document.getElementById("contents")!;
+  const table = container.querySelector("table")!;
+  const content = container.querySelector("tbody")!;
+
+  infiniteScrollLoop(container, content, {
+    scrollSpeed: 20,
+    cloneInto: table,
+  });
+</script>
+
+<style>
+  .guide {
+    --guide-bg: #0f1414;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    max-height: 100%;
+    overflow: hidden;
+    background-color: var(--guide-bg);
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: 1fr 2fr;
+    font-size: clamp(14px, 2vw, 20px);
+    font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+    user-select: none;
+  }
+
+  header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    z-index: 1;
+  }
+
+  #contents {
+    height: 100%;
+    min-height: 0;
+    overflow: scroll;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    overscroll-behavior: none;
+  }
+
+  .container {
+    width: clamp(640px, 100%, 1024px);
+    margin: 0 auto;
+  }
+
+  table {
+    width: 100%;
+    border-spacing: 0;
+    table-layout: fixed;
+  }
+
+  colgroup col:first-child {
+    width: 15ch;
+  }
+
+  thead {
+    --chrome: linear-gradient(
+      to bottom,
+      #e2e2e2 0%,
+      #dbdbdb 50%,
+      #d1d1d1 51%,
+      #fefefe 100%
+    );
+
+    tr {
+      background: #000000;
+    }
+
+    th {
+      height: 40px;
+      background: var(--chrome);
+      color: #333;
+      text-shadow: 0 2px 1px rgba(255, 255, 255, 0.8);
+      font-weight: bold;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+
+      &:not(:last-child) {
+        border-right: 1px solid rgba(0, 0, 0, 0.25);
+        box-shadow: inset -1.5px 0 0 rgba(255, 255, 255, 1);
+      }
+    }
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 40px;
+      background: var(--chrome);
+      box-shadow:
+        0 3px 4px rgba(0, 0, 0, 0.4),
+        0 -1px 0 rgba(255, 255, 255, 1);
+      z-index: 1;
+    }
+  }
+
+  .channel-info {
+    background: linear-gradient(to top, rgb(153, 25, 25), rgb(77, 9, 9));
+    color: rgb(226, 208, 48);
+    text-shadow: 0 2px 1px rgba(0, 0, 0, 0.5);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    line-height: 1.2;
+    text-decoration: none;
+    font-weight: bold;
+    position: relative;
+  }
+
+  thead th:first-child,
+  tbody th {
+    position: sticky;
+    left: 0;
+    padding-left: 0.75rem;
+  }
+
+  thead th:last-child,
+  tbody td:last-child {
+    padding-right: 0.75rem;
+  }
+
+  thead th:first-child {
+    z-index: 2;
+  }
+
+  tbody th {
+    background: linear-gradient(
+      to right,
+      var(--guide-bg),
+      var(--guide-bg),
+      rgba(0, 0, 0, 0)
+    );
+    z-index: 1;
+    white-space: nowrap;
+  }
+
+  tbody {
+    --height: clamp(4.5rem, 8vw, 5rem);
+    --padding: 0.25rem;
+    --outer-padding: 2rem;
+
+    th,
+    td {
+      height: var(--height);
+      padding: var(--padding);
+    }
+
+    tr:first-child {
+      th,
+      td {
+        padding-top: var(--outer-padding);
+        height: calc(var(--height) - var(--padding) + var(--outer-padding));
+      }
+    }
+
+    tr:last-child {
+      th,
+      td {
+        padding-bottom: var(--outer-padding);
+        height: calc(var(--height) - var(--padding) + var(--outer-padding));
+      }
+    }
+  }
+
+  .program-info {
+    background: linear-gradient(to top, rgb(8, 8, 229), rgb(32, 32, 51));
+    color: #eeeeee;
+    text-shadow: 0 2px 1px rgba(0, 0, 0, 0.5);
+    font-weight: bold;
+    height: 100%;
+    position: relative;
+    line-height: 1.2;
+
+    &[data-empty="true"] {
+      background: #1a2424;
+      text-align: center;
+
+      &::before {
+        content: "No schedule";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: rgba(255, 255, 255, 0.6);
+      }
+    }
+  }
+
+  .channel-info,
+  .program-info {
+    min-height: 0;
+    padding-inline: 1rem;
+    border-radius: 0.75rem;
+
+    &:not([data-empty="true"])::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border: 5px solid transparent;
+      background: linear-gradient(
+          to bottom,
+          rgba(255, 255, 255, 0),
+          rgba(255, 255, 255, 0),
+          rgba(255, 255, 255, 0.2)
+        )
+        border-box;
+      border-radius: 0.75rem;
+      mask:
+        linear-gradient(#fff 0 0) padding-box,
+        linear-gradient(#fff 0 0);
+      mask-composite: exclude;
+      mix-blend-mode: screen;
+    }
+  }
+
+  .program-contents {
+    display: block;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    height: 100%;
+
+    &[data-continues-before="true"]::before,
+    &[data-continues-after="true"]::after {
+      content: "";
+      width: 2rem;
+      height: 2rem;
+      position: absolute;
+    }
+
+    &[data-continues-before="true"] {
+      padding-left: 1rem;
+
+      &::before {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='rgba(171, 197, 255, 0.5)'%3E%3Cpath d='M8.3685 12L13.1162 3.03212L14.8838 3.9679L10.6315 12L14.8838 20.0321L13.1162 20.9679L8.3685 12Z'%3E%3C/path%3E%3C/svg%3E");
+        left: 0;
+      }
+    }
+
+    &[data-continues-after="true"] {
+      padding-right: 1rem;
+
+      &::after {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='rgba(171, 197, 255, 0.5)'%3E%3Cpath d='M15.6315 12L10.8838 3.03212L9.11622 3.9679L13.3685 12L9.11622 20.0321L10.8838 20.9679L15.6315 12Z'%3E%3C/path%3E%3C/svg%3E");
+        right: 0;
+      }
+    }
+  }
+</style>

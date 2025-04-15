@@ -78,10 +78,10 @@ export function infiniteScrollLoop(
           : scrollSpeed;
         const targetScrollPerSecond = effectiveScrollSpeed;
         const scrollAmount = (targetScrollPerSecond * deltaTime) / 1000;
-        
+
         // Accumulate fractional pixels
         totalScrolled += scrollAmount;
-        
+
         // Only apply scroll when we have at least 1 pixel to scroll
         if (totalScrolled >= 1) {
           const pixelsToScroll = Math.floor(totalScrolled);

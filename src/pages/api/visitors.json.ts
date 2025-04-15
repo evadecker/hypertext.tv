@@ -4,11 +4,11 @@ export const GET: APIRoute = async () => {
   try {
     const apiKey = import.meta.env.FATHOM_API_KEY;
     const siteId = "EPXKTQED";
-    
+
     if (!apiKey) {
       return new Response(
         JSON.stringify({ error: "Fathom API key is not configured" }),
-        { status: 500, headers: { "Content-Type": "application/json" } }
+        { status: 500, headers: { "Content-Type": "application/json" } },
       );
     }
 
@@ -19,40 +19,37 @@ export const GET: APIRoute = async () => {
           Authorization: `Bearer ${apiKey}`,
           Accept: "application/json",
         },
-      }
+      },
     );
 
     if (!response.ok) {
       const errorData = await response.json();
       return new Response(
-        JSON.stringify({ 
-          error: "Failed to fetch data from Fathom API", 
-          details: errorData 
+        JSON.stringify({
+          error: "Failed to fetch data from Fathom API",
+          details: errorData,
         }),
-        { 
-          status: response.status, 
-          headers: { "Content-Type": "application/json" } 
-        }
+        {
+          status: response.status,
+          headers: { "Content-Type": "application/json" },
+        },
       );
     }
 
     const data = await response.json();
-    
-    return new Response(
-      JSON.stringify(data),
-      { 
-        status: 200, 
-        headers: { 
-          "Content-Type": "application/json",
-          "Cache-Control": "no-cache, no-store, must-revalidate"
-        } 
-      }
-    );
+
+    return new Response(JSON.stringify(data), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+      },
+    });
   } catch (error) {
     console.error("Error fetching current visitors:", error);
-    return new Response(
-      JSON.stringify({ error: "Internal server error" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
-}; 
+};

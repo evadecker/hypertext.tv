@@ -2,21 +2,24 @@
 import "../styles/index.css";
 
 interface Props {
-  title: string;
+	title: string;
 }
 
 const { title } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const pageTitle =
-  Astro.url.pathname === "/" ? title : `${title} | Hypertext TV`;
+	Astro.url.pathname === "/" ? title : `${title} | Hypertext TV`;
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"
+		/>
 		<title>{pageTitle}</title>
 		<link rel="preconnect" href="https://cdn.usefathom.com" />
 		<script>

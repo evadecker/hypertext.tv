@@ -2,7 +2,7 @@
 
 ---
 
-<div class="menu" data-open="false">
+<div id="menu" data-open="false">
   <div class="menu-content" role="menu" aria-label="Menu Options">
     <div aria-hidden="true" class="instructions">
       <span>↑↓Select</span><span>Adjust←→</span>
@@ -372,16 +372,15 @@
   }
 
   let menuFocusGroup: MenuFocusGroup;
+  const menu = document.getElementById("menu");
 
   function openMenu() {
-    const menu = document.querySelector(".menu");
     menu?.setAttribute("data-open", "true");
     if (menuFocusGroup) menuFocusGroup.setSelectedIndex(0);
     Fathom.trackEvent("menu: open");
   }
 
   function closeMenu() {
-    const menu = document.querySelector(".menu");
     menu?.setAttribute("data-open", "false");
     const menuItems = menu?.querySelectorAll(
       '[role="menuitem"]',
@@ -394,16 +393,16 @@
     Fathom.trackEvent("menu: close");
   }
 
-  const menu = document.querySelector(".menu");
+  function toggleMenu() {
+    const isOpen = menu?.getAttribute("data-open") === "true";
+    isOpen ? closeMenu() : openMenu();
+  }
+
   menu?.setAttribute("data-open", "false");
   menuFocusGroup = new MenuFocusGroup(".menu-content");
 
-  const menuButton = document.getElementById("menu");
-  menuButton?.addEventListener("click", () => {
-    const menu = document.querySelector(".menu");
-    const isOpen = menu?.getAttribute("data-open") === "true";
-    isOpen ? closeMenu() : openMenu();
-  });
+  const menuButton = document.getElementById("menu-button");
+  menuButton?.addEventListener("click", toggleMenu);
 
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") closeMenu();
@@ -411,9 +410,11 @@
 </script>
 
 <style>
-  .menu {
+  #menu {
     display: none;
     pointer-events: none;
+    /* Safari fix */
+    transform: translate3d(0, 0, 0);
 
     &[data-open="true"] {
       position: absolute;

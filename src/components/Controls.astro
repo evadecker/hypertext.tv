@@ -38,7 +38,7 @@ const { prev, next } = await getPagination(channelId);
     </div>
     <div class="control-group">
       <div class="label">Menu</div>
-      <button class="button" aria-label="Open Menu" id="menu"></button>
+      <button class="button" aria-label="Open Menu" id="menu-button"></button>
     </div>
   </div>
   <ChannelDisplay channelId={channelId} activeProgram={activeProgram} />
@@ -64,7 +64,7 @@ const { prev, next } = await getPagination(channelId);
   const screen = document.querySelector(".screen");
   const powerIndicator = document.querySelector(".power-indicator");
   const channelDisplay = document.querySelector("channel-display");
-  const menuButton = document.getElementById("menu");
+  const menuButton = document.getElementById("menu-button");
   const channelButtons = document.querySelectorAll(".channel-button");
 
   function updateButtonStates(powerState: string) {
@@ -88,6 +88,38 @@ const { prev, next } = await getPagination(channelId);
     } else {
       powerButton?.removeAttribute("disabled");
     }
+  }
+
+  function handlePowerButtonClick(event: Event) {
+    // Prevent default behavior to avoid any conflicts
+    event.preventDefault();
+
+    if (!screen) return;
+
+    const isTurningOff = screen.getAttribute("data-power") === "on";
+
+    Fathom.trackEvent(`controls: click power ${isTurningOff ? "off" : "on"}`);
+
+    if (isTurningOff) {
+      screen.setAttribute("data-powering-off", "true");
+      updateButtonStates(screen.getAttribute("data-power") || "on");
+    } else {
+      screen.setAttribute("data-power", "on");
+      screen.setAttribute("data-booting", "true");
+      localStorage.setItem("power", "on");
+      updateButtonStates("on");
+    }
+
+    const newPowerState = isTurningOff ? "off" : "on";
+    powerIndicator?.setAttribute("data-power", newPowerState);
+    channelDisplay?.setAttribute("data-power", newPowerState);
+  }
+
+  function handleChannelButtonClick(event: Event) {
+    const button = event.currentTarget as HTMLAnchorElement;
+    const direction =
+      button.getAttribute("data-arrow") === "up" ? "next" : "previous";
+    Fathom.trackEvent(`controls: click channel ${direction}`);
   }
 
   function init() {
@@ -116,38 +148,10 @@ const { prev, next } = await getPagination(channelId);
     });
 
     powerButton?.addEventListener("click", handlePowerButtonClick);
+
     channelButtons.forEach((button) => {
       button.addEventListener("click", handleChannelButtonClick);
     });
-  }
-
-  function handleChannelButtonClick(event: Event) {
-    const button = event.currentTarget as HTMLAnchorElement;
-    const direction =
-      button.getAttribute("data-arrow") === "up" ? "next" : "previous";
-    Fathom.trackEvent(`controls: click channel ${direction}`);
-  }
-
-  function handlePowerButtonClick() {
-    if (!screen) return;
-
-    const isTurningOff = screen.getAttribute("data-power") === "on";
-
-    Fathom.trackEvent(`controls: click power ${isTurningOff ? "off" : "on"}`);
-
-    if (isTurningOff) {
-      screen.setAttribute("data-powering-off", "true");
-      updateButtonStates(screen.getAttribute("data-power") || "on");
-    } else {
-      screen.setAttribute("data-power", "on");
-      screen.setAttribute("data-booting", "true");
-      localStorage.setItem("power", "on");
-      updateButtonStates("on");
-    }
-
-    const newPowerState = isTurningOff ? "off" : "on";
-    powerIndicator?.setAttribute("data-power", newPowerState);
-    channelDisplay?.setAttribute("data-power", newPowerState);
   }
 
   init();
@@ -165,6 +169,7 @@ const { prev, next } = await getPagination(channelId);
     grid-template-columns: auto;
     grid-template-areas: "buttons display logo";
     width: 100%;
+    user-select: none;
     align-items: center;
     justify-items: space-between;
     gap: 1rem;
@@ -309,6 +314,7 @@ const { prev, next } = await getPagination(channelId);
 
   .button {
     --shadow-color: 0deg 0% 0%;
+    touch-action: manipulation; /* Prevent double-tap zoom on iOS */
     width: 4rem;
     height: 1.5rem;
     background-color: #333333;
