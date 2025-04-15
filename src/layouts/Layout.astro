@@ -2,14 +2,14 @@
 import "../styles/index.css";
 
 interface Props {
-  title: string;
+	title: string;
 }
 
 const { title } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const pageTitle =
-  Astro.url.pathname === "/" ? title : `${title} | Hypertext TV`;
+	Astro.url.pathname === "/" ? title : `${title} | Hypertext TV`;
 ---
 
 <!doctype html>
@@ -23,6 +23,11 @@ const pageTitle =
 		<meta name="generator" content={Astro.generator} />
 		<title>{pageTitle}</title>
 		<meta name="description" content="What’s on the internet today?" />
+		<meta property="og:image" content="/og.png" />
+		<meta property="og:title" content={pageTitle} />
+		<meta property="og:description" content="What’s on the internet today?" />
+		<meta property="og:url" content={canonicalURL} />
+		<meta property="og:type" content="website" />
 		<link
 			rel="preload"
 			href="/fonts/BetterVCR-latin.woff2"

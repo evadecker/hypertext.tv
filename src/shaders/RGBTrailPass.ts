@@ -112,11 +112,11 @@ export class RGBTrailPass extends ShaderPass {
     // Update uniforms
     this.material.uniforms.tNew.value = readBuffer.texture;
     this.material.uniforms.tOld.value = this.oldTarget.texture;
-    
+
     // Render to new target
     renderer.setRenderTarget(this.newTarget);
     this.fsQuad.render(renderer);
-    
+
     // Render to output buffer
     if (this.renderToScreen) {
       renderer.setRenderTarget(null);
@@ -126,7 +126,7 @@ export class RGBTrailPass extends ShaderPass {
       if (this.clear) renderer.clear();
       this.fsQuad.render(renderer);
     }
-    
+
     // Swap buffers for next frame
     const temp = this.oldTarget;
     this.oldTarget = this.newTarget;
