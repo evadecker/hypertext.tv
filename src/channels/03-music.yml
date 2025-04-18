@@ -308,6 +308,9 @@ schedule:
     - "23:30":
   sunday:
     - "00:00":
+        title: Dancing Boss
+        author: Laura Sirvent
+        url: https://boss.laurasirvent.com/
     - "00:30":
     - "01:00":
     - "01:30":

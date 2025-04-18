@@ -32,6 +32,9 @@ schedule:
     - "12:00":
     - "12:30":
     - "13:00":
+        title: Relative Time
+        author: Jonny Thaw
+        url: https://relative-time.jthaw.club/
     - "13:30":
     - "14:00":
     - "14:30":
@@ -349,6 +352,9 @@ schedule:
     - "05:00":
     - "05:30":
     - "06:00":
+        title: DOOM CAPTCHA
+        author: Guillermo Rauch
+        url: https://doom-captcha.vercel.app/
     - "06:30":
     - "07:00":
     - "07:30":

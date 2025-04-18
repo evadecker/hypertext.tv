@@ -295,6 +295,9 @@ schedule:
     - "12:00":
     - "12:30":
     - "13:00":
+        title: textmode.art
+        author: humanbydefinition
+        url: https://textmode.art/
     - "13:30":
     - "14:00":
     - "14:30":

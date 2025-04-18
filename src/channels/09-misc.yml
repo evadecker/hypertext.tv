@@ -3,6 +3,9 @@ name: Misc
 schedule:
   monday:
     - "00:00":
+        title: 715-999-7483
+        author: Brian Moore
+        url: https://715-999-7483.com/
     - "00:30":
     - "01:00":
     - "01:30":
@@ -52,6 +55,9 @@ schedule:
     - "23:30":
   tuesday:
     - "00:00":
+        title: Binocular Shot
+        author: Javier Arce
+        url: https://binocularshot.com/
     - "00:30":
     - "01:00":
     - "01:30":
