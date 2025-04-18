@@ -55,6 +55,9 @@ schedule:
     - "22:00":
     - "22:30":
     - "23:00":
+        title: elle's homepage
+        author: elle
+        url: https://ellesho.me/page
     - "23:30":
   tuesday:
     - "00:00":
