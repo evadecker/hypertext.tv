@@ -190,8 +190,7 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
       const width = 50;
       const height = 10; // height in pixels
       const MIN_HEIGHT = 2; // minimum height of a bar
-      const SOFT_MIN = 5; // minimum value on the scale
-      const maxValue = Math.max(...this.visitorHistory, SOFT_MIN);
+      const maxValue = Math.max(...this.visitorHistory, 1); // Use 1 as minimum to avoid division by zero
       const totalBars = this.visitorHistory.length;
       const totalWidth =
         this.BAR_WIDTH * totalBars + this.BAR_GAP * (totalBars - 1);
@@ -202,24 +201,18 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
 
       // Create bars
       this.visitorHistory.forEach((point, idx) => {
-        // Calculate the available height above minimum
-        const availableHeight = height - MIN_HEIGHT;
-
-        // Scale the value to the available height
-        const scaledHeight =
-          point <= SOFT_MIN
-            ? MIN_HEIGHT + availableHeight * (point / SOFT_MIN) // Scale small values proportionally
-            : height * (1 - (point - SOFT_MIN) / (maxValue - SOFT_MIN)); // Scale larger values as before
-
+        // Calculate height as percentage of max value
+        const percentage = point / maxValue;
+        const barHeight = Math.max(MIN_HEIGHT, height * percentage);
         const x = startX + idx * (this.BAR_WIDTH + this.BAR_GAP);
-        const barHeight = Math.max(MIN_HEIGHT, scaledHeight);
+        const y = height - barHeight;
 
         const rect = document.createElementNS(
           "http://www.w3.org/2000/svg",
           "rect",
         );
         rect.setAttribute("x", x.toString());
-        rect.setAttribute("y", (height - barHeight).toString());
+        rect.setAttribute("y", y.toString());
         rect.setAttribute("width", this.BAR_WIDTH.toString());
         rect.setAttribute("height", barHeight.toString());
         rect.setAttribute("rx", "1");
