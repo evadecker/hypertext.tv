@@ -280,10 +280,28 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
       history: number[] | undefined,
       currentCount: number,
     ): void {
+      // If we have history from the API, use it
       if (history && Array.isArray(history) && history.length > 0) {
-        // Use the history from the API if available
         this.visitorHistory = history;
       } else {
+        // If no history provided, try to get initial data from the dataset
+        const initialData = this.dataset.initialVisitors;
+        if (initialData) {
+          try {
+            const parsed = JSON.parse(initialData);
+            if (
+              parsed.history &&
+              Array.isArray(parsed.history) &&
+              parsed.history.length > 0
+            ) {
+              this.visitorHistory = parsed.history;
+              return;
+            }
+          } catch (error) {
+            console.error("Failed to parse initial visitor data:", error);
+          }
+        }
+
         // Fallback to updating with just the current count
         this.visitorHistory = [...this.visitorHistory.slice(1), currentCount];
       }
@@ -608,15 +626,9 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
     }
 
     #visitors {
-      color: var(--phosphor-inactive);
       display: flex;
       align-items: center;
       gap: 0.5em;
-
-      &[data-active="true"] {
-        color: var(--phosphor-active);
-        text-shadow: var(--phosphor-glow);
-      }
     }
 
     .visitor-trend {
@@ -666,10 +678,10 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
   #visitors[data-active="true"] {
     .visitor-trend rect {
       filter: drop-shadow(
-          0 0 2px color-mix(in srgb, currentColor 50%, transparent)
+          0 0 2px color-mix(in srgb, currentColor 30%, transparent)
         )
-        drop-shadow(0 0 4px color-mix(in srgb, currentColor 40%, transparent))
-        drop-shadow(0 0 8px color-mix(in srgb, currentColor 30%, transparent));
+        drop-shadow(0 0 4px color-mix(in srgb, currentColor 20%, transparent))
+        drop-shadow(0 0 8px color-mix(in srgb, currentColor 15%, transparent));
     }
   }
 </style>
