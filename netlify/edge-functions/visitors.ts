@@ -227,7 +227,7 @@ export const config: Config = {
   path: "/api/visitors",
   rateLimit: {
     action: "rate_limit",
-    aggregateBy: "domain",
+    aggregateBy: "ip",
     windowSize: 60,
   },
 };
