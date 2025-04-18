@@ -293,6 +293,9 @@ schedule:
     - "17:00":
     - "17:30":
     - "18:00":
+        title: Optical Toys
+        author: Tom's Toys
+        url: https://optical.toys/
     - "18:30":
     - "19:00":
     - "19:30":

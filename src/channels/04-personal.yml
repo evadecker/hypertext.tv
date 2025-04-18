@@ -242,6 +242,9 @@ schedule:
     - "07:00":
     - "07:30":
     - "08:00":
+        title: Leusyths Webspace
+        author: Leusyth
+        url: https://leusyth.neocities.org/
     - "08:30":
     - "09:00":
     - "09:30":
@@ -262,6 +265,9 @@ schedule:
     - "17:00":
     - "17:30":
     - "18:00":
+        title: Maya Man
+        author: Maya Man
+        url: https://mayaontheinter.net/
     - "18:30":
     - "19:00":
     - "19:30":

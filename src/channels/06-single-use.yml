@@ -267,6 +267,9 @@ schedule:
     - "18:00":
     - "18:30":
     - "19:00":
+        title: Lissajous Curve SVG Generator
+        author: Eva Decker
+        url: https://lissajous.eva.town/
     - "19:30":
     - "20:00":
     - "20:30":

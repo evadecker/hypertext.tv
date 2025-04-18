@@ -225,6 +225,9 @@ schedule:
     - "07:00":
     - "07:30":
     - "08:00":
+        title: Blob Ross
+        author: Tom's Toys
+        url: https://toms.toys/toy/blob-ross
     - "08:30":
     - "09:00":
     - "09:30":
@@ -237,6 +240,9 @@ schedule:
     - "13:00":
     - "13:30":
     - "14:00":
+        title: The Barnacle Goose Experiment
+        author: Everest Pipkin
+        url: https://everest-pipkin.com/barnacle-goose/
     - "14:30":
     - "15:00":
     - "15:30":
@@ -245,6 +251,9 @@ schedule:
     - "17:00":
     - "17:30":
     - "18:00":
+        title: Drift Mine Satellite
+        author: Everest Pipkin
+        url: https://solarprotocol.net/sunthinking/pipkin/
     - "18:30":
     - "19:00":
     - "19:30":
