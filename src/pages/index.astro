@@ -15,8 +15,6 @@ const activeProgram: ActiveProgram = {
 const response = await GET(Astro);
 const guideData: GuideData = await response.json();
 const { timeBlocks, channels } = guideData;
-
-const currentTime = new Date();
 ---
 
 <Layout title="Hypertext TV">
@@ -41,8 +39,8 @@ const currentTime = new Date();
             <thead>
               <tr>
                 <th>
-                  <time datetime={currentTime.toISOString()} id="current-time">
-                    {currentTime.toLocaleTimeString()}
+                  <time datetime={new Date().toISOString()} id="current-time">
+                    {new Date().toLocaleTimeString()}
                   </time>
                 </th>
                 {

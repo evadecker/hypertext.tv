@@ -10,6 +10,46 @@ const { activeProgram } = Astro.props;
 const { program, startTime, endTime } = activeProgram ?? {};
 const { title, url } = program ?? {};
 
+// Fetch initial visitor data
+let initialVisitorData = { total: 0, history: Array(10).fill(0) };
+try {
+  const response = await fetch("/api/visitors");
+  if (response.ok) {
+    initialVisitorData = await response.json();
+  }
+} catch (error) {
+  console.error("Failed to fetch initial visitor data:", error);
+}
+
+const BAR_WIDTH = 3;
+const BAR_GAP = 2;
+const SVG_WIDTH = 50;
+const SVG_HEIGHT = 10;
+const MIN_HEIGHT = 2;
+const SOFT_MIN = 5;
+
+function generateBars(history: number[]) {
+  const maxValue = Math.max(...history, SOFT_MIN);
+  const totalBars = history.length;
+  const totalWidth = BAR_WIDTH * totalBars + BAR_GAP * (totalBars - 1);
+  const startX = (SVG_WIDTH - totalWidth) / 2;
+
+  return history
+    .map((point, idx) => {
+      const availableHeight = SVG_HEIGHT - MIN_HEIGHT;
+      const scaledHeight =
+        point <= SOFT_MIN
+          ? MIN_HEIGHT + availableHeight * (point / SOFT_MIN)
+          : SVG_HEIGHT * (1 - (point - SOFT_MIN) / (maxValue - SOFT_MIN));
+      const barHeight = Math.max(MIN_HEIGHT, scaledHeight);
+      const x = startX + idx * (BAR_WIDTH + BAR_GAP);
+      const y = SVG_HEIGHT - barHeight;
+
+      return `<rect x="${x}" y="${y}" width="${BAR_WIDTH}" height="${barHeight}" rx="1" fill="currentColor" />`;
+    })
+    .join("");
+}
+
 function getReadableTime(timeStr: string | undefined) {
   if (!timeStr) return "00:00";
 
@@ -28,11 +68,15 @@ function getReadableTime(timeStr: string | undefined) {
 const readableEndTime = getReadableTime(endTime)?.split(" ")[0];
 const isAm = getReadableTime(endTime)?.split(" ")[1] === "AM";
 
-const day = new Date().toLocaleDateString("en-US", { weekday: "short" });
 const isAiring = Boolean(startTime && endTime) && program !== null;
 ---
 
-<channel-display data-title={title} data-url={url} data-power="on">
+<channel-display
+  data-title={title}
+  data-url={url}
+  data-power="on"
+  data-initial-visitors={JSON.stringify(initialVisitorData)}
+>
   <header class="display">
     <div
       class="title"
@@ -54,38 +98,43 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
     </div>
 
     <div class="secondary">
-      <div class="airing" data-active={isAiring || title === "TV Guide"}>
-        <div class="airing-indicator"></div>
-        Live
-      </div>
-      <div class="times">
-        <span data-active={isAiring}>Until</span>
-        <time datetime={endTime} data-active={isAiring}>
-          {readableEndTime}
-        </time>
-        <span
-          class="am-pm am"
-          data-active={Boolean(isAm && isAiring)}
-          aria-hidden={Boolean(!isAm || !isAiring)}
+      <div class="airing-container">
+        <div
+          class="airing"
+          data-active={isAiring || title === "What's Airing Now"}
         >
-          AM
-        </span>
-        <span
-          class="am-pm pm"
-          data-active={Boolean(!isAm && isAiring)}
-          aria-hidden={Boolean(isAm || !isAiring)}
-        >
-          PM
-        </span>
+          <div class="airing-indicator"></div>
+          Live
+        </div>
+        <div class="times">
+          <span data-active={isAiring}>Until</span>
+          <time datetime={endTime} data-active={isAiring}>
+            {readableEndTime}
+          </time>
+          <span
+            class="am-pm am"
+            data-active={Boolean(isAm && isAiring)}
+            aria-hidden={Boolean(!isAm || !isAiring)}
+          >
+            AM
+          </span>
+          <span
+            class="am-pm pm"
+            data-active={Boolean(!isAm && isAiring)}
+            aria-hidden={Boolean(isAm || !isAiring)}
+          >
+            PM
+          </span>
+        </div>
       </div>
-      <div class="days">
-        <span data-active={isAiring && day === "Mon"}>Mo</span>
-        <span data-active={isAiring && day === "Tue"}>Tu</span>
-        <span data-active={isAiring && day === "Wed"}>We</span>
-        <span data-active={isAiring && day === "Thu"}>Th</span>
-        <span data-active={isAiring && day === "Fri"}>Fr</span>
-        <span data-active={isAiring && day === "Sat"}>Sa</span>
-        <span data-active={isAiring && day === "Sun"}>Su</span>
+      <div id="visitors" data-active="true">
+        <svg class="visitor-trend" width="50" height="15">
+          <g
+            class="trend-bars"
+            set:html={generateBars(initialVisitorData.history)}
+          />
+        </svg>
+        <span class="count">{initialVisitorData.total}</span> watching
       </div>
     </div>
   </header>
@@ -95,9 +144,168 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
   class ChannelDisplay extends HTMLElement {
     intervalId: NodeJS.Timer | null = null;
     timeoutId: NodeJS.Timeout | null = null;
+    visitorUpdateInterval: NodeJS.Timer | null = null;
+    isOnline: boolean = true;
+    private visitorHistory: number[] = [];
+    private trendBars: SVGGElement | null = null;
+    private readonly MAX_POINTS = 10;
+    private readonly BAR_WIDTH = 3;
+    private readonly BAR_GAP = 2;
 
     constructor() {
       super();
+
+      // Initialize visitor history from server-side data
+      try {
+        const initialData = JSON.parse(
+          this.dataset.initialVisitors || '{"total": 0, "history": []}',
+        );
+        this.visitorHistory =
+          initialData.history.length > 0
+            ? initialData.history
+            : new Array(this.MAX_POINTS).fill(0);
+
+        // Update the visitor count display immediately
+        const countElement = this.querySelector("#visitors .count");
+        if (countElement) {
+          countElement.textContent = initialData.total.toString();
+        }
+      } catch (error) {
+        console.error("Failed to parse initial visitor data:", error);
+        this.visitorHistory = new Array(this.MAX_POINTS).fill(0);
+      }
+    }
+
+    private setupSparkline() {
+      this.trendBars = this.querySelector(".trend-bars");
+      if (!this.trendBars) return;
+
+      this.updateSparkline();
+    }
+
+    private updateSparkline() {
+      if (!this.trendBars) return;
+
+      // Calculate dimensions
+      const width = 50;
+      const height = 10; // height in pixels
+      const MIN_HEIGHT = 2; // minimum height of a bar
+      const SOFT_MIN = 5; // minimum value on the scale
+      const maxValue = Math.max(...this.visitorHistory, SOFT_MIN);
+      const totalBars = this.visitorHistory.length;
+      const totalWidth =
+        this.BAR_WIDTH * totalBars + this.BAR_GAP * (totalBars - 1);
+      const startX = (width - totalWidth) / 2; // Center the bars
+
+      // Clear existing bars
+      this.trendBars.innerHTML = "";
+
+      // Create bars
+      this.visitorHistory.forEach((point, idx) => {
+        // Calculate the available height above minimum
+        const availableHeight = height - MIN_HEIGHT;
+
+        // Scale the value to the available height
+        const scaledHeight =
+          point <= SOFT_MIN
+            ? MIN_HEIGHT + availableHeight * (point / SOFT_MIN) // Scale small values proportionally
+            : height * (1 - (point - SOFT_MIN) / (maxValue - SOFT_MIN)); // Scale larger values as before
+
+        const x = startX + idx * (this.BAR_WIDTH + this.BAR_GAP);
+        const barHeight = Math.max(MIN_HEIGHT, scaledHeight);
+
+        const rect = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "rect",
+        );
+        rect.setAttribute("x", x.toString());
+        rect.setAttribute("y", (height - barHeight).toString());
+        rect.setAttribute("width", this.BAR_WIDTH.toString());
+        rect.setAttribute("height", barHeight.toString());
+        rect.setAttribute("rx", "1");
+        rect.setAttribute("fill", "currentColor");
+
+        if (this.trendBars) {
+          this.trendBars.appendChild(rect);
+        }
+      });
+    }
+
+    async fetchVisitorCount() {
+      if (!this.isOnline) return;
+
+      try {
+        const response = await fetch("/api/visitors");
+        if (!response.ok) {
+          throw new Error(`Failed to fetch visitor count: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // Validate the data structure
+        if (!data || typeof data.total !== "number") {
+          throw new Error("Invalid visitor data received");
+        }
+
+        const visitorCount = data.total;
+        const countElement = this.querySelector("#visitors .count");
+
+        if (!countElement) {
+          console.warn("Visitor count element not found");
+          return;
+        }
+
+        // Update the count display
+        countElement.textContent = visitorCount.toString();
+
+        // Update visitor history
+        this.updateVisitorHistory(data.history, visitorCount);
+
+        // Update the sparkline visualization
+        this.updateSparkline();
+
+        // Update the active state based on visitor count
+        this.updateVisitorActiveState(visitorCount);
+      } catch (error) {
+        console.error("Error fetching visitor count:", error);
+      }
+    }
+
+    /**
+     * Updates the visitor history with new data
+     * @param history - Array of historical visitor counts from the API
+     * @param currentCount - Current visitor count
+     */
+    updateVisitorHistory(
+      history: number[] | undefined,
+      currentCount: number,
+    ): void {
+      if (history && Array.isArray(history) && history.length > 0) {
+        // Use the history from the API if available
+        this.visitorHistory = history;
+      } else {
+        // Fallback to updating with just the current count
+        this.visitorHistory = [...this.visitorHistory.slice(1), currentCount];
+      }
+
+      // Ensure we always have MAX_POINTS
+      while (this.visitorHistory.length < this.MAX_POINTS) {
+        this.visitorHistory.unshift(0);
+      }
+      while (this.visitorHistory.length > this.MAX_POINTS) {
+        this.visitorHistory.pop();
+      }
+    }
+
+    /**
+     * Updates the active state of the visitors element based on count
+     * @param count - Current visitor count
+     */
+    updateVisitorActiveState(count: number): void {
+      const visitorsElement = this.querySelector("#visitors");
+      if (visitorsElement) {
+        visitorsElement.setAttribute("data-active", (count > 0).toString());
+      }
     }
 
     connectedCallback() {
@@ -121,6 +329,18 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
       // Add event listeners for cleanup
       document.addEventListener("astro:before-swap", () => this.clearTimers());
       document.addEventListener("astro:after-swap", () => this.clearTimers());
+
+      // Set up sparkline
+      this.setupSparkline();
+
+      // Set up visitor count updates
+      this.setupVisitorUpdates();
+
+      // Add visibility change listener
+      document.addEventListener(
+        "visibilitychange",
+        this.handleVisibilityChange.bind(this),
+      );
     }
 
     updateTimeDisplay() {
@@ -158,8 +378,35 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
       }
     }
 
+    setupVisitorUpdates() {
+      // Initial fetch
+      this.fetchVisitorCount();
+
+      // Set up interval for updates
+      this.visitorUpdateInterval = setInterval(() => {
+        this.fetchVisitorCount();
+      }, 6000); // Update every 6 seconds
+    }
+
+    handleVisibilityChange() {
+      this.isOnline = document.visibilityState === "visible";
+      if (this.isOnline) {
+        this.fetchVisitorCount();
+      }
+    }
+
     disconnectedCallback() {
       this.clearTimers();
+
+      if (this.visitorUpdateInterval !== null) {
+        clearInterval(this.visitorUpdateInterval);
+        this.visitorUpdateInterval = null;
+      }
+
+      document.removeEventListener(
+        "visibilitychange",
+        this.handleVisibilityChange.bind(this),
+      );
     }
 
     clearTimers() {
@@ -170,6 +417,11 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
       if (this.timeoutId !== null) {
         clearTimeout(this.timeoutId);
         this.timeoutId = null;
+      }
+
+      if (this.visitorUpdateInterval !== null) {
+        clearInterval(this.visitorUpdateInterval);
+        this.visitorUpdateInterval = null;
       }
     }
 
@@ -252,7 +504,7 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
     background: black;
     border-radius: 1rem;
     height: 4rem;
-    width: min-content;
+    width: 20.5rem;
     font-size: 1.3rem;
     padding-inline: 1.5ch;
     display: flex;
@@ -282,6 +534,9 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
       text-shadow: var(--phosphor-glow);
       text-wrap: nowrap;
       line-height: 1;
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
 
       &[data-scroll="true"] a {
         white-space: pre;
@@ -331,8 +586,10 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
       margin-right: 0.5em;
     }
 
-    .days {
-      color: var(--phosphor-inactive);
+    .airing-container {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
     }
 
     .times {
@@ -347,6 +604,38 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
         background: var(--phosphor-active);
         box-shadow: var(--phosphor-glow);
         animation: live-pulse 3s ease infinite;
+      }
+    }
+
+    #visitors {
+      color: var(--phosphor-inactive);
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+
+      &[data-active="true"] {
+        color: var(--phosphor-active);
+        text-shadow: var(--phosphor-glow);
+      }
+    }
+
+    .visitor-trend {
+      overflow: visible;
+      position: relative;
+
+      &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          to right,
+          var(--phosphor-active) 0%,
+          transparent 100%
+        );
+      }
+
+      rect {
+        transition: all 0.3s ease-out;
       }
     }
   }
@@ -366,6 +655,21 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
         box-shadow: none;
         animation: none;
       }
+
+      .visitor-trend rect {
+        fill: var(--phosphor-inactive);
+        filter: none;
+      }
+    }
+  }
+
+  #visitors[data-active="true"] {
+    .visitor-trend rect {
+      filter: drop-shadow(
+          0 0 2px color-mix(in srgb, currentColor 50%, transparent)
+        )
+        drop-shadow(0 0 4px color-mix(in srgb, currentColor 40%, transparent))
+        drop-shadow(0 0 8px color-mix(in srgb, currentColor 30%, transparent));
     }
   }
 </style>
