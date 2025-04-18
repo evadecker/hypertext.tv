@@ -329,6 +329,9 @@ schedule:
     - "10:00":
     - "10:30":
     - "11:00":
+        title: Very Interactive
+        author: Laurel Schwulst
+        url: https://veryinteractive.net/
     - "11:30":
     - "12:00":
     - "12:30":

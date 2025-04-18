@@ -77,6 +77,11 @@ schedule:
     - "09:00":
     - "09:30":
     - "10:00":
+        title: A Friend is Writing
+        author:
+          - Ben West
+          - Callum Copley
+        url: https://a-friend-is-writing.bewe.me/
     - "10:30":
     - "11:00":
     - "11:30":
@@ -89,6 +94,8 @@ schedule:
     - "15:00":
     - "15:30":
     - "16:00":
+        title: nature
+        url: https://xixxii.neocities.org/projects/weirdweboctober24/01-nature
     - "16:30":
     - "17:00":
     - "17:30":

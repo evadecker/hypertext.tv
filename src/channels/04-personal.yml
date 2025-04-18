@@ -24,6 +24,9 @@ schedule:
     - "08:00":
     - "08:30":
     - "09:00":
+        title: Lean Rada
+        author: Lean Rada
+        url: https://leanrada.com/
     - "09:30":
     - "10:00":
     - "10:30":

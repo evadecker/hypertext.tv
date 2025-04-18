@@ -101,6 +101,9 @@ schedule:
     - "23:30":
   wednesday:
     - "00:00":
+        title: Stolen Buttons
+        author: Anatoly Zenkov
+        url: https://anatolyzenkov.com/stolen-buttons
     - "00:30":
     - "01:00":
     - "01:30":
@@ -150,6 +153,9 @@ schedule:
     - "23:30":
   thursday:
     - "00:00":
+        title: Genderswap FM
+        author: Eva Decker
+        url: https://genderswap.fm/
     - "00:30":
     - "01:00":
     - "01:30":
@@ -331,6 +337,9 @@ schedule:
     - "12:00":
     - "12:30":
     - "13:00":
+        title: Genders.WTF
+        author: Effy Elden
+        url: https://genders.wtf/
     - "13:30":
     - "14:00":
     - "14:30":

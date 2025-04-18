@@ -223,6 +223,9 @@ schedule:
     - "23:30":
   friday:
     - "00:00":
+        title: Nothing
+        author: Maze Heart
+        url: https://nothing.mvze.net/
     - "00:30":
     - "01:00":
     - "01:30":
@@ -359,6 +362,9 @@ schedule:
     - "13:00":
     - "13:30":
     - "14:00":
+        title: Seventh Sanctum
+        author: Steven Savage
+        url: https://www.seventhsanctum.com/
     - "14:30":
     - "15:00":
     - "15:30":

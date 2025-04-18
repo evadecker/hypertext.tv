@@ -12,7 +12,6 @@ export default defineConfig({
   },
   adapter: netlify(),
   prefetch: true,
-  trailingSlash: "never",
   redirects: {
     "/ch/00": "/",
     "/about": "/credits",

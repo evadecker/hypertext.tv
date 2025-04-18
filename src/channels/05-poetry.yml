@@ -258,6 +258,8 @@ schedule:
     - "09:00":
     - "09:30":
     - "10:00":
+        title: FORM
+        url: https://www.c3.hu/collection/form/index1.html
     - "10:30":
     - "11:00":
     - "11:30":
