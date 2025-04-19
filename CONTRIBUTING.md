@@ -57,3 +57,7 @@ Programs can only be scheduled at `:00` or `:30`. Programs will air continuously
 ## Can I submit more than one site?
 
 If you have multiple sites that meet the criteria, please do!
+
+## I have a site I want to add, but I'm not sure how to submit through GitHub. Is there another way?
+
+Send me an email (hey@evadecker.com) with your website, channel, and requested time, and I'll add it!

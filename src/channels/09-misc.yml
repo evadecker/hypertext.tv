@@ -211,7 +211,7 @@ schedule:
     - "23:30":
   friday:
     - "00:00":
-        title: DoDIY: DIY Resource & Organizer List
+        title: DoDIY - DIY Resource & Organizer List
         author: Elliott Giannini
         url: https://www.dodiy.org/
     - "00:30":
