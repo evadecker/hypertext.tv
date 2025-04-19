@@ -114,6 +114,9 @@ schedule:
     - "21:00":
     - "21:30":
     - "22:00":
+        title: ribo.zone
+        author: ribose
+        url: https://ribo.zone/
     - "22:30":
     - "23:00":
     - "23:30":

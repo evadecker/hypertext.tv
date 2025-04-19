@@ -116,6 +116,9 @@ schedule:
         title: Rotating Sandwiches
         url: https://rotatingsandwiches.com/
     - "00:30":
+        title: Wild Bread
+        author: Indigo Giertz
+        url: https://wildbread.pictures/
     - "01:00":
     - "01:30":
     - "02:00":
@@ -178,6 +181,9 @@ schedule:
     - "05:00":
     - "05:30":
     - "06:00":
+        title: Your Plan of Care
+        author: Bailey Miller
+        url: https://nervepain.online/
     - "06:30":
     - "07:00":
     - "07:30":

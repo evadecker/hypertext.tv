@@ -20,6 +20,8 @@ schedule:
     - "06:00":
     - "06:30":
     - "07:00":
+        title: Canned Tuna
+        url: https://canned-tuna.com/
     - "07:30":
     - "08:00":
     - "08:30":
@@ -209,6 +211,9 @@ schedule:
     - "23:30":
   friday:
     - "00:00":
+        title: DoDIY: DIY Resource & Organizer List
+        author: Elliott Giannini
+        url: https://www.dodiy.org/
     - "00:30":
     - "01:00":
     - "01:30":

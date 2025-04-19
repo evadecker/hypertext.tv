@@ -15,6 +15,9 @@ schedule:
     - "05:00":
     - "05:30":
     - "06:00":
+        title: Electronic Entomology
+        author: Lucas Yasunaga
+        url: https://electronicentomology.com/
     - "06:30":
     - "07:00":
     - "07:30":
@@ -103,6 +106,8 @@ schedule:
     - "23:30":
   wednesday:
     - "00:00":
+        title: glass beach
+        url: https://glassbeach.band/
     - "00:30":
     - "01:00":
     - "01:30":
@@ -207,6 +212,8 @@ schedule:
         author: Ben West
         url: https://www.bo-en.info/
     - "00:30":
+        title: People's Coalition of Tandy
+        url: https://www.pcotandy.org/
     - "01:00":
     - "01:30":
     - "02:00":
@@ -241,6 +248,11 @@ schedule:
         title: WFMU
         url: https://wfmu.org/
     - "16:30":
+        title: Ear Association
+        author:
+          - Evy Kassirer
+          - Jacob deGroot-Maggetti
+        url: https://ear-association.github.io/
     - "17:00":
     - "17:30":
     - "18:00":

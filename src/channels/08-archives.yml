@@ -33,6 +33,9 @@ schedule:
     - "14:00":
     - "14:30":
     - "15:00":
+        title: archives.design
+        author: Valery Marier
+        url: https://archives.design/
     - "15:30":
     - "16:00":
     - "16:30":
@@ -81,6 +84,8 @@ schedule:
     - "13:30":
     - "14:00":
     - "14:30":
+        title: Booklet Library
+        url: https://bookletlibrary.org/
     - "15:00":
     - "15:30":
     - "16:00":
@@ -144,6 +149,9 @@ schedule:
     - "19:00":
     - "19:30":
     - "20:00":
+        title: Wildflower Search
+        author: Steve Sullivan
+        url: https://wildflowersearch.org/
     - "20:30":
     - "21:00":
     - "21:30":
@@ -181,6 +189,9 @@ schedule:
     - "11:30":
     - "12:00":
     - "12:30":
+        title: Carabiner Collection
+        author: Sam Johnson
+        url: https://www.carabinercollection.com/
     - "13:00":
     - "13:30":
     - "14:00":
@@ -232,6 +243,9 @@ schedule:
     - "12:30":
     - "13:00":
     - "13:30":
+        title: The Hydrant Directory
+        author: day lane
+        url: https://www.dayroselane.com/hydrants
     - "14:00":
         title: Hardware Archive
         author: Liang-Jung Chen
@@ -333,6 +347,8 @@ schedule:
     - "10:00":
     - "10:30":
     - "11:00":
+        title: Kite Plan Base
+        url: https://www.kiteplans.org/
     - "11:30":
     - "12:00":
     - "12:30":
@@ -352,6 +368,9 @@ schedule:
     - "18:00":
     - "18:30":
     - "19:00":
+        title: Outdoor Index
+        author: Donica Ida
+        url: https://outdoor-index.net/
     - "19:30":
     - "20:00":
     - "20:30":
