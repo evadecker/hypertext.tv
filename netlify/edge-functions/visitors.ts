@@ -2,7 +2,7 @@ import { getStore } from "@netlify/blobs";
 import type { Config, Context } from "@netlify/edge-functions";
 
 const VISITORS_KEY = "visitor_counts";
-const CACHE_TTL = 15;
+const CACHE_TTL = 30;
 const MAX_HISTORY_POINTS = 8;
 const SITE_ID = "EPXKTQED";
 
@@ -255,8 +255,8 @@ async function handleSSE(request: Request): Promise<Response> {
   // Send initial data
   await sendStats();
 
-  // Update every 15 seconds
-  const timer = setInterval(sendStats, 15000);
+  // Update every 30 seconds
+  const timer = setInterval(sendStats, 30000);
 
   request.signal.addEventListener("abort", () => {
     clearInterval(timer);
