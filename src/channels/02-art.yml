@@ -321,6 +321,9 @@ schedule:
     - "19:00":
     - "19:30":
     - "20:00":
+        title: dream stream
+        author: c budnick
+        url: https://cbudnick.com/sleep/
     - "20:30":
     - "21:00":
     - "21:30":
