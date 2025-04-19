@@ -17,7 +17,9 @@ async function listAllContributors() {
   );
 
   // Remove duplicates and sort
-  return [...new Set(allContributors)].sort();
+  return [...new Set(allContributors)].sort((a, b) =>
+    a.toLowerCase().localeCompare(b.toLowerCase()),
+  );
 }
 
 export const GET: APIRoute = async () => {
