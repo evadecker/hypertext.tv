@@ -10,7 +10,7 @@ Hypertext TV is a celebration of small, handmade games and sites. Sites air at a
 
 ## Why?
 
-Most platforms on the web offer on-demand access to practically limitless content. At the same time, platforms algorithmically tailor content to our tastes keep us engaged and online. Experiences are individualized—each person has a different feed, and a different sense of time as they navigate that feed.
+Most platforms on the web offer on-demand access to practically limitless content. At the same time, platforms algorithmically tailor content to keep us engaged and online. Experiences are individualized—each person has a different feed, and a different sense of time as they navigate that feed.
 
 Television and radio offer an alternative means of programming: a shared schedule, with programs airing at a particular time of day, experienced collectively.
 
