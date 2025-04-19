@@ -190,6 +190,9 @@ schedule:
     - "04:00":
     - "04:30":
     - "05:00":
+        title: Jeff Milner
+        author: Jeff Milner
+        url: https://jeffmilner.com/
     - "05:30":
     - "06:00":
     - "06:30":
