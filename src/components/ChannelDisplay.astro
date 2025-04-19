@@ -34,7 +34,6 @@ const calculateSvgWidth = (totalBars: number) => {
 
 function generateBars(history: number[]) {
   const maxValue = Math.max(...history, SOFT_MIN);
-  const totalBars = history.length;
 
   return history
     .map((point, i) => {
@@ -243,7 +242,6 @@ const svgWidth = calculateSvgWidth(initialVisitorData.history.length);
       const height = 10; // height in pixels
       const MIN_HEIGHT = 2; // minimum height of a bar
       const maxValue = Math.max(...this.visitorHistory, 1); // Use 1 as minimum to avoid division by zero
-      const totalBars = this.visitorHistory.length;
       const startX = 0; // No need to center since SVG width is dynamic
 
       // Clear existing bars
