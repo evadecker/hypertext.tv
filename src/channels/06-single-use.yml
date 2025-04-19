@@ -40,6 +40,9 @@ schedule:
     - "14:30":
     - "15:00":
     - "15:30":
+        title: Caltrans CCTV
+        author: Hot Garbage
+        url: https://ctcctv.hotgarba.ge/
     - "16:00":
     - "16:30":
     - "17:00":
@@ -281,6 +284,9 @@ schedule:
     - "22:00":
     - "22:30":
     - "23:00":
+        title: Caltrans CCTV
+        author: Hot Garbage
+        url: https://ctcctv.hotgarba.ge/
     - "23:30":
   saturday:
     - "00:00":
@@ -324,6 +330,9 @@ schedule:
     - "17:00":
     - "17:30":
     - "18:00":
+        title: Bicycle RIP
+        author: Hot Garbage
+        url: https://bicycle.rip/
     - "18:30":
     - "19:00":
     - "19:30":
