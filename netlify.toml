@@ -1,15 +1,3 @@
 [dev]
   framework = "astro"
   targetPort = 4321
-
-[build]
-  command = "npm run build"
-  publish = "dist"
-
-[[edge_functions]]
-  function = "live-stats"
-  path = "/.netlify/edge-functions/live-stats"
-
-[build.environment]
-  FATHOM_API_KEY = "your-api-key"
-  FATHOM_SITE_ID = "your-site-id"
