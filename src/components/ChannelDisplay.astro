@@ -11,7 +11,7 @@ const { program, startTime, endTime } = activeProgram ?? {};
 const { title, url } = program ?? {};
 
 // Fetch initial visitor data
-let initialVisitorData = { total: 0, history: Array(10).fill(0) };
+let initialVisitorData = { total: 0, history: Array(8).fill(0) };
 try {
   const response = await fetch("/api/visitors");
   if (response.ok) {
@@ -23,26 +23,28 @@ try {
 
 const BAR_WIDTH = 3;
 const BAR_GAP = 2;
-const SVG_WIDTH = 50;
 const SVG_HEIGHT = 10;
 const MIN_HEIGHT = 2;
 const SOFT_MIN = 5;
 
+// Calculate SVG width dynamically based on bar width and gap
+const calculateSvgWidth = (totalBars: number) => {
+  return BAR_WIDTH * totalBars + BAR_GAP * (totalBars - 1);
+};
+
 function generateBars(history: number[]) {
   const maxValue = Math.max(...history, SOFT_MIN);
   const totalBars = history.length;
-  const totalWidth = BAR_WIDTH * totalBars + BAR_GAP * (totalBars - 1);
-  const startX = (SVG_WIDTH - totalWidth) / 2;
 
   return history
-    .map((point, idx) => {
+    .map((point, i) => {
       const availableHeight = SVG_HEIGHT - MIN_HEIGHT;
       const scaledHeight =
         point <= SOFT_MIN
           ? MIN_HEIGHT + availableHeight * (point / SOFT_MIN)
           : SVG_HEIGHT * (1 - (point - SOFT_MIN) / (maxValue - SOFT_MIN));
       const barHeight = Math.max(MIN_HEIGHT, scaledHeight);
-      const x = startX + idx * (BAR_WIDTH + BAR_GAP);
+      const x = i * (BAR_WIDTH + BAR_GAP);
       const y = SVG_HEIGHT - barHeight;
 
       return `<rect x="${x}" y="${y}" width="${BAR_WIDTH}" height="${barHeight}" rx="1" fill="currentColor" />`;
@@ -69,6 +71,8 @@ const readableEndTime = getReadableTime(endTime)?.split(" ")[0];
 const isAm = getReadableTime(endTime)?.split(" ")[1] === "AM";
 
 const isAiring = Boolean(startTime && endTime) && program !== null;
+
+const svgWidth = calculateSvgWidth(initialVisitorData.history.length);
 ---
 
 <channel-display
@@ -128,7 +132,7 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
         </div>
       </div>
       <div id="visitors" data-active="true">
-        <svg class="visitor-trend" width="50" height="15">
+        <svg class="visitor-trend" width={svgWidth} height="15">
           <g
             class="trend-bars"
             set:html={generateBars(initialVisitorData.history)}
@@ -144,11 +148,12 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
   class ChannelDisplay extends HTMLElement {
     intervalId: NodeJS.Timer | null = null;
     timeoutId: NodeJS.Timeout | null = null;
-    visitorUpdateInterval: NodeJS.Timer | null = null;
+    private eventSource: EventSource | null = null;
     isOnline: boolean = true;
     private visitorHistory: number[] = [];
     private trendBars: SVGGElement | null = null;
-    private readonly MAX_POINTS = 10;
+    private svgElement: SVGElement | null = null;
+    private readonly MAX_POINTS = 8;
     private readonly BAR_WIDTH = 3;
     private readonly BAR_GAP = 2;
 
@@ -176,25 +181,70 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
       }
     }
 
+    private setupLiveUpdates() {
+      if (this.eventSource) {
+        this.eventSource.close();
+      }
+
+      this.eventSource = new EventSource("/api/visitors");
+
+      this.eventSource.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          this.updateVisitorHistory(data.history, data.total);
+          this.updateSparkline();
+
+          // Update the count display
+          const countElement = this.querySelector("#visitors .count");
+          if (countElement) {
+            countElement.textContent = data.total.toString();
+          }
+
+          // Update active state
+          this.updateVisitorActiveState(data.total);
+        } catch (error) {
+          console.error("Error parsing SSE data:", error);
+        }
+      };
+
+      this.eventSource.onerror = () => {
+        // Close the connection if it exists
+        if (this.eventSource) {
+          this.eventSource.close();
+          this.eventSource = null;
+        }
+
+        // Attempt to reconnect after a delay
+        setTimeout(() => this.setupLiveUpdates(), 5000);
+      };
+    }
+
     private setupSparkline() {
       this.trendBars = this.querySelector(".trend-bars");
-      if (!this.trendBars) return;
+      this.svgElement = this.querySelector(".visitor-trend");
+      if (!this.trendBars || !this.svgElement) return;
 
       this.updateSparkline();
     }
 
+    // Calculate SVG width dynamically based on bar width and gap
+    private calculateSvgWidth(totalBars: number): number {
+      return this.BAR_WIDTH * totalBars + this.BAR_GAP * (totalBars - 1);
+    }
+
     private updateSparkline() {
-      if (!this.trendBars) return;
+      if (!this.trendBars || !this.svgElement) return;
+
+      // Update SVG width based on number of bars
+      const svgWidth = this.calculateSvgWidth(this.visitorHistory.length);
+      this.svgElement.setAttribute("width", svgWidth.toString());
 
       // Calculate dimensions
-      const width = 50;
       const height = 10; // height in pixels
       const MIN_HEIGHT = 2; // minimum height of a bar
       const maxValue = Math.max(...this.visitorHistory, 1); // Use 1 as minimum to avoid division by zero
       const totalBars = this.visitorHistory.length;
-      const totalWidth =
-        this.BAR_WIDTH * totalBars + this.BAR_GAP * (totalBars - 1);
-      const startX = (width - totalWidth) / 2; // Center the bars
+      const startX = 0; // No need to center since SVG width is dynamic
 
       // Clear existing bars
       this.trendBars.innerHTML = "";
@@ -218,50 +268,8 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
         rect.setAttribute("rx", "1");
         rect.setAttribute("fill", "currentColor");
 
-        if (this.trendBars) {
-          this.trendBars.appendChild(rect);
-        }
+        this.trendBars?.appendChild(rect);
       });
-    }
-
-    async fetchVisitorCount() {
-      if (!this.isOnline) return;
-
-      try {
-        const response = await fetch("/api/visitors");
-        if (!response.ok) {
-          throw new Error(`Failed to fetch visitor count: ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        // Validate the data structure
-        if (!data || typeof data.total !== "number") {
-          throw new Error("Invalid visitor data received");
-        }
-
-        const visitorCount = data.total;
-        const countElement = this.querySelector("#visitors .count");
-
-        if (!countElement) {
-          console.warn("Visitor count element not found");
-          return;
-        }
-
-        // Update the count display
-        countElement.textContent = visitorCount.toString();
-
-        // Update visitor history
-        this.updateVisitorHistory(data.history, visitorCount);
-
-        // Update the sparkline visualization
-        this.updateSparkline();
-
-        // Update the active state based on visitor count
-        this.updateVisitorActiveState(visitorCount);
-      } catch (error) {
-        console.error("Error fetching visitor count:", error);
-      }
     }
 
     /**
@@ -340,8 +348,8 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
       // Set up sparkline
       this.setupSparkline();
 
-      // Set up visitor count updates
-      this.setupVisitorUpdates();
+      // Set up live updates
+      this.setupLiveUpdates();
 
       // Add visibility change listener
       document.addEventListener(
@@ -385,29 +393,19 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
       }
     }
 
-    setupVisitorUpdates() {
-      // Initial fetch
-      this.fetchVisitorCount();
-
-      // Set up interval for updates
-      this.visitorUpdateInterval = setInterval(() => {
-        this.fetchVisitorCount();
-      }, 15000); // Update every 15 seconds
-    }
-
     handleVisibilityChange() {
       this.isOnline = document.visibilityState === "visible";
       if (this.isOnline) {
-        this.fetchVisitorCount();
+        this.setupLiveUpdates();
       }
     }
 
     disconnectedCallback() {
       this.clearTimers();
 
-      if (this.visitorUpdateInterval !== null) {
-        clearInterval(this.visitorUpdateInterval);
-        this.visitorUpdateInterval = null;
+      if (this.eventSource) {
+        this.eventSource.close();
+        this.eventSource = null;
       }
 
       document.removeEventListener(
@@ -424,11 +422,6 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
       if (this.timeoutId !== null) {
         clearTimeout(this.timeoutId);
         this.timeoutId = null;
-      }
-
-      if (this.visitorUpdateInterval !== null) {
-        clearInterval(this.visitorUpdateInterval);
-        this.visitorUpdateInterval = null;
       }
     }
 
@@ -623,17 +616,8 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
     .visitor-trend {
       overflow: visible;
       position: relative;
-
-      &::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(
-          to right,
-          var(--phosphor-active) 0%,
-          transparent 100%
-        );
-      }
+      /* Optical alignment */
+      transform: translateY(2px);
 
       rect {
         transition: all 0.3s ease-out;

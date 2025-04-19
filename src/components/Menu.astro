@@ -199,12 +199,17 @@
             `[data-setting="${setting.name}"]`,
           );
           if (toggleElement) {
-            const savedState =
-              localStorage.getItem(setting.localStorageKey) === "true";
-            toggleElement.setAttribute(
-              "data-on",
-              savedState ? "true" : "false",
-            );
+            const savedState = localStorage.getItem(setting.localStorageKey);
+            const isOn =
+              savedState === null
+                ? setting.defaultValue === "true"
+                : savedState === "true";
+            toggleElement.setAttribute("data-on", isOn ? "true" : "false");
+
+            // Also trigger the setting change to ensure the event is fired
+            this.handleSettingChange(setting.name, isOn.toString(), {
+              doNotTrack: true,
+            });
           }
         }
       });

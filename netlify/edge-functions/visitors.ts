@@ -2,10 +2,8 @@ import { getStore } from "@netlify/blobs";
 import type { Config, Context } from "@netlify/edge-functions";
 
 const VISITORS_KEY = "visitor_counts";
-// Fathom max limit: 6 (10 times per minute)
-// Increase to 15 seconds to avoid accidental triggering of rate limit
 const CACHE_TTL = 15;
-const MAX_HISTORY_POINTS = 10;
+const MAX_HISTORY_POINTS = 8;
 const SITE_ID = "EPXKTQED";
 
 interface VisitorData {
@@ -196,7 +194,86 @@ function createVisitorResponse(
   };
 }
 
-export default async (_request: Request, _context: Context) => {
+/**
+ * Handles Server-Sent Events (SSE) for real-time visitor updates
+ */
+async function handleSSE(request: Request): Promise<Response> {
+  const headers = new Headers({
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache",
+    Connection: "keep-alive",
+  });
+
+  const stream = new TransformStream();
+  const writer = stream.writable.getWriter();
+  const store = getStore("visitors-cache");
+
+  const sendStats = async () => {
+    try {
+      const visitorData = await getVisitorData(store);
+      const recentResponse = getRecentData(visitorData);
+
+      if (recentResponse) {
+        writer.write(
+          new TextEncoder().encode(
+            `data: ${JSON.stringify(recentResponse)}\n\n`,
+          ),
+        );
+        return;
+      }
+
+      // If no recent data, fetch from Fathom API
+      try {
+        const total = await fetchFathomData();
+        const updatedData = await updateVisitorData(store, visitorData, total);
+        const response = createVisitorResponse(updatedData, total);
+
+        writer.write(
+          new TextEncoder().encode(`data: ${JSON.stringify(response)}\n\n`),
+        );
+      } catch (error) {
+        // If Fathom errors, just send existing data
+        const response = {
+          total: visitorData[visitorData.length - 1]?.count ?? 0,
+          history: visitorData.map((data) => data.count),
+        };
+
+        writer.write(
+          new TextEncoder().encode(`data: ${JSON.stringify(response)}\n\n`),
+        );
+      }
+    } catch (error) {
+      console.error("Error in SSE handler:", error);
+      writer.write(
+        new TextEncoder().encode(
+          `data: ${JSON.stringify({ total: 0, history: Array(MAX_HISTORY_POINTS).fill(0) })}\n\n`,
+        ),
+      );
+    }
+  };
+
+  // Send initial data
+  await sendStats();
+
+  // Update every 15 seconds
+  const timer = setInterval(sendStats, 15000);
+
+  request.signal.addEventListener("abort", () => {
+    clearInterval(timer);
+    writer.close();
+  });
+
+  return new Response(stream.readable, { headers });
+}
+
+export default async (request: Request, _context: Context) => {
+  // Check if this is an SSE request
+  const acceptHeader = request.headers.get("accept");
+  if (acceptHeader?.includes("text/event-stream")) {
+    return handleSSE(request);
+  }
+
+  // Regular JSON request handling
   try {
     const store = getStore("visitors-cache");
     const visitorData = await getVisitorData(store);
@@ -214,10 +291,8 @@ export default async (_request: Request, _context: Context) => {
       const response = createVisitorResponse(updatedData, total);
       return createJsonResponse(response);
     } catch (error: unknown) {
-      console.error("Error fetching Fathom data:", error);
-      const errorMessage =
-        error instanceof Error ? error.message : "Failed to fetch visitor data";
-      return createErrorResponse(errorMessage);
+      // If Fathom errors we have probably exceeded the rate limit, just return existing
+      return createJsonResponse(visitorData);
     }
   } catch (error: unknown) {
     console.error("Internal server error:", error);
