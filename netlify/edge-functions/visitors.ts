@@ -2,7 +2,9 @@ import { getStore } from "@netlify/blobs";
 import type { Config, Context } from "@netlify/edge-functions";
 
 const VISITORS_KEY = "visitor_counts";
-const CACHE_TTL = 6; // Fathom limits API calls to 10 times per minute
+// Fathom max limit: 6 (10 times per minute)
+// Increase to 15 seconds to avoid accidental triggering of rate limit
+const CACHE_TTL = 15;
 const MAX_HISTORY_POINTS = 10;
 const SITE_ID = "EPXKTQED";
 
@@ -43,7 +45,7 @@ function createDefaultVisitorData(index?: number): VisitorData | VisitorData[] {
 function createJsonResponse<T>(
   data: T,
   status = 200,
-  cacheControl = "public, max-age=6",
+  cacheControl = "public, max-age=15",
 ): Response {
   return new Response(JSON.stringify(data), {
     status,
@@ -228,6 +230,6 @@ export const config: Config = {
   rateLimit: {
     action: "rate_limit",
     aggregateBy: "ip",
-    windowSize: 60,
+    windowSize: 100,
   },
 };

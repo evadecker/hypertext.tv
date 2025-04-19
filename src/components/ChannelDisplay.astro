@@ -337,10 +337,6 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
         this.updateTimeDisplay();
       }
 
-      // Add event listeners for cleanup
-      document.addEventListener("astro:before-swap", () => this.clearTimers());
-      document.addEventListener("astro:after-swap", () => this.clearTimers());
-
       // Set up sparkline
       this.setupSparkline();
 
@@ -396,7 +392,7 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
       // Set up interval for updates
       this.visitorUpdateInterval = setInterval(() => {
         this.fetchVisitorCount();
-      }, 6000); // Update every 6 seconds
+      }, 15000); // Update every 15 seconds
     }
 
     handleVisibilityChange() {
