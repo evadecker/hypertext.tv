@@ -410,6 +410,8 @@ schedule:
     - "19:00":
     - "19:30":
     - "20:00":
+        title: Gravity
+        url: https://lab.nationalmedals.org/gravity.php
     - "20:30":
     - "21:00":
     - "21:30":
