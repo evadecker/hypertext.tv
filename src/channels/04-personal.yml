@@ -365,6 +365,9 @@ schedule:
     - "06:00":
     - "06:30":
     - "07:00":
+        title: Bobby's Blog
+        author: Bobby Hiltz
+        url: https://bobbyhiltz.com/
     - "07:30":
     - "08:00":
     - "08:30":
