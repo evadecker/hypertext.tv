@@ -55,9 +55,6 @@ schedule:
     - "22:00":
     - "22:30":
     - "23:00":
-        title: elle's homepage
-        author: elle
-        url: https://ellesho.me/page
     - "23:30":
   tuesday:
     - "00:00":
@@ -122,9 +119,6 @@ schedule:
     - "23:30":
   wednesday:
     - "00:00":
-        title: Halim Lee
-        author: Halim Lee
-        url: https://leehalim.com/
     - "00:30":
     - "01:00":
     - "01:30":
@@ -180,9 +174,6 @@ schedule:
     - "23:30":
   thursday:
     - "00:00":
-        title: Kate Bagenzo
-        author: Kate Bagenzo
-        url: https://bagenzos.house/
     - "00:30":
     - "01:00":
     - "01:30":
@@ -335,9 +326,6 @@ schedule:
     - "17:00":
     - "17:30":
     - "18:00":
-        title: Anh Vu
-        author: Anh Vu
-        url: https://anhvn.com/
     - "18:30":
     - "19:00":
     - "19:30":
@@ -397,9 +385,21 @@ schedule:
     - "19:00":
     - "19:30":
     - "20:00":
+        title: Anh Vu
+        author: Anh Vu
+        url: https://anhvn.com/
     - "20:30":
+        title: Kate Bagenzo
+        author: Kate Bagenzo
+        url: https://bagenzos.house/
     - "21:00":
+        title: elle's homepage
+        author: elle
+        url: https://ellesho.me/page
     - "21:30":
+        title: Halim Lee
+        author: Halim Lee
+        url: https://leehalim.com/
     - "22:00":
     - "22:30":
     - "23:00":

@@ -114,9 +114,6 @@ schedule:
   wednesday:
     - "00:00":
     - "00:30":
-        title: Wild Bread
-        author: Indigo Giertz
-        url: https://wildbread.pictures/
     - "01:00":
     - "01:30":
     - "02:00":
@@ -246,9 +243,6 @@ schedule:
     - "11:00":
     - "11:30":
     - "12:00":
-        title: Worms and Waves
-        author: Carl Sverre
-        url: https://proto.sh/
     - "12:30":
     - "13:00":
     - "13:30":
@@ -374,10 +368,16 @@ schedule:
     - "19:30":
     - "20:00":
     - "20:30":
-    - "21:00":
         title: Rotating Sandwiches
         url: https://rotatingsandwiches.com/
+    - "21:00":
+        title: Worms and Waves
+        author: Carl Sverre
+        url: https://proto.sh/
     - "21:30":
+        title: Wild Bread
+        author: Indigo Giertz
+        url: https://wildbread.pictures/
     - "22:00":
     - "22:30":
     - "23:00":

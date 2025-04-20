@@ -302,9 +302,6 @@ schedule:
     - "17:00":
     - "17:30":
     - "18:00":
-        title: Optical Toys
-        author: Tom's Toys
-        url: https://optical.toys/
     - "18:30":
     - "19:00":
     - "19:30":
@@ -419,6 +416,9 @@ schedule:
         title: Gravity
         url: https://lab.nationalmedals.org/gravity.php
     - "20:30":
+        title: Optical Toys
+        author: Tom's Toys
+        url: https://optical.toys/
     - "21:00":
     - "21:30":
     - "22:00":

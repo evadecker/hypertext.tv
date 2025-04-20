@@ -372,11 +372,11 @@ schedule:
     - "20:00":
     - "20:30":
     - "21:00":
-    - "21:30":
-    - "22:00":
         title: Stolen Buttons
         author: Anatoly Zenkov
         url: https://anatolyzenkov.com/stolen-buttons
+    - "21:30":
+    - "22:00":
     - "22:30":
     - "23:00":
     - "23:30":
