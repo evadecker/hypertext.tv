@@ -197,6 +197,9 @@ schedule:
     - "08:00":
     - "08:30":
     - "09:00":
+        title: PerThirtySix
+        author: Shri Khalpada
+        url: https://perthirtysix.com
     - "09:30":
     - "10:00":
     - "10:30":
@@ -276,6 +279,9 @@ schedule:
     - "08:00":
     - "08:30":
     - "09:00":
+        title: Falling Posts
+        author: Shri Khalpada
+        url: https://fallingposts.com/
     - "09:30":
     - "10:00":
     - "10:30":
