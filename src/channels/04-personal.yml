@@ -143,6 +143,9 @@ schedule:
     - "08:00":
     - "08:30":
     - "09:00":
+        title: Shri Khalpada
+        author: Shri Khalpada
+        url: https://shrikhalpada.dev
     - "09:30":
     - "10:00":
     - "10:30":
