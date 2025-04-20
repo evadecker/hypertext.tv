@@ -359,12 +359,12 @@ schedule:
     - "19:00":
     - "19:30":
     - "20:00":
-        title: Canned Tuna
-        url: https://canned-tuna.com/
     - "20:30":
     - "21:00":
+        title: Canned Tuna
+        url: https://canned-tuna.com/
     - "21:30":
-    - "22:00":
+    - "22:00": null
     - "22:30":
     - "23:00":
     - "23:30":

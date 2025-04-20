@@ -84,9 +84,6 @@ schedule:
     - "11:00":
     - "11:30":
     - "12:00":
-        title: WikiAsteroids
-        author: Kevin Payravi
-        url: https://asteroids.wiki/
     - "12:30":
     - "13:00":
     - "13:30":
@@ -381,6 +378,9 @@ schedule:
     - "20:30":
     - "21:00":
     - "21:30":
+        title: WikiAsteroids
+        author: Kevin Payravi
+        url: https://asteroids.wiki/
     - "22:00":
         title: CSS Clicker
         author: Lyra Rebane

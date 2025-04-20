@@ -368,16 +368,16 @@ schedule:
     - "19:30":
     - "20:00":
     - "20:30":
+    - "21:00":
         title: Rotating Sandwiches
         url: https://rotatingsandwiches.com/
-    - "21:00":
-        title: Worms and Waves
-        author: Carl Sverre
-        url: https://proto.sh/
     - "21:30":
         title: Wild Bread
         author: Indigo Giertz
         url: https://wildbread.pictures/
     - "22:00":
+        title: Worms and Waves
+        author: Carl Sverre
+        url: https://proto.sh/
     - "22:30":
     - "23:00":
