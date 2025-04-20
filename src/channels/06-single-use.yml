@@ -24,6 +24,9 @@ schedule:
     - "08:00":
     - "08:30":
     - "09:00":
+        title: Aurora
+        author: Shri Khalpada
+        url: https://drawaurora.com
     - "09:30":
     - "10:00":
     - "10:30":
@@ -82,6 +85,9 @@ schedule:
     - "08:00":
     - "08:30":
     - "09:00":
+        title: DrawBeats
+        author: Shri Khalpada
+        url: https://drawbeats.com
     - "09:30":
     - "10:00":
     - "10:30":
