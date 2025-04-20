@@ -332,8 +332,6 @@ schedule:
     - "23:00":
   sunday:
     - "00:00":
-        title: The Bible as a Hyperlink
-        url: http://www.thebibleasahyperlink.com/
     - "00:30":
     - "01:00":
     - "01:30":
