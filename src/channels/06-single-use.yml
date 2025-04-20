@@ -382,6 +382,7 @@ schedule:
     - "12:30":
     - "13:00":
         title: Year Progress
+        author: Andrew Conlin
         url: https://year-progress.cnln.dev/
     - "13:30":
     - "14:00":
