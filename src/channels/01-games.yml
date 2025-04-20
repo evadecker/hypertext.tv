@@ -154,6 +154,9 @@ schedule:
     - "19:00":
     - "19:30":
     - "20:00":
+        title: Tetromino Sweep
+        author: Mark Egli
+        url: https://markegli.com/sweep/
     - "20:30":
     - "21:00":
     - "21:30":
