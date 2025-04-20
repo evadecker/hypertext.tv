@@ -15,29 +15,14 @@ function createTimeBlocks(datetime: Date) {
 
   let timeBlocks = [];
 
-  if (currentMinute >= 55) {
-    // If between H:55 and H:60, show the next 30 min block
-    timeBlocks = [
-      createTimeBlock(nextHour, 0),
-      createTimeBlock(nextHour, 30),
-      createTimeBlock(nextHour + 1, 0),
-    ];
-  } else if (currentMinute >= 30 && currentMinute < 55) {
-    // If between H:30 and H:55, show the current 30 min block
-    timeBlocks = [
-      createTimeBlock(currentHour, 30),
-      createTimeBlock(nextHour, 0),
-      createTimeBlock(nextHour, 30),
-    ];
-  } else if (currentMinute >= 25 && currentMinute < 30) {
-    // If between H:25 and H:30, show the next 30 min block
+  // Show the current 30 min block + the next two 30 min blocks
+  if (currentMinute >= 30) {
     timeBlocks = [
       createTimeBlock(currentHour, 30),
       createTimeBlock(nextHour, 0),
       createTimeBlock(nextHour, 30),
     ];
   } else {
-    // If between H:00 and H:25, show the current 30 min block
     timeBlocks = [
       createTimeBlock(currentHour, 0),
       createTimeBlock(currentHour, 30),
