@@ -365,10 +365,10 @@ schedule:
     - "19:30":
     - "20:00":
     - "20:30":
-        title: N10.AS RADIO
-        url: https://n10.as/
     - "21:00":
     - "21:30":
+        title: N10.AS RADIO
+        url: https://n10.as/
     - "22:00":
     - "22:30":
     - "23:00":
