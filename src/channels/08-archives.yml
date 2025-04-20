@@ -106,9 +106,6 @@ schedule:
     - "23:30":
   wednesday:
     - "00:00":
-        title: Stolen Buttons
-        author: Anatoly Zenkov
-        url: https://anatolyzenkov.com/stolen-buttons
     - "00:30":
     - "01:00":
     - "01:30":
@@ -377,6 +374,9 @@ schedule:
     - "21:00":
     - "21:30":
     - "22:00":
+        title: Stolen Buttons
+        author: Anatoly Zenkov
+        url: https://anatolyzenkov.com/stolen-buttons
     - "22:30":
     - "23:00":
     - "23:30":

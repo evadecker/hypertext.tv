@@ -29,9 +29,6 @@ schedule:
     - "11:00":
     - "11:30":
     - "12:00":
-        title: CSS Clicker
-        author: Lyra Rebane
-        url: https://lyra.horse/css-clicker/
     - "12:30":
     - "13:00":
     - "13:30":
@@ -385,6 +382,9 @@ schedule:
     - "21:00":
     - "21:30":
     - "22:00":
+        title: CSS Clicker
+        author: Lyra Rebane
+        url: https://lyra.horse/css-clicker/
     - "22:30":
     - "23:00":
     - "23:30":

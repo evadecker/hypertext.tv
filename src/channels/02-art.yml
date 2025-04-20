@@ -113,8 +113,6 @@ schedule:
     - "23:30":
   wednesday:
     - "00:00":
-        title: Rotating Sandwiches
-        url: https://rotatingsandwiches.com/
     - "00:30":
         title: Wild Bread
         author: Indigo Giertz
@@ -248,7 +246,7 @@ schedule:
     - "11:00":
     - "11:30":
     - "12:00":
-        title: Worms and waves
+        title: Worms and Waves
         author: Carl Sverre
         url: https://proto.sh/
     - "12:30":
@@ -356,7 +354,7 @@ schedule:
     - "11:00":
     - "11:30":
     - "12:00":
-        title: Relaxing dots
+        title: Relaxing Dots
         author: Carl Sverre
         url: https://c83.me/
     - "12:30":
@@ -377,6 +375,8 @@ schedule:
     - "20:00":
     - "20:30":
     - "21:00":
+        title: Rotating Sandwiches
+        url: https://rotatingsandwiches.com/
     - "21:30":
     - "22:00":
     - "22:30":
