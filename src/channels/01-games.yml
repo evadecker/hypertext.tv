@@ -206,6 +206,9 @@ schedule:
     - "19:00":
     - "19:30":
     - "20:00":
+        title: Kick the Billionaire
+        author: Dr. Jorge Pérez
+        url: https://kickthebillionaire.com/
     - "20:30":
     - "21:00":
     - "21:30":
