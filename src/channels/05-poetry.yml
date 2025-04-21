@@ -19,6 +19,9 @@ schedule:
     - "07:00":
     - "07:30":
     - "08:00":
+        title: Fridge Poetry
+        author: Spencer Chang
+        url: https://playhtml.fun/fridge.html
     - "08:30":
     - "09:00":
     - "09:30":
@@ -155,6 +158,8 @@ schedule:
     - "08:00":
     - "08:30":
     - "09:00":
+        title: Poem Garden
+        url: https://www.poem.garden/
     - "09:30":
     - "10:00":
     - "10:30":

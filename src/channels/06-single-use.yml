@@ -51,6 +51,9 @@ schedule:
     - "17:00":
     - "17:30":
     - "18:00":
+        title: Electric Zine Maker
+        author: alienmelon
+        url: https://unicornycopia.com/ezm/
     - "18:30":
     - "19:00":
     - "19:30":
@@ -133,6 +136,9 @@ schedule:
     - "03:00":
     - "03:30":
     - "04:00":
+        title: Video Game Generator
+        author: Orteil
+        url: https://orteil.dashnet.org/gamegen
     - "04:30":
     - "05:00":
     - "05:30":
@@ -186,6 +192,8 @@ schedule:
     - "00:30":
     - "01:00":
     - "01:30":
+        title: Steal This Website
+        url: https://www.stealthiswebsite.art/
     - "02:00":
     - "02:30":
     - "03:00":
@@ -253,6 +261,9 @@ schedule:
     - "05:00":
     - "05:30":
     - "06:00":
+        title: Ravel
+        author: Everest Pipkin
+        url: https://ravel.neocities.org/
     - "06:30":
     - "07:00":
     - "07:30":
@@ -315,6 +326,9 @@ schedule:
     - "06:00":
     - "06:30":
     - "07:00":
+        title: Neumorphism.io
+        author: Adam Giebl
+        url: https://neumorphism.io/
     - "07:30":
     - "08:00":
     - "08:30":

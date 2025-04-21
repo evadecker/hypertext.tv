@@ -135,6 +135,9 @@ schedule:
     - "06:00":
     - "06:30":
     - "07:00":
+        title: Nested
+        author: Orteil
+        url: https://orteil.dashnet.org/nested
     - "07:30":
     - "08:00":
     - "08:30":
@@ -335,6 +338,11 @@ schedule:
     - "07:30":
     - "08:00":
     - "08:30":
+        title: List of Physical Visualizations
+        author:
+          - Pierre Dragicevic
+          - Yvonne Jansen
+        url: https://dataphys.org/list/
     - "09:00":
     - "09:30":
     - "10:00":

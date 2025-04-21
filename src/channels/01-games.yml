@@ -308,6 +308,8 @@ schedule:
     - "08:00":
     - "08:30":
     - "09:00":
+        title: The Purpose of Water
+        url: https://games.increpare.com/ZweckDesWassers/
     - "09:30":
     - "10:00":
     - "10:30":
@@ -354,6 +356,8 @@ schedule:
     - "05:00":
     - "05:30":
     - "06:00":
+        title: CSS Grid Garden
+        url: https://cssgridgarden.com/
     - "06:30":
     - "07:00":
     - "07:30":

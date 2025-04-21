@@ -45,6 +45,9 @@ schedule:
     - "17:00":
     - "17:30":
     - "18:00":
+        title: alienmelon
+        author: alienmelon
+        url: https://alienmelon.com/
     - "18:30":
     - "19:00":
     - "19:30":
