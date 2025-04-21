@@ -269,6 +269,8 @@ schedule:
     - "23:30":
   saturday:
     - "00:00":
+        title: N10.AS RADIO
+        url: https://n10.as/
     - "00:30":
     - "01:00":
     - "01:30":
@@ -367,8 +369,6 @@ schedule:
     - "20:30":
     - "21:00":
     - "21:30":
-        title: N10.AS RADIO
-        url: https://n10.as/
     - "22:00":
     - "22:30":
     - "23:00":
