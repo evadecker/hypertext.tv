@@ -59,6 +59,7 @@ const { prev, next } = await getPagination(channelId);
 
 <script>
   import * as Fathom from "fathom-client";
+  import { playButtonClick } from "../sfx/button";
 
   const powerButton = document.getElementById("power");
   const screen = document.querySelector(".screen");
@@ -66,6 +67,9 @@ const { prev, next } = await getPagination(channelId);
   const channelDisplay = document.querySelector("channel-display");
   const menuButton = document.getElementById("menu-button");
   const channelButtons = document.querySelectorAll(".channel-button");
+
+  const buttons = document.querySelectorAll(".controls .button");
+  buttons.forEach(button => button.addEventListener('click', playButtonClick));
 
   function updateButtonStates(powerState: string) {
     if (powerState === "off") {
