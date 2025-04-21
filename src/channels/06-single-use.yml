@@ -3,6 +3,9 @@ name: Single-Use
 schedule:
   monday:
     - "00:00":
+        title: The Death Generator
+        author: Foone Turing
+        url: https://deathgenerator.com/#gallery
     - "00:30":
     - "01:00":
     - "01:30":
@@ -61,6 +64,9 @@ schedule:
     - "23:30":
   tuesday:
     - "00:00":
+        title: How did you find me?
+        author: Elan Ullendorff
+        url: https://www.howdidyoufind.me/
     - "00:30":
     - "01:00":
     - "01:30":
@@ -333,6 +339,9 @@ schedule:
     - "17:00":
     - "17:30":
     - "18:00":
+        title: Bicycle RIP
+        author: Hot Garbage
+        url: https://bicycle.rip/
     - "18:30":
     - "19:00":
     - "19:30":
@@ -346,6 +355,9 @@ schedule:
     - "23:30":
   sunday:
     - "00:00":
+        title: wide emoji maker
+        author: Max Bittker
+        url: https://emoji-stretcher--maxbittker.on.websim.ai/
     - "00:30":
     - "01:00":
     - "01:30":
@@ -394,20 +406,8 @@ schedule:
     - "20:00":
     - "20:30":
     - "21:00":
-        title: Bicycle RIP
-        author: Hot Garbage
-        url: https://bicycle.rip/
     - "21:30":
-        title: The Death Generator
-        author: Foone Turing
-        url: https://deathgenerator.com/#gallery
     - "22:00":
-        title: How did you find me?
-        author: Elan Ullendorff
-        url: https://www.howdidyoufind.me/
     - "22:30":
-        title: wide emoji maker
-        author: Max Bittker
-        url: https://emoji-stretcher--maxbittker.on.websim.ai/
     - "23:00":
     - "23:30":

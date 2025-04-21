@@ -302,6 +302,9 @@ schedule:
     - "17:00":
     - "17:30":
     - "18:00":
+        title: Optical Toys
+        author: Tom's Toys
+        url: https://optical.toys/
     - "18:30":
     - "19:00":
     - "19:30":
@@ -402,6 +405,9 @@ schedule:
     - "15:00":
     - "15:30":
     - "16:00":
+        title: In the Year of a Tree
+        author: Katherine Yang
+        url: https://tree.kayserifserif.place/
     - "16:30":
     - "17:00":
     - "17:30":
@@ -410,18 +416,12 @@ schedule:
     - "19:00":
     - "19:30":
     - "20:00":
-    - "20:30":
-    - "21:00":
         title: Gravity
         url: https://lab.nationalmedals.org/gravity.php
+    - "20:30":
+    - "21:00":
     - "21:30":
     - "22:00":
-        title: Optical Toys
-        author: Tom's Toys
-        url: https://optical.toys/
     - "22:30":
-        title: In the Year of a Tree
-        author: Katherine Yang
-        url: https://tree.kayserifserif.place/
     - "23:00":
     - "23:30":
