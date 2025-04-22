@@ -269,8 +269,7 @@ schedule:
     - "18:00":
     - "18:30":
         title: drone-it
-        author:
-          - Patricio Cifredo
+        author: Patricio Cifredo
         url: https://drone-it.netlify.app/
     - "19:00":
     - "19:30":
