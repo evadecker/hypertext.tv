@@ -184,8 +184,8 @@ schedule:
     - "06:00":
     - "06:30":
     - "07:00":
-      title: Moss Garden
-      url: https://moss.garden/
+        title: Moss Garden
+        url: https://moss.garden/
     - "07:30":
     - "08:00":
     - "08:30":
