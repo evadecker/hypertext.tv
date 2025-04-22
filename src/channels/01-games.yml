@@ -57,12 +57,6 @@ schedule:
     - "23:30":
   tuesday:
     - "00:00":
-        title: Peter Talisman
-        author:
-          - Callum Copley
-          - Ben West
-          - Joseph Pleass
-        url: https://petertalisman.quest/
     - "00:30":
     - "01:00":
     - "01:30":
