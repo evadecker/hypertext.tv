@@ -5,6 +5,8 @@ import Layout from "@layouts/Layout.astro";
 
 const { url } = Astro.params;
 if (!url) return Astro.redirect("/test");
+
+const src = url.includes("https://") ? url : `https://${url}`;
 ---
 
 <Layout title="Site Preview">
@@ -17,6 +19,6 @@ if (!url) return Astro.redirect("/test");
     channelId="PRE"
     channelName="Preview"
   >
-    <IFrame src={`https://${url}`} />
+    <IFrame src={src} />
   </Television>
 </Layout>

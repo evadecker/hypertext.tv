@@ -57,12 +57,6 @@ schedule:
     - "23:30":
   tuesday:
     - "00:00":
-        title: Peter Talisman
-        author:
-          - Callum Copley
-          - Ben West
-          - Joseph Pleass
-        url: https://petertalisman.quest/
     - "00:30":
     - "01:00":
     - "01:30":
@@ -160,6 +154,9 @@ schedule:
     - "19:00":
     - "19:30":
     - "20:00":
+        title: Tetromino Sweep
+        author: Mark Egli
+        url: https://markegli.com/sweep/
     - "20:30":
     - "21:00":
     - "21:30":
@@ -212,6 +209,9 @@ schedule:
     - "19:00":
     - "19:30":
     - "20:00":
+        title: Kick the Billionaire
+        author: Dr. Jorge Pérez
+        url: https://kickthebillionaire.com/
     - "20:30":
     - "21:00":
     - "21:30":
@@ -302,6 +302,8 @@ schedule:
     - "08:00":
     - "08:30":
     - "09:00":
+        title: The Purpose of Water
+        url: https://games.increpare.com/ZweckDesWassers/
     - "09:30":
     - "10:00":
     - "10:30":
@@ -348,6 +350,8 @@ schedule:
     - "05:00":
     - "05:30":
     - "06:00":
+        title: CSS Grid Garden
+        url: https://cssgridgarden.com/
     - "06:30":
     - "07:00":
     - "07:30":

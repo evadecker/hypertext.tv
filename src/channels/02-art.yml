@@ -30,6 +30,9 @@ schedule:
     - "11:00":
     - "11:30":
     - "12:00":
+        title: Life Sharing
+        author: Eva and Franco Mattes
+        url: https://anthology.rhizome.org/life-sharing
     - "12:30":
     - "13:00":
     - "13:30":
@@ -39,6 +42,8 @@ schedule:
     - "15:30":
     - "16:00":
     - "16:30":
+        title: Rothko.me
+        url: https://rothko.me/
     - "17:00":
     - "17:30":
     - "18:00":
@@ -67,6 +72,14 @@ schedule:
     - "04:00":
     - "04:30":
     - "05:00":
+        title: Traumagotchi
+        author: 
+          - Lark Alder
+          - Porpentine Charity Heartscape
+          - Angelabelle Abarientos
+          - Ajavision
+          - Rooks Feather
+        url: https://www.traumagotchi.com/
     - "05:30":
     - "06:00":
     - "06:30":
@@ -148,6 +161,9 @@ schedule:
     - "14:00":
     - "14:30":
     - "15:00":
+        title: Trail Mosaic
+        author: Vidya Giri
+        url: https://vidyagiri.com/mosaic/
     - "15:30":
     - "16:00":
     - "16:30":

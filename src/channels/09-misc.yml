@@ -237,6 +237,8 @@ schedule:
     - "10:30":
     - "11:00":
     - "11:30":
+        title: those.tools
+        url: https://those.tools/
     - "12:00":
     - "12:30":
     - "13:00":

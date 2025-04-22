@@ -36,6 +36,9 @@ schedule:
     - "14:00":
     - "14:30":
     - "15:00":
+        title: BeepBox
+        author:  John Nesky
+        url: https://www.beepbox.co/
     - "15:30":
     - "16:00":
     - "16:30":
@@ -78,6 +81,9 @@ schedule:
     - "09:30":
     - "10:00":
     - "10:30":
+        title: jsfxr
+        author: Eric Fredricksen
+        url: https://sfxr.me/
     - "11:00":
     - "11:30":
     - "12:00":
@@ -132,6 +138,11 @@ schedule:
     - "11:00":
     - "11:30":
     - "12:00":
+        title: Song Maker
+        author:
+          - Google Creative Lab
+          - Yotam Mann
+        url: https://musiclab.chromeexperiments.com/Song-Maker/
     - "12:30":
     - "13:00":
     - "13:30":
@@ -173,6 +184,8 @@ schedule:
     - "06:00":
     - "06:30":
     - "07:00":
+        title: Moss Garden
+        url: https://moss.garden/
     - "07:30":
     - "08:00":
     - "08:30":
@@ -257,6 +270,9 @@ schedule:
     - "17:30":
     - "18:00":
     - "18:30":
+        title: drone-it
+        author: Patricio Cifredo
+        url: https://drone-it.netlify.app/
     - "19:00":
     - "19:30":
     - "20:00":

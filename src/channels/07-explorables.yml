@@ -7,33 +7,27 @@ schedule:
         author: Nicky Case
         url: https://ncase.me/sim/
     - "00:30":
-        title: Attractor Landscapes
-        author: Nicky Case
-        url: https://ncase.me/attractors/
     - "01:00":
-        title: The Wisdom And/Or Madness Of Crowds
-        author: Nicky Case
-        url: https://ncase.me/crowds/
     - "01:30":
-        title: To Build A Better Ballot
-        author: Nicky Case
-        url: https://ncase.me/ballot/
     - "02:00":
-        title: Adventures With Anxiety
-        author: Nicky Case
-        url: https://ncase.me/anxiety/
     - "02:30":
     - "03:00":
     - "03:30":
     - "04:00":
     - "04:30":
     - "05:00":
+        title: The Wisdom And/Or Madness Of Crowds
+        author: Nicky Case
+        url: https://ncase.me/crowds/
     - "05:30":
     - "06:00":
     - "06:30":
     - "07:00":
     - "07:30":
     - "08:00":
+        title: To Build A Better Ballot
+        author: Nicky Case
+        url: https://ncase.me/ballot/
     - "08:30":
     - "09:00":
     - "09:30":
@@ -50,6 +44,9 @@ schedule:
     - "15:00":
     - "15:30":
     - "16:00":
+        title: Attractor Landscapes
+        author: Nicky Case
+        url: https://ncase.me/attractors/
     - "16:30":
     - "17:00":
     - "17:30":
@@ -138,6 +135,9 @@ schedule:
     - "06:00":
     - "06:30":
     - "07:00":
+        title: Nested
+        author: Orteil
+        url: https://orteil.dashnet.org/nested
     - "07:30":
     - "08:00":
     - "08:30":
@@ -197,6 +197,9 @@ schedule:
     - "08:00":
     - "08:30":
     - "09:00":
+        title: PerThirtySix
+        author: Shri Khalpada
+        url: https://perthirtysix.com
     - "09:30":
     - "10:00":
     - "10:30":
@@ -276,6 +279,9 @@ schedule:
     - "08:00":
     - "08:30":
     - "09:00":
+        title: Falling Posts
+        author: Shri Khalpada
+        url: https://fallingposts.com/
     - "09:30":
     - "10:00":
     - "10:30":
@@ -332,6 +338,11 @@ schedule:
     - "07:30":
     - "08:00":
     - "08:30":
+        title: List of Physical Visualizations
+        author:
+          - Pierre Dragicevic
+          - Yvonne Jansen
+        url: https://dataphys.org/list/
     - "09:00":
     - "09:30":
     - "10:00":
@@ -410,6 +421,11 @@ schedule:
     - "19:00":
     - "19:30":
     - "20:00":
+        title: Space Marine Painter 3D
+        author: Minh Hua
+        url: https://minhhua.com/space_marine_painter_3d/
+    - "20:30":
+    - "21:00":
         title: Gravity
         url: https://lab.nationalmedals.org/gravity.php
     - "20:30":
