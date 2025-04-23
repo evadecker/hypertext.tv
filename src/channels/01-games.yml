@@ -323,6 +323,9 @@ schedule:
     - "17:30":
     - "18:00":
     - "18:30":
+        title: Sandwich Alignment Game
+        author: Andrew Boylan
+        url: https://sandwich-alignment.vercel.app/game
     - "19:00":
     - "19:30":
     - "20:00":
