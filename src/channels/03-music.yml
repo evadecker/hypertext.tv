@@ -53,6 +53,9 @@ schedule:
     - "21:00":
     - "21:30":
     - "22:00":
+        title: Youtube Sequencer
+        author: Andrew Boylan
+        url: https://youtubesequencer.com/
     - "22:30":
     - "23:00":
     - "23:30":
