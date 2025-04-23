@@ -57,7 +57,7 @@ function getReadableTime(timeStr: string | undefined) {
   // Create a new date and set it to the time from the string
   const [hours, minutes] = timeStr.split(":").map(Number);
   const date = new Date();
-  date.setHours(hours, minutes, 0, 0);
+  date.setUTCHours(hours, minutes, 0, 0);
 
   return date.toLocaleTimeString("en-US", {
     hour: "2-digit",
@@ -366,7 +366,7 @@ const svgWidth = calculateSvgWidth(initialVisitorData.history.length);
       // Parse the time string and convert to local time
       const [hours, minutes] = timeStr.split(":").map(Number);
       const date = new Date();
-      date.setHours(hours, minutes, 0, 0);
+      date.setUTCHours(hours, minutes, 0, 0);
 
       // Format the time
       const formattedTime = date.toLocaleTimeString("en-US", {
