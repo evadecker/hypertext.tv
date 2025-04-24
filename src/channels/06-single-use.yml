@@ -205,9 +205,6 @@ schedule:
     - "06:00":
     - "06:30":
     - "07:00":
-        title: Every screen resolution
-        author: Michael Lascarides
-        url: http://lascarid.es/screenres.html
     - "07:30":
     - "08:00":
     - "08:30":
