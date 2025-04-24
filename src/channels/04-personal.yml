@@ -33,6 +33,9 @@ schedule:
     - "11:00":
     - "11:30":
     - "12:00":
+        title: Maciek Palmowski
+        author: Maciek Palmowski
+        url: https://maciekpalmowski.dev/
     - "12:30":
     - "13:00":
     - "13:30":
