@@ -182,6 +182,8 @@ schedule:
     - "09:00":
     - "09:30":
     - "10:00":
+        title: Carveat Emptor
+        url: https://snell.zone/carveat/
     - "10:30":
     - "11:00":
     - "11:30":
