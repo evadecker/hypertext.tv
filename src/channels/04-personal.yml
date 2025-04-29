@@ -139,6 +139,9 @@ schedule:
     - "03:00":
     - "03:30":
     - "04:00":
+        title: Yihui
+        author: Yihui H
+        url: https://www.yihui.work
     - "04:30":
     - "05:00":
     - "05:30":
