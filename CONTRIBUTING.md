@@ -25,17 +25,18 @@ Create a pull request against this repository by [forking it](https://docs.githu
 4. Add your site details. For example:
 
 ```yml
-# The selected day of the week
 - wednesday:
-  # The selected time to air, formatted as 24h time, within quotes
   - "14:00": 
-      # The title of your website
       title: Design Is 
-      # (Optional) Your name, nickname, or handle, to be displayed on the credits page
+      # (Optional) Your name, nickname, or handle
+      # To be displayed on the credits page
       # Multiple authors can be listed
       author: Eva Decker 
       # A link to your website, using https://
       url: https://design.eva.town 
+
+# Important: YAML is whitespace-sensitive.
+# Make sure your entries are indented 2 spaces beneath the time block!
 ```
 
 5. Save and commit your changes, then [open a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request).
