@@ -264,9 +264,9 @@ schedule:
     - "18:00":
     - "18:30":
     - "19:00":
-     title: The Frutiger Aero Archive
-     author: Daniele
-     url: https://frutigeraeroarchive.org/
+        title: The Frutiger Aero Archive
+        author: Daniele
+        url: https://frutigeraeroarchive.org/
     - "19:30":
     - "20:00":
     - "20:30":
