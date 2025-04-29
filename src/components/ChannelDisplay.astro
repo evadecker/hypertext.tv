@@ -12,13 +12,15 @@ const { title, url } = program ?? {};
 
 // Fetch initial visitor data
 let initialVisitorData = { total: 0, history: Array(8).fill(0) };
-try {
-  const response = await fetch("/api/visitors");
-  if (response.ok) {
-    initialVisitorData = await response.json();
+if (!import.meta.env.DEV) {
+  try {
+    const response = await fetch("/api/visitors");
+    if (response.ok) {
+      initialVisitorData = await response.json();
+    }
+  } catch (error) {
+    console.error("Failed to fetch initial visitor data:", error);
   }
-} catch (error) {
-  console.error("Failed to fetch initial visitor data:", error);
 }
 
 const BAR_WIDTH = 3;
