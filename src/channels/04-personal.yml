@@ -40,6 +40,9 @@ schedule:
     - "13:00":
     - "13:30":
     - "14:00":
+        title: Cantinho do Romeo
+        author: Guilherme de Oliveira (aka Romeo)
+        url: https://cantinhodoromeo.com.br/
     - "14:30":
     - "15:00":
     - "15:30":
