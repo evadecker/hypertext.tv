@@ -13,7 +13,7 @@ We'll air [handmade websites](https://luckysoap.com/statements/handmadeweb.html)
 > - Marketing sites or anything with ads
 > - AI-generated content
 > - Sites promoting racism, homophobia, transphobia, fatphobia, or other assholery
-> - Insecure sites (sites *must* use the `https://` protocol, not `http://`)
+> - Insecure sites (sites must use the `https://` protocol)
 
 ## How do I add my site?
 
@@ -30,13 +30,26 @@ Create a pull request against this repository by [forking it](https://docs.githu
       title: Design Is 
       # (Optional) Your name, nickname, or handle
       # To be displayed on the credits page
-      # Multiple authors can be listed
       author: Eva Decker 
       # A link to your website, using https://
       url: https://design.eva.town 
 
-# Important: YAML is whitespace-sensitive.
-# Make sure your entries are indented 2 spaces beneath the time block!
+      # Important: YAML is whitespace-sensitive.
+      # Make sure your entries are indented 2 spaces beneath the time block!
+```
+
+If you need to credit multiple authors, you can do so like this:
+
+```yml
+- friday:
+  - "16:30"
+      title: Ear Association
+      author:
+        - Evy Kassirer
+        - Jacob deGroot-Maggetti
+      url: https://ear-association.github.io/
+
+      # Again: make sure YAML is indented correctly!
 ```
 
 5. Save and commit your changes, then [open a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request).
