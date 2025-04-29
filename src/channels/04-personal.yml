@@ -84,6 +84,9 @@ schedule:
     - "06:00":
     - "06:30":
     - "07:00":
+        title: Tesseralis
+        author: Tesseralis
+        url: https://tesseralis.site/
     - "07:30":
     - "08:00":
     - "08:30":

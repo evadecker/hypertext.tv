@@ -79,6 +79,9 @@ schedule:
     - "05:00":
     - "05:30":
     - "06:00":
+        title: The Labyrinth of Polyominoes
+        author: Tesseralis
+        url: https://minos.tessera.li/
     - "06:30":
     - "07:00":
     - "07:30":
@@ -106,6 +109,9 @@ schedule:
     - "17:00":
     - "17:30":
     - "18:00":
+        title: Polyhedra Viewer
+        author: Tesseralis
+        url: https://polyhedra.tessera.li/
     - "18:30":
     - "19:00":
     - "19:30":
@@ -152,6 +158,9 @@ schedule:
     - "13:00":
     - "13:30":
     - "14:00":
+        title: Nat Notation
+        author: Tesseralis
+        url: https://tesseralis.site/nat-notation
     - "14:30":
     - "15:00":
     - "15:30":
