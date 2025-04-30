@@ -165,9 +165,6 @@ schedule:
     - "15:00":
     - "15:30":
     - "16:00":
-        title: Defense Against Dishonest Charts
-        author: Nathan Yau
-        url: https://flowingdata.com/projects/dishonest-charts/
     - "16:30":
     - "17:00":
     - "17:30":
