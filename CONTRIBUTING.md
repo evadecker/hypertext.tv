@@ -15,7 +15,7 @@ We'll air [handmade websites](https://luckysoap.com/statements/handmadeweb.html)
 > - Sites promoting racism, homophobia, transphobia, fatphobia, or other assholery
 > - Insecure sites (sites must use the `https://` protocol)
 
-Right now, all sites on HTTV must be in English. However, there is an open [discussion](https://github.com/evadecker/hypertext.tv/discussions/64) about accepting non-English sites.
+Right now, all sites on HTTV must be in English. However, there is an open [discussion](https://github.com/evadecker/hypertext.tv/discussions/64) about accepting non-English sites. If you have a site in a language other than English which you want to submit, please [add it to the discussion thread](https://github.com/evadecker/hypertext.tv/discussions/64) so I can gauge interest.
 
 ## How do I add my site?
 
