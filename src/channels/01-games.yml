@@ -185,6 +185,9 @@ schedule:
     - "05:30":
     - "06:00":
     - "06:30":
+        title: Nomido
+        author: The Browser
+        url: https://thebrowser.com/nomido-game/
     - "07:00":
     - "07:30":
     - "08:00":
