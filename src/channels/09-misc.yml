@@ -84,6 +84,9 @@ schedule:
     - "11:00":
     - "11:30":
     - "12:00":
+        title: Nokia 3250
+        author: Chaz.Fun
+        url: https://chaz.fun/phone/3250/
     - "12:30":
     - "13:00":
     - "13:30":

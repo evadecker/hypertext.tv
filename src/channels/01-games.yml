@@ -137,6 +137,9 @@ schedule:
     - "10:30":
     - "11:00":
     - "11:30":
+        title: PONGS
+        author: Pippin Barr
+        url: https://pippinbarr.com/pongs/
     - "12:00":
     - "12:30":
     - "13:00":
