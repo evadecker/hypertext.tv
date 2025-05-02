@@ -339,6 +339,9 @@ schedule:
     - "13:00":
     - "13:30":
     - "14:00":
+        title: Charles Wang
+        author: Charles Wang
+        url: https://charleszw.com/
     - "14:30":
     - "15:00":
     - "15:30":
