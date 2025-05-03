@@ -19,6 +19,9 @@ schedule:
     - "05:30":
     - "06:00":
     - "06:30":
+        title: On A Sunbeam
+        author: Tillie Walden
+        url: https://www.onasunbeam.com/
     - "07:00":
     - "07:30":
     - "08:00":
@@ -150,6 +153,9 @@ schedule:
     - "07:00":
     - "07:30":
     - "08:00":
+        title: XKCD
+        author: Randall Munroe
+        url: https://xkcd.com/
     - "08:30":
     - "09:00":
     - "09:30":
@@ -213,6 +219,9 @@ schedule:
     - "10:00":
     - "10:30":
     - "11:00":
+        title: Three Word Phrase
+        author: Ryan Pequin
+        url: https://threewordphrase.com/
     - "11:30":
     - "12:00":
     - "12:30":
