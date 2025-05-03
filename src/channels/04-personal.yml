@@ -96,6 +96,9 @@ schedule:
     - "10:30":
     - "11:00":
     - "11:30":
+        title: Kit Mills
+        author: Kit Mills
+        url: https://mitkills.com/
     - "12:00":
     - "12:30":
     - "13:00":

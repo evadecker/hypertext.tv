@@ -232,6 +232,8 @@ schedule:
     - "03:30":
     - "04:00":
     - "04:30":
+        title: Exercise Book Archive
+        url: https://www.exercisebookarchive.org/
     - "05:00":
     - "05:30":
     - "06:00":
@@ -241,6 +243,9 @@ schedule:
     - "08:00":
     - "08:30":
     - "09:00":
+        title: The Hydrant Directory
+        author: day lane
+        url: https://www.dayroselane.com/hydrants
     - "09:30":
     - "10:00":
     - "10:30":
@@ -250,9 +255,6 @@ schedule:
     - "12:30":
     - "13:00":
     - "13:30":
-        title: The Hydrant Directory
-        author: day lane
-        url: https://www.dayroselane.com/hydrants
     - "14:00":
         title: Hardware Archive
         author: Liang-Jung Chen
@@ -296,6 +298,9 @@ schedule:
     - "05:00":
     - "05:30":
     - "06:00":
+        title: Public Domain Image Archive
+        author: The Public Domain Review
+        url: https://pdimagearchive.org/
     - "06:30":
     - "07:00":
     - "07:30":
@@ -304,6 +309,9 @@ schedule:
     - "09:00":
     - "09:30":
     - "10:00":
+        title: Fictional Brands Archive
+        author: Lorenzo Bernini
+        url: https://fictionalbrandsarchive.com/
     - "10:30":
     - "11:00":
     - "11:30":
@@ -323,6 +331,9 @@ schedule:
     - "17:30":
     - "18:00":
     - "18:30":
+        title: Arabic Design Archive
+        author: Design Repository
+        url: https://arabicdesignarchive.com/
     - "19:00":
     - "19:30":
     - "20:00":
@@ -342,6 +353,9 @@ schedule:
     - "02:30":
     - "03:00":
     - "03:30":
+        title: Black Film Archive
+        author: Maya S. Cade
+        url: https://blackfilmarchive.com/
     - "04:00":
     - "04:30":
     - "05:00":
@@ -351,6 +365,8 @@ schedule:
     - "07:00":
     - "07:30":
     - "08:00":
+        title: NYPL Digital Collections
+        url: https://digitalcollections.nypl.org/
     - "08:30":
     - "09:00":
     - "09:30":
