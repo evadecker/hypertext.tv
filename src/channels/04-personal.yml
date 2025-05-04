@@ -236,6 +236,9 @@ schedule:
     - "15:00":
     - "15:30":
     - "16:00":
+        title: Anton Basistov
+        author: Anton Basistov
+        url: https://basistov.com
     - "16:30":
     - "17:00":
     - "17:30":
