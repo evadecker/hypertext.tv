@@ -113,6 +113,9 @@ schedule:
     - "16:00":
     - "16:30":
     - "17:00":
+        title: Elevator.js
+        author: Tim Holman
+        url: https://tholman.com/elevator.js/
     - "17:30":
     - "18:00":
     - "18:30":
@@ -120,6 +123,9 @@ schedule:
     - "19:30":
     - "20:00":
     - "20:30":
+        title: Meet the Ipsums
+        author: Tim Holman
+        url: https://meettheipsums.com/
     - "21:00":
     - "21:30":
     - "22:00":
@@ -146,6 +152,9 @@ schedule:
     - "06:30":
     - "07:00":
     - "07:30":
+        title: Reaction Diffusion Explorer
+        author: Karl Sims
+        url: https://karlsims.com/rdtool.html
     - "08:00":
     - "08:30":
     - "09:00":

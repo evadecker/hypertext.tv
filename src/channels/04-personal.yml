@@ -186,6 +186,9 @@ schedule:
     - "19:00":
     - "19:30":
     - "20:00":
+        title: Karl Sims
+        author: Karl Sims
+        url: https://karlsims.com/
     - "20:30":
     - "21:00":
     - "21:30":

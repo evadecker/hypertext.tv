@@ -118,6 +118,9 @@ schedule:
     - "20:00":
     - "20:30":
     - "21:00":
+        title: Making Software
+        author: Dan Hollick
+        url: https://www.makingsoftware.com/
     - "21:30":
     - "22:00":
     - "22:30":
@@ -169,6 +172,9 @@ schedule:
     - "17:00":
     - "17:30":
     - "18:00":
+        title: Practical Typography
+        author: Matthew Butterick
+        url: https://practicaltypography.com/
     - "18:30":
     - "19:00":
     - "19:30":

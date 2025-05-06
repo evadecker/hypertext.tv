@@ -72,6 +72,9 @@ schedule:
     - "05:00":
     - "05:30":
     - "06:00":
+        title: Resizabill
+        author: Anatoly Zenkov
+        url: https://anatolyzenkov.com/resizabill
     - "06:30":
     - "07:00":
     - "07:30":
@@ -125,6 +128,9 @@ schedule:
     - "04:30":
     - "05:00":
     - "05:30":
+        title: Pug in a Rug
+        author: Tim Holman
+        url: https://puginarug.com/
     - "06:00":
     - "06:30":
     - "07:00":
@@ -140,6 +146,9 @@ schedule:
     - "12:00":
     - "12:30":
     - "13:00":
+        title: The Finger
+        author: Tim Holman
+        url: https://thatsthefinger.com/
     - "13:30":
     - "14:00":
     - "14:30":

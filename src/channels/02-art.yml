@@ -89,6 +89,8 @@ schedule:
     - "07:00":
     - "07:30":
     - "08:00":
+        title: Sun Clock
+        url: https://sunclock.net/
     - "08:30":
     - "09:00":
     - "09:30":
@@ -145,6 +147,9 @@ schedule:
     - "03:00":
     - "03:30":
     - "04:00":
+        title: ASCII Theater
+        author: MSCHF
+        url: https://ascii.theater/
     - "04:30":
     - "05:00":
     - "05:30":
@@ -162,6 +167,9 @@ schedule:
     - "10:00":
     - "10:30":
     - "11:00":
+        title: Fungal Page
+        author: Raphaël Bastide
+        url: https://fungal.page/
     - "11:30":
     - "12:00":
     - "12:30":
@@ -181,6 +189,9 @@ schedule:
     - "18:00":
     - "18:30":
     - "19:00":
+        title: Mondrian and Me
+        author: Tim Holman
+        url: https://mondrianandme.com/
     - "19:30":
     - "20:00":
     - "20:30":
@@ -261,6 +272,8 @@ schedule:
     - "02:00":
     - "02:30":
     - "03:00":
+        title: Lorem Ipsum
+        url: https://t-h-e-s-p-a-c-e.com/lorem-ipsum/
     - "03:30":
     - "04:00":
     - "04:30":
@@ -270,6 +283,9 @@ schedule:
     - "06:30":
     - "07:00":
     - "07:30":
+        title: Jordan Belson Landscapes
+        author: Jordan Belson
+        url: https://matthewmarks.com/online/jordan-belson
     - "08:00":
     - "08:30":
     - "09:00":
@@ -284,6 +300,9 @@ schedule:
         url: https://proto.sh/
     - "12:30":
     - "13:00":
+        title: Objectified
+        author: Chester Fernandez
+        url: https://www.objectifiedcomic.com/
     - "13:30":
     - "14:00":
     - "14:30":
