@@ -128,6 +128,9 @@ schedule:
     - "04:30":
     - "05:00":
     - "05:30":
+        title: George and Jonathan
+        author: George and Jonathan
+        url: https://www.georgeandjonathan.com/
     - "06:00":
     - "06:30":
     - "07:00":

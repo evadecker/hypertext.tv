@@ -139,6 +139,9 @@ schedule:
     - "01:30":
     - "02:00":
     - "02:30":
+        title: Michael Norman
+        author: Michael Norman
+        url: https://www.michaelnorman.au/
     - "03:00":
     - "03:30":
     - "04:00":
@@ -148,10 +151,16 @@ schedule:
     - "04:30":
     - "05:00":
     - "05:30":
+        title: Ben Elwyn
+        author: Ben Elwyn
+        url: https://www.elwyn.co/
     - "06:00":
     - "06:30":
     - "07:00":
     - "07:30":
+        title: Junior Vigneault
+        author: Junior Vigneault
+        url: https://www.juniorvigneault.com/
     - "08:00":
     - "08:30":
     - "09:00":

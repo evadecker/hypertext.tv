@@ -185,6 +185,9 @@ schedule:
     - "16:00":
     - "16:30":
     - "17:00":
+        title: David Lanham
+        author: David Lanham
+        url: https://www.dlanham.com/
     - "17:30":
     - "18:00":
     - "18:30":

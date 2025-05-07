@@ -148,6 +148,8 @@ schedule:
     - "14:00":
     - "14:30":
     - "15:00":
+        title: Site of Sites
+        url: https://www.siteofsites.co/
     - "15:30":
     - "16:00":
     - "16:30":
@@ -188,6 +190,9 @@ schedule:
     - "06:30":
     - "07:00":
     - "07:30":
+        title: Geokash
+        author: Katarina Lingat
+        url: https://geokash.com/
     - "08:00":
     - "08:30":
     - "09:00":

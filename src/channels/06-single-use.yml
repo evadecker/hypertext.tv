@@ -185,11 +185,17 @@ schedule:
     - "17:00":
     - "17:30":
     - "18:00":
+        title: Nature Keyboard
+        author: Katarina Lingat
+        url: https://geokash.com/nature-keyboard
     - "18:30":
     - "19:00":
     - "19:30":
     - "20:00":
     - "20:30":
+        title: Pointilliser
+        author: Ben Elwyn
+        url: https://pointilliser.elwyn.co/
     - "21:00":
     - "21:30":
     - "22:00":
@@ -242,11 +248,17 @@ schedule:
     - "17:00":
     - "17:30":
     - "18:00":
+        title: Colour Mapper
+        author: Michael Norman
+        url: https://colour-mapper.michaelnorman.au/
     - "18:30":
     - "19:00":
     - "19:30":
     - "20:00":
     - "20:30":
+        title: Harmonizer
+        author: Evil Martians
+        url: https://harmonizer-web.web.app/
     - "21:00":
     - "21:30":
     - "22:00":
