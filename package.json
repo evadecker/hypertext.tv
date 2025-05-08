@@ -23,8 +23,10 @@
     "@astrojs/sitemap": "^3.3.0",
     "@netlify/blobs": "^8.2.0",
     "@netlify/edge-functions": "^2.11.1",
+    "@types/howler": "^2.2.12",
     "astro": "^5.5.2",
     "fathom-client": "^3.7.2",
+    "howler": "^2.2.4",
     "three": "^0.174.0",
     "typescript": "^5.8.2"
   },
