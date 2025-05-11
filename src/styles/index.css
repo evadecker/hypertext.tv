@@ -2,8 +2,7 @@
 
 @font-face {
   font-family: "Better VCR";
-  src: url("/fonts/BetterVCR-latin.woff2") format("woff2"),
-    url("/fonts/BetterVCR-latin.woff") format("woff");
+  src: url("/fonts/BetterVCR-latin.woff2") format("woff2");
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -11,8 +10,7 @@
 
 @font-face {
   font-family: "DSEG 14";
-  src: url("/fonts/DSEG14ClassicMini-Italic.woff2") format("woff2"),
-    url("/fonts/DSEG14ClassicMini-Italic.woff") format("woff");
+  src: url("/fonts/DSEG14ClassicMini-Italic.woff2") format("woff2");
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -20,8 +18,7 @@
 
 @font-face {
   font-family: "Eurostile";
-  src: url("/fonts/Eurostile-Bold.woff2") format("woff2"),
-    url("/fonts/Eurostile-Bold.woff") format("woff");
+  src: url("/fonts/Eurostile-Bold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: block;
