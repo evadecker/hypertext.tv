@@ -125,6 +125,9 @@ schedule:
     - "19:00":
     - "19:30":
     - "20:00":
+        title: Ninety Nine Plus Nine
+        author: Tiger Dingsun
+        url: https://108.tiger.exposed/
     - "20:30":
     - "21:00":
     - "21:30":
@@ -315,12 +318,20 @@ schedule:
     - "16:30":
     - "17:00":
     - "17:30":
+        title: Unseen Garden
+        author: 
+          - Chris Hamamoto
+          - Federico Perez Villoro
+        url: https://www.unseen.garden/
     - "18:00":
     - "18:30":
     - "19:00":
     - "19:30":
     - "20:00":
     - "20:30":
+        title: I Never Want to See the Same Image Twice
+        author: Tiger Dingsun
+        url: https://tdingsun.github.io/dp/
     - "21:00":
     - "21:30":
     - "22:00":

@@ -14,6 +14,11 @@ schedule:
     - "03:00":
     - "03:30":
     - "04:00":
+        title: Heavyweight
+        author:
+          - Morry Kolman
+          - Kendra Albert
+        url: https://heavyweight.cc/
     - "04:30":
     - "05:00":
     - "05:30":
@@ -80,6 +85,8 @@ schedule:
     - "04:00":
     - "04:30":
     - "05:00":
+        title: Gridlover
+        url: https://gridlover.net/
     - "05:30":
     - "06:00":
     - "06:30":
@@ -214,6 +221,8 @@ schedule:
     - "03:00":
     - "03:30":
     - "04:00":
+        title: ASCIIzify
+        url: https://asciizify.studiodev.xyz/
     - "04:30":
     - "05:00":
     - "05:30":
@@ -433,6 +442,8 @@ schedule:
     - "16:00":
     - "16:30":
     - "17:00":
+        title: Unicode Snowman For You
+        url: https://unicodesnowmanforyou.com/
     - "17:30":
     - "18:00":
     - "18:30":

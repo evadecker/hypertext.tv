@@ -395,6 +395,9 @@ schedule:
     - "15:00":
     - "15:30":
     - "16:00":
+        title: Unparalleled Misalignments
+        author: Ricki Heicklen
+        url: https://rickiheicklen.com/unparalleled-misalignments.html
     - "16:30":
     - "17:00":
     - "17:30":
@@ -407,6 +410,13 @@ schedule:
     - "19:30":
     - "20:00":
     - "20:30":
+        title: Thinking with Moss
+        author: 
+          - Elaine Ayers
+          - Ahmed Ansari
+          - Tega Brain
+          - Laura Briscoe
+        url: https://www.thinkingwithmoss.net/
     - "21:00":
     - "21:30":
     - "22:00":

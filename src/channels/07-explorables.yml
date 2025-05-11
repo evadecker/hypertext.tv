@@ -298,6 +298,9 @@ schedule:
     - "03:30":
     - "04:00":
     - "04:30":
+        title: Icy and Rocky Worlds
+        author: Luke Steuber
+        url: https://assisted.site/viewport/full/graphics/typonomy/science/icy_and_rocky/index.html
     - "05:00":
     - "05:30":
     - "06:00":

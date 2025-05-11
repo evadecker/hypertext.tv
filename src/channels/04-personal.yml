@@ -181,6 +181,9 @@ schedule:
     - "13:30":
     - "14:00":
     - "14:30":
+        title: Tiger Dingsun
+        author: Tiger Dingsun
+        url: https://tiger.exposed/
     - "15:00":
     - "15:30":
     - "16:00":
