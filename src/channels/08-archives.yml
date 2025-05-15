@@ -122,6 +122,9 @@ schedule:
     - "02:30":
     - "03:00":
     - "03:30":
+        title: Mac Themes Garden
+        author: Damien Erambert
+        url: https://macthemes.garden
     - "04:00":
     - "04:30":
     - "05:00":
