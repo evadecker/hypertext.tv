@@ -3,6 +3,9 @@ name: Music
 schedule:
   monday:
     - "00:00":
+        title: moon musiq netlabel
+        author: moon musiq
+        url: https://moonmusiq.com/
     - "00:30":
     - "01:00":
     - "01:30":
