@@ -14,6 +14,9 @@ schedule:
     - "03:00":
     - "03:30":
     - "04:00":
+        title: GENOSADNESS
+        author: Genosad
+        url: https://genosadness.neocities.org/
     - "04:30":
     - "05:00":
     - "05:30":
@@ -42,6 +45,9 @@ schedule:
     - "14:00":
     - "14:30":
     - "15:00":
+        title: risingthumb.xyz
+        author: RisingThumb
+        url: https://risingthumb.xyz/
     - "15:30":
     - "16:00":
     - "16:30":
@@ -120,6 +126,9 @@ schedule:
     - "18:00":
     - "18:30":
     - "19:00":
+        title: World Playground Deceit
+        author: UltramarineWeather
+        url: https://world-playground-deceit.net/
     - "19:30":
     - "20:00":
     - "20:30":
@@ -180,6 +189,9 @@ schedule:
         author: Maggie Appleton
         url: https://maggieappleton.com/
     - "12:30":
+        title: proto_P
+        author: P
+        url: https://proto-p.neocities.org/
     - "13:00":
     - "13:30":
     - "14:00":
@@ -267,6 +279,9 @@ schedule:
     - "20:00":
     - "20:30":
     - "21:00":
+        title: Walrus Island
+        author: HammerKoopa
+        url: https://walrus-island.neocities.org/
     - "21:30":
     - "22:00":
     - "22:30":
@@ -348,6 +363,9 @@ schedule:
     - "04:00":
     - "04:30":
     - "05:00":
+        title: Punp's Pog Dungeon
+        author: Punp
+        url: https://punp.neocities.org/pog_dungeon
     - "05:30":
     - "06:00":
     - "06:30":
@@ -423,7 +441,6 @@ schedule:
     - "09:30":
     - "10:00":
     - "10:30":
-    - "11:00":
     - "11:30":
     - "12:00":
     - "12:30":
