@@ -57,12 +57,6 @@ schedule:
     - "23:30":
   tuesday:
     - "00:00":
-        title: Tardquest
-        author:
-            - Xx_TheMilkMan69_xX
-            - MySpace Tom
-            - endless_self
-        url: https://xxthemilkman69xx.neocities.org/dungeon/game
     - "00:30":
     - "01:00":
     - "01:30":
