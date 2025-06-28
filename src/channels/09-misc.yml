@@ -50,6 +50,9 @@ schedule:
     - "20:00":
     - "20:30":
     - "21:00":
+        title: tarotmancer
+        author: tyler broussard
+        url: https://tarotmancer.com/
     - "21:30":
     - "22:00":
     - "22:30":
@@ -334,6 +337,9 @@ schedule:
     - "23:30":
   sunday:
     - "00:00":
+        title: tarotmancer
+        author: tyler broussard
+        url: https://tarotmancer.com/
     - "00:30":
     - "01:00":
     - "01:30":
