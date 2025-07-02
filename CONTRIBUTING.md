@@ -7,13 +7,13 @@ Add your sites to Hypertext TV.
 We'll air [handmade websites](https://luckysoap.com/statements/handmadeweb.html) of any size! Games, personal sites, art, poetry, interactive experiences, toys, explorations—anything special. It can be a small as [a single photo of a potato](https://po.ta.to/) or as large as an [interactive explorable about mechanical watches](https://ciechanow.ski/mechanical-watch/).
 
 > [!IMPORTANT]  
-> We do not accept:
+> Acceptance criteria:
 > 
-> - Links to large platforms like YouTube, Instagram, Spotify, Soundcloud, Medium, etc.
-> - Marketing sites or anything with ads
-> - AI-generated content
-> - Sites promoting racism, homophobia, transphobia, fatphobia, or other assholery
-> - Insecure sites (sites must use the `https://` protocol)
+> 1. No links to large platforms like YouTube, Instagram, Spotify, Soundcloud, Medium, etc.
+> 2. No marketing sites or anything with ads
+> 3. No AI-generated content
+> 4. No sites promoting racism, homophobia, transphobia, sexism, fatphobia, or other assholery
+> 5. No insecure sites (sites must use the `https://` protocol)
 
 Right now, all sites on HTTV must be in English. However, there is an open [discussion](https://github.com/evadecker/hypertext.tv/discussions/64) about accepting non-English sites. If you have a site in a language other than English which you want to submit, please [add it to the discussion thread](https://github.com/evadecker/hypertext.tv/discussions/64) so I can gauge interest.
 
