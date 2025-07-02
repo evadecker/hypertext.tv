@@ -45,9 +45,6 @@ schedule:
     - "14:00":
     - "14:30":
     - "15:00":
-        title: risingthumb.xyz
-        author: RisingThumb
-        url: https://risingthumb.xyz/
     - "15:30":
     - "16:00":
     - "16:30":
