@@ -8,11 +8,11 @@ We'll air [handmade websites](https://luckysoap.com/statements/handmadeweb.html)
 
 > [!IMPORTANT]  
 > Acceptance criteria:
-> 
-> 1. No links to large platforms like YouTube, Instagram, Spotify, Soundcloud, Medium, etc.
-> 2. No marketing sites or anything with ads
-> 3. No AI-generated content
-> 4. No sites promoting racism, homophobia, transphobia, sexism, fatphobia, or other assholery
+>
+> 1. No sites promoting racism, homophobia, transphobia, sexism, fatphobia, or other assholery
+> 2. No links to large platforms like YouTube, Instagram, Spotify, Soundcloud, Medium, etc.
+> 3. No marketing sites or anything with ads
+> 4. No AI-generated content
 > 5. No insecure sites (sites must use the `https://` protocol)
 
 Right now, all sites on HTTV must be in English. However, there is an open [discussion](https://github.com/evadecker/hypertext.tv/discussions/64) about accepting non-English sites. If you have a site in a language other than English which you want to submit, please [add it to the discussion thread](https://github.com/evadecker/hypertext.tv/discussions/64) so I can gauge interest.
