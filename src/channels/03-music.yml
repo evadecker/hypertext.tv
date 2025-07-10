@@ -166,6 +166,9 @@ schedule:
     - "17:00":
     - "17:30":
     - "18:00":
+        title: Yamanotes
+        author: Morgan Sleeper
+        url: https://yamanot.es/
     - "18:30":
     - "19:00":
     - "19:30":
