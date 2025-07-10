@@ -425,6 +425,9 @@ schedule:
     - "05:30":
     - "06:00":
     - "06:30":
+        title: Treepedia
+        author: MIT Senseable City Lab
+        url: https://senseable.mit.edu/treepedia
     - "07:00":
     - "07:30":
     - "08:00":

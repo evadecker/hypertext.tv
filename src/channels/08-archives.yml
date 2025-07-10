@@ -200,6 +200,8 @@ schedule:
     - "03:00":
     - "03:30":
     - "04:00":
+        title: Pokémon TCG Archive
+        url: https://ptcgarchive.com/
     - "04:30":
     - "05:00":
     - "05:30":
