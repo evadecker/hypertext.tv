@@ -79,6 +79,9 @@ schedule:
     - "02:00":
     - "02:30":
     - "03:00":
+        title: Greg Technology
+        author: Greg Sadetsky
+        url: https://greg.technology/
     - "03:30":
     - "04:00":
     - "04:30":

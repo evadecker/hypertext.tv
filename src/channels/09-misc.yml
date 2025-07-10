@@ -214,6 +214,9 @@ schedule:
     - "16:30":
     - "17:00":
     - "17:30":
+        title: Infinite Mac
+        author: Mihai Parparita
+        url: https://infinitemac.org/
     - "18:00":
     - "18:30":
     - "19:00":

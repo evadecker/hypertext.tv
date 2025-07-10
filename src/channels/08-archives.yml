@@ -9,6 +9,9 @@ schedule:
     - "02:00":
     - "02:30":
     - "03:00":
+        title: Restaurants in Peace
+        author: Greg Sadetsky
+        url: https://www.restaurants.rip/
     - "03:30":
     - "04:00":
     - "04:30":
@@ -46,6 +49,9 @@ schedule:
     - "18:00":
     - "18:30":
     - "19:00":
+        title: Subway Jingles
+        author: Greg Sadetsky
+        url: https://subwayjingles.com/
     - "19:30":
     - "20:00":
     - "20:30":
@@ -61,6 +67,9 @@ schedule:
     - "01:00":
     - "01:30":
     - "02:00":
+        title: macOS Screenshot Library
+        author: Stephen Hackett
+        url: https://512pixels.net/projects/aqua-screenshot-library/
     - "02:30":
     - "03:00":
     - "03:30":
@@ -79,6 +88,9 @@ schedule:
     - "09:00":
     - "09:30":
     - "10:00":
+        title: Reccs
+        author: Greg Sadetsky
+        url: https://reccs.greg.technology/
     - "10:30":
     - "11:00":
     - "11:30":
@@ -132,6 +144,8 @@ schedule:
     - "06:00":
     - "06:30":
     - "07:00":
+        title: Guidebook
+        url: https://guidebookgallery.org/
     - "07:30":
     - "08:00":
     - "08:30":
@@ -221,6 +235,9 @@ schedule:
     - "17:30":
     - "18:00":
     - "18:30":
+        title: these are clouds
+        author: Dana Teagle
+        url: https://clouds.danateagle.com/
     - "19:00":
     - "19:30":
     - "20:00":
@@ -274,6 +291,9 @@ schedule:
     - "15:30":
     - "16:00":
     - "16:30":
+        title: Roddenberry Archive
+        author: Eugene Roddenberry
+        url: https://archive.x.io/
     - "17:00":
     - "17:30":
     - "18:00":

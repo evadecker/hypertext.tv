@@ -105,6 +105,8 @@ schedule:
     - "17:00":
     - "17:30":
     - "18:00":
+        title: Radio Garden
+        url: https://radio.garden/
     - "18:30":
     - "19:00":
     - "19:30":
@@ -205,6 +207,8 @@ schedule:
     - "11:00":
     - "11:30":
     - "12:00":
+        title: OverClocked ReMix
+        url: https://ocremix.org/
     - "12:30":
     - "13:00":
     - "13:30":
@@ -213,6 +217,9 @@ schedule:
     - "15:00":
     - "15:30":
     - "16:00":
+        title: Radio Paradise
+        author: William Goldsmith
+        url: https://radioparadise.com/
     - "16:30":
     - "17:00":
     - "17:30":
@@ -316,6 +323,8 @@ schedule:
     - "09:00":
     - "09:30":
     - "10:00":
+        title: Radio Punctum
+        url: https://www.radiopunctum.cz/
     - "10:30":
     - "11:00":
     - "11:30":
