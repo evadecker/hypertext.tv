@@ -354,6 +354,9 @@ schedule:
     - "05:00":
     - "05:30":
     - "06:00":
+        title: these are clouds
+        author: Dana Teagle
+        url: https://clouds.danateagle.com/
     - "06:30":
     - "07:00":
     - "07:30":

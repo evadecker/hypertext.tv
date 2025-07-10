@@ -233,6 +233,9 @@ schedule:
     - "01:30":
     - "02:00":
     - "02:30":
+        title: Pippin Barr
+        author: Pippin Barr
+        url: https://pippinbarr.com/
     - "03:00":
     - "03:30":
     - "04:00":
@@ -248,6 +251,9 @@ schedule:
     - "07:30":
     - "08:00":
     - "08:30":
+        title: Bennett Feely
+        author: Bennett Feely
+        url: https://bennettfeely.com/
     - "09:00":
     - "09:30":
     - "10:00":

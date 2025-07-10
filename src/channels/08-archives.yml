@@ -9,9 +9,6 @@ schedule:
     - "02:00":
     - "02:30":
     - "03:00":
-        title: Restaurants in Peace
-        author: Greg Sadetsky
-        url: https://www.restaurants.rip/
     - "03:30":
     - "04:00":
     - "04:30":
@@ -237,9 +234,6 @@ schedule:
     - "17:30":
     - "18:00":
     - "18:30":
-        title: these are clouds
-        author: Dana Teagle
-        url: https://clouds.danateagle.com/
     - "19:00":
     - "19:30":
     - "20:00":

@@ -217,14 +217,20 @@ schedule:
     - "15:00":
     - "15:30":
     - "16:00":
-        title: Radio Paradise
-        author: William Goldsmith
-        url: https://radioparadise.com/
     - "16:30":
     - "17:00":
     - "17:30":
+        title: Blokdust
+        author: Luke Phillips
+        url: https://femurdesign.com/blokdust/
     - "18:00":
+        title: Omni
+        author: Luke Phillips
+        url: https://femurdesign.com/omni/
     - "18:30":
+        title: Theremin
+        author: Luke Phillips
+        url: https://www.femurdesign.com/theremin/
     - "19:00":
     - "19:30":
     - "20:00":

@@ -425,22 +425,18 @@ schedule:
     - "05:30":
     - "06:00":
     - "06:30":
-        title: Treepedia
-        author: MIT Senseable City Lab
-        url: https://senseable.mit.edu/treepedia
     - "07:00":
     - "07:30":
     - "08:00":
     - "08:30":
+        title: The Indie Web
+        url: https://theindieweb.com/
     - "09:00":
     - "09:30":
     - "10:00":
     - "10:30":
     - "11:00":
     - "11:30":
-        title: Reflective Urbanisms
-        author: Cheryl Wing-Zi Wong
-        url: https://nyc.reflective-urbanisms.com/
     - "12:00":
     - "12:30":
     - "13:00":
