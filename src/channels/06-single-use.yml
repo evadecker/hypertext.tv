@@ -240,6 +240,9 @@ schedule:
     - "10:00":
     - "10:30":
     - "11:00":
+        title: Infowars
+        author: Greg Sadetsky
+        url: https://infowars.greg.technology/
     - "11:30":
     - "12:00":
     - "12:30":

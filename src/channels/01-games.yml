@@ -145,6 +145,9 @@ schedule:
     - "13:00":
     - "13:30":
     - "14:00":
+        title: Chesses
+        author: Pippin Barr
+        url: https://pippinbarr.com/chesses/
     - "14:30":
     - "15:00":
     - "15:30":

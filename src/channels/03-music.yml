@@ -105,6 +105,8 @@ schedule:
     - "17:00":
     - "17:30":
     - "18:00":
+        title: Radio Garden
+        url: https://radio.garden/
     - "18:30":
     - "19:00":
     - "19:30":
@@ -205,6 +207,8 @@ schedule:
     - "11:00":
     - "11:30":
     - "12:00":
+        title: OverClocked ReMix
+        url: https://ocremix.org/
     - "12:30":
     - "13:00":
     - "13:30":
@@ -216,8 +220,17 @@ schedule:
     - "16:30":
     - "17:00":
     - "17:30":
+        title: Blokdust
+        author: Luke Phillips
+        url: https://femurdesign.com/blokdust/
     - "18:00":
+        title: Omni
+        author: Luke Phillips
+        url: https://femurdesign.com/omni/
     - "18:30":
+        title: Theremin
+        author: Luke Phillips
+        url: https://www.femurdesign.com/theremin/
     - "19:00":
     - "19:30":
     - "20:00":
@@ -316,6 +329,8 @@ schedule:
     - "09:00":
     - "09:30":
     - "10:00":
+        title: Radio Punctum
+        url: https://www.radiopunctum.cz/
     - "10:30":
     - "11:00":
     - "11:30":

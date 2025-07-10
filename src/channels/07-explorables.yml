@@ -429,6 +429,8 @@ schedule:
     - "07:30":
     - "08:00":
     - "08:30":
+        title: The Indie Web
+        url: https://theindieweb.com/
     - "09:00":
     - "09:30":
     - "10:00":
