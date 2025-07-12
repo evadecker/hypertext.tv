@@ -233,6 +233,9 @@ schedule:
     - "17:00":
     - "17:30":
     - "18:00":
+        title: Fictional Brands Archive
+        author: Lorenzo Bernini
+        url: https://fictionalbrandsarchive.com/index.php
     - "18:30":
     - "19:00":
     - "19:30":
