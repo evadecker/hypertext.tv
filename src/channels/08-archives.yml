@@ -345,6 +345,8 @@ schedule:
     - "11:00":
     - "11:30":
     - "12:00":
+        title: Consumed Today
+        url: https://consumed.today/
     - "12:30":
     - "13:00":
     - "13:30":

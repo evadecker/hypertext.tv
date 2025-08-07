@@ -388,6 +388,9 @@ schedule:
     - "13:00":
     - "13:30":
     - "14:00":
+        title: Historical Tech Tree
+        author: Étienne Fortier-Dubois
+        url: https://www.historicaltechtree.com/
     - "14:30":
     - "15:00":
     - "15:30":

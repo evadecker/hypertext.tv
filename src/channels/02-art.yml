@@ -28,6 +28,9 @@ schedule:
     - "08:30":
     - "09:00":
     - "09:30":
+        title: Traffic Cam Photobooth
+        author: WTTDOTM
+        url: https://trafficcamphotobooth.com/
     - "10:00":
     - "10:30":
     - "11:00":
@@ -363,6 +366,8 @@ schedule:
     - "08:00":
     - "08:30":
     - "09:00":
+        title: Cloudgazing Online
+        url: https://cloudgazing.online/
     - "09:30":
     - "10:00":
     - "10:30":
