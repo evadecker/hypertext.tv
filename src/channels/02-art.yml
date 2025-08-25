@@ -233,7 +233,10 @@ schedule:
     - "07:00":
     - "07:30":
     - "08:00":
-    - "08:30":
+    - "08:30": 
+        title: Digital Collage Gallery
+        author: Oritsemughone Ogbemi
+        url: https://tsemone.com/gallery.html
     - "09:00":
     - "09:30":
     - "10:00":
