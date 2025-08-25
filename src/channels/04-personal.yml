@@ -12,11 +12,10 @@ schedule:
     - "02:00":
     - "02:30":
     - "03:00":
-      title: Sightless Scribbles
-      author:
-        - Robert Kingett
-      url: https://sightlessscribbles.com/    
-      - "03:30":
+        title: Sightless Scribbles
+        author: Robert Kingett
+        url: https://sightlessscribbles.com/    
+    - "03:30":
     - "04:00":
         title: GENOSADNESS
         author: Genosad
