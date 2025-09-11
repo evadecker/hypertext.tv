@@ -242,6 +242,8 @@ schedule:
     - "20:00":
     - "20:30":
     - "21:00":
+        title: Fifty Thousand Names
+        url: https://fiftythousandnames.org/
     - "21:30":
     - "22:00":
     - "22:30":
@@ -277,6 +279,9 @@ schedule:
     - "10:30":
     - "11:00":
     - "11:30":
+        title: Websitesite
+        author: Jisu
+        url: https://websitesite.xyz/
     - "12:00":
     - "12:30":
     - "13:00":
