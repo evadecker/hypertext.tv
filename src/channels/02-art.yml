@@ -57,6 +57,8 @@ schedule:
     - "19:00":
     - "19:30":
     - "20:00":
+        title: Robida Collective
+        url: https://robidacollective.com/
     - "20:30":
     - "21:00":
     - "21:30":
@@ -303,6 +305,11 @@ schedule:
     - "09:00":
     - "09:30":
     - "10:00":
+        title: C0DA
+        author:
+          - Michael Kirkbride
+          - Many Elder Scrolls fans
+        url: https://c0da.es/
     - "10:30":
     - "11:00":
     - "11:30":
