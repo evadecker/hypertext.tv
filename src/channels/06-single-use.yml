@@ -305,6 +305,8 @@ schedule:
     - "09:00":
     - "09:30":
     - "10:00":
+        title: Darning Space
+        url: https://darning.space/
     - "10:30":
     - "11:00":
     - "11:30":
@@ -352,6 +354,9 @@ schedule:
     - "02:30":
     - "03:00":
     - "03:30":
+        title: Earthbound Text
+        author: Bill Eager
+        url: https://www.earthboundtext.com/
     - "04:00":
     - "04:30":
     - "05:00":
@@ -370,6 +375,9 @@ schedule:
     - "10:00":
     - "10:30":
     - "11:00":
+        title: Comic Caption Swapper
+        author: SolarSands
+        url: https://comicswap.art
     - "11:30":
     - "12:00":
     - "12:30":
@@ -427,6 +435,8 @@ schedule:
     - "08:30":
     - "09:00":
     - "09:30":
+        title: Don't Forget To Take A Selfie With Your Herbs
+        url: https://websitesite.xyz/dontforgettotakeaselfiewithyourherbs/
     - "10:00":
     - "10:30":
     - "11:00":
