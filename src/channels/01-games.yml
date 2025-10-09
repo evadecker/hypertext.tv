@@ -377,6 +377,9 @@ schedule:
     - "10:00":
     - "10:30":
     - "11:00":
+        title: Typify
+        author: Bishal Biswas
+        url: https://bishal692002.github.io/Typify/
     - "11:30":
     - "12:00":
         title: Gisnep
