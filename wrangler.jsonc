@@ -13,7 +13,7 @@
   "durable_objects": {
     "bindings": [
       {
-        "name": "VISITOR_TRACKER",
+        "name": "VisitorTracker",
         "class_name": "VisitorTracker"
       }
     ]
