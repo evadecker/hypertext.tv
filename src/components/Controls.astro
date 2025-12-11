@@ -14,7 +14,11 @@ const { activeProgram, channelId } = Astro.props;
 
 <nav class="controls">
   <Buttons channelId={channelId} />
-  <ChannelDisplay channelId={channelId} activeProgram={activeProgram} />
+  <ChannelDisplay
+    channelId={channelId}
+    activeProgram={activeProgram}
+    transition:persist="visitor-count"
+  />
   <Logo />
 </nav>
 
