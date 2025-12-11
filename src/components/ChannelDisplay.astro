@@ -519,12 +519,6 @@ const svgWidth = calculateSvgWidth(initialVisitorData.history.length);
     overflow: hidden;
     text-transform: uppercase;
 
-    * {
-      transition-property: color, text-shadow;
-      transition-duration: 0.3s;
-      transition-timing-function: ease-out;
-    }
-
     a {
       color: var(--phosphor-active);
       text-decoration: none;
@@ -621,10 +615,6 @@ const svgWidth = calculateSvgWidth(initialVisitorData.history.length);
       position: relative;
       /* Optical alignment */
       transform: translateY(2px);
-
-      rect {
-        transition: all 0.3s ease-out;
-      }
     }
   }
 
