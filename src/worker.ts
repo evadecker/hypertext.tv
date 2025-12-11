@@ -1,9 +1,3 @@
-/**
- * Custom Cloudflare Worker entrypoint that integrates:
- * 1. Durable Object for visitor tracking
- * 2. Astro's generated worker for the main site
- */
-
 import { DurableObject } from "cloudflare:workers";
 import { handle } from "@astrojs/cloudflare/handler";
 import type { SSRManifest } from "astro";
@@ -19,9 +13,6 @@ interface VisitorMessage {
   history?: number[];
 }
 
-/**
- * Durable Object that maintains WebSocket connections and broadcasts visitor counts
- */
 class VisitorTracker extends DurableObject<Env> {
   private connections: Set<WebSocket>;
   private history: number[];
@@ -96,10 +87,6 @@ class VisitorTracker extends DurableObject<Env> {
     });
   }
 
-  /**
-   * Updates the history array with a new count
-   * Ensures minimum of 1 for display purposes
-   */
   private updateHistory(count: number): void {
     this.history.push(Math.max(1, count));
     if (this.history.length > this.MAX_HISTORY) {
@@ -107,10 +94,6 @@ class VisitorTracker extends DurableObject<Env> {
     }
   }
 
-  /**
-   * Broadcasts the current visitor count to all connected clients
-   * Ensures minimum of 1 (if someone is viewing, there's at least one visitor)
-   */
   private broadcastCount(): void {
     const actualCount = Math.max(1, this.connections.size);
     const message: VisitorMessage = {
@@ -131,9 +114,6 @@ class VisitorTracker extends DurableObject<Env> {
     }
   }
 
-  /**
-   * Sends a message to a specific client
-   */
   private sendToClient(ws: WebSocket, message: VisitorMessage): void {
     try {
       ws.send(JSON.stringify(message));
@@ -143,9 +123,6 @@ class VisitorTracker extends DurableObject<Env> {
   }
 }
 
-/**
- * Worker entrypoint - exports the Durable Object for Astro to use
- */
 export function createExports(manifest: SSRManifest) {
   const app = new App(manifest);
 
