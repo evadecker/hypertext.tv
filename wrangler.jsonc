@@ -21,7 +21,7 @@
   "migrations": [
     {
       "tag": "v1",
-      "new_classes": ["VisitorTracker"]
+      "new_sqlite_classes": ["VisitorTracker"]
     }
   ]
 }
