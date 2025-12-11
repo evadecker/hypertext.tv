@@ -147,7 +147,7 @@ const svgWidth = calculateSvgWidth(initialVisitorData.history.length);
 
 <script>
   class ChannelDisplay extends HTMLElement {
-    intervalId: NodeJS.Timer | null = null;
+    intervalId: number | null = null;
     timeoutId: NodeJS.Timeout | null = null;
     private eventSource: EventSource | null = null;
     isOnline: boolean = true;
@@ -459,7 +459,7 @@ const svgWidth = calculateSvgWidth(initialVisitorData.history.length);
         }
 
         startIndex += direction;
-      }, 300);
+      }, 300) as unknown as number;
     }
   }
 
@@ -497,16 +497,17 @@ const svgWidth = calculateSvgWidth(initialVisitorData.history.length);
       transparent
     );
 
-    --phosphor-glow: 0 0 2px color-mix(in srgb, currentColor 50%, transparent),
+    --phosphor-glow:
+      0 0 2px color-mix(in srgb, currentColor 50%, transparent),
       0 0 4px color-mix(in srgb, currentColor 40%, transparent),
       0 0 8px color-mix(in srgb, currentColor 30%, transparent);
 
     background: black;
     border-radius: 1rem;
     height: 4rem;
-    width: 20.5rem;
+    width: 20rem;
     font-size: 1.3rem;
-    padding-inline: 1.5ch;
+    padding-inline: 1rem;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -519,7 +520,9 @@ const svgWidth = calculateSvgWidth(initialVisitorData.history.length);
     text-transform: uppercase;
 
     * {
-      transition: all 0.3s ease-out;
+      transition-property: color, text-shadow;
+      transition-duration: 0.3s;
+      transition-timing-function: ease-out;
     }
 
     a {

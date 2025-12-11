@@ -259,7 +259,7 @@ async function handleSSE(request: Request): Promise<Response> {
   const timer = setInterval(sendStats, 30000);
 
   request.signal.addEventListener("abort", () => {
-    clearInterval(timer);
+    clearInterval(timer as unknown as number);
     writer.close();
   });
 

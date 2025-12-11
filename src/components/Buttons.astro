@@ -1,0 +1,422 @@
+---
+import { getPagination } from "@utils/getPagination";
+
+interface Props {
+  channelId: string;
+}
+
+const { channelId } = Astro.props;
+
+const { prev, next } = await getPagination(channelId);
+---
+
+<svg
+  width="286"
+  height="64"
+  viewBox="0 0 286 64"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+  class="buttons"
+>
+  <!-- Button group inset -->
+  <g>
+    <path
+      d="M32 0C32.2486 0 32.497 0.00303691 32.7451 0.00878906C32.7959 0.00995006 32.8467 0.0112977 32.8975 0.0126953C33.3777 0.0261061 33.857 0.0501524 34.335 0.0849609C34.4429 0.0927431 34.5506 0.101502 34.6582 0.110352C34.7468 0.117703 34.8353 0.125706 34.9238 0.133789C37.0633 0.327595 39.1416 0.732077 41.1387 1.32617C41.1719 1.33601 41.2051 1.34552 41.2383 1.35547C41.3914 1.40158 41.5441 1.44874 41.6963 1.49707C41.7534 1.51514 41.8102 1.53434 41.8672 1.55273C42.0725 1.61922 42.277 1.68731 42.4805 1.75781C42.6116 1.80302 42.7425 1.84859 42.873 1.89551C42.9533 1.92449 43.0333 1.95379 43.1133 1.9834C45.0467 2.69576 46.9154 3.59476 48.6914 4.67383L70.9287 18.1846C77.1891 21.9883 84.3739 24 91.6992 24H266C277.046 24 286 32.9543 286 44C286 55.0457 277.046 64 266 64H36V63.751C34.6896 63.9144 33.3547 64 32 64C14.3269 64 0 49.6731 0 32C0 14.3269 14.3269 0 32 0Z"
+      fill="url(#button-group-inset-gradient)"></path>
+  </g>
+
+  <!-- Power button -->
+  <g>
+    <rect
+      x="5"
+      y="5"
+      width="54"
+      height="54"
+      rx="27"
+      fill="#141414"
+      class="button-inset"></rect>
+    <a href="#" aria-label="Power" id="power" data-power="on">
+      <rect
+        x="8"
+        y="8"
+        width="48"
+        height="48"
+        rx="24"
+        class="button"
+        shape-rendering="geometricPrecision"></rect>
+      <path
+        d="M32 33.0859C30.9609 33.0859 30.291 32.3613 30.291 31.2676V22.9277C30.291 21.834 30.9609 21.1094 32 21.1094C33.0391 21.1094 33.709 21.834 33.709 22.9277V31.2676C33.709 32.3613 33.0391 33.0859 32 33.0859ZM32 43.5586C25.9844 43.5586 21.1035 38.6777 21.1035 32.6758C21.1035 29.75 22.2793 27.0703 24.0566 25.2656C25.5879 23.6523 27.9805 25.5664 26.3535 27.3711C25.0547 28.7383 24.248 30.5977 24.248 32.6758C24.248 36.9551 27.7207 40.4141 32 40.4141C36.2793 40.4141 39.7383 36.9551 39.7383 32.6758C39.7383 30.6113 38.9453 28.752 37.6465 27.3711C36.0195 25.5664 38.4258 23.6387 39.957 25.2656C41.707 27.084 42.8828 29.7227 42.8828 32.6758C42.8828 38.6777 38.0156 43.5586 32 43.5586Z"
+        fill="#676767"
+        class="button-label"></path>
+    </a>
+  </g>
+
+  <!-- Channel buttons -->
+  <g>
+    <path
+      d="M110.284 8.92383C111.556 8.92383 112.06 9.03188 112.468 9.37988C112.804 9.66786 113.008 10.088 113.08 10.6758C113.104 10.8678 113.115 11.1082 113.127 11.6602H111.604C111.58 10.3762 111.436 10.2441 110.068 10.2441C109.048 10.2441 108.604 10.3277 108.364 10.5557C108.16 10.7597 108.076 11.0482 108.052 11.6602C108.04 11.8639 108.04 11.8646 108.04 12.9561C108.04 15.5838 108.148 15.7519 109.864 15.752C111.424 15.752 111.688 15.5595 111.688 14.4795C111.688 14.4075 111.688 14.2993 111.676 14.1436H113.2V14.4199C113.2 15.6197 113.08 16.0637 112.648 16.4717C112.396 16.7117 111.976 16.916 111.532 17C111.28 17.036 110.572 17.0723 109.864 17.0723C108.484 17.0723 108.111 17.0119 107.583 16.7119C106.888 16.3399 106.587 15.7395 106.503 14.5996C106.467 14.1435 106.444 13.1596 106.444 12.4277C106.444 10.7598 106.6 10.1478 107.14 9.63184C107.74 9.05597 108.34 8.92384 110.284 8.92383ZM116.286 12.2725H119.994V8.99609H121.53V17H119.994V13.5801H116.286V17H114.75V8.99609H116.286V12.2725ZM130.535 17H128.963L128.447 15.4639H124.991L124.5 17H122.891L125.555 8.99609H127.823L130.535 17ZM136.484 13.0518C136.784 13.6517 136.88 13.8559 137.42 15.0078L137.732 15.668H137.78L137.768 15.1523C137.732 14.4085 137.732 14.3481 137.732 13.6045V8.99609H139.256V17H136.676L134.384 12.6084C134.24 12.3084 134.084 11.9839 133.604 10.8799L133.34 10.3164H133.292L133.304 10.832C133.34 11.6 133.34 11.6603 133.34 12.4043V17H131.829V8.99609H134.396L136.484 13.0518ZM145.92 13.0518C146.22 13.6517 146.316 13.8561 146.856 15.0078L147.168 15.668H147.216L147.205 15.1523C147.169 14.4085 147.168 14.3481 147.168 13.6045V8.99609H148.692V17H146.112L143.82 12.6084C143.676 12.3084 143.521 11.9839 143.041 10.8799L142.776 10.3164H142.728L142.74 10.832C142.776 11.6 142.776 11.6603 142.776 12.4043V17H141.264V8.99609H143.833L145.92 13.0518ZM156.172 10.2686H152.236V12.3438H155.968V13.4717H152.236V15.7285H156.208V17H150.701V8.99609H156.172V10.2686ZM159.469 15.6562H163.201V17H157.933V8.99609H159.469V15.6562ZM125.351 14.3242H128.099L126.719 10.1719L125.351 14.3242Z"
+      fill="#919191"
+      class="label"></path>
+    <rect
+      x="67"
+      y="29"
+      width="136"
+      height="30"
+      rx="15"
+      fill="#141414"
+      class="button-inset"></rect>
+    <a href={prev} aria-label="Previous Channel" class="channel-button">
+      <path
+        d="M70 44C70 37.3726 75.3726 32 82 32H130C131.657 32 133 33.3431 133 35V53C133 54.6569 131.657 56 130 56H82C75.3726 56 70 50.6274 70 44V44Z"
+        class="button"
+        shape-rendering="geometricPrecision"></path>
+      <path
+        d="M105.643 41.0225C105.643 41.2754 105.547 41.4873 105.396 41.8086L102.519 47.8174C102.272 48.3301 101.938 48.5967 101.5 48.5967C101.062 48.5967 100.728 48.3301 100.481 47.8174L97.6035 41.8086C97.4531 41.4873 97.3506 41.2686 97.3506 41.0225C97.3506 40.5098 97.7471 40.0654 98.4102 40.0654H104.59C105.253 40.0654 105.643 40.5098 105.643 41.0225Z"
+        fill="#676767"
+        class="button-label"></path>
+    </a>
+    <a href={next} aria-label="Next Channel" class="channel-button">
+      <path
+        d="M137 35C137 33.3431 138.343 32 140 32H188C194.627 32 200 37.3726 200 44V44C200 50.6274 194.627 56 188 56H140C138.343 56 137 54.6569 137 53V35Z"
+        class="button"
+        shape-rendering="geometricPrecision"></path>
+      <path
+        d="M171.643 47.6533C171.643 48.166 171.253 48.6104 170.59 48.6104H164.41C163.747 48.6104 163.351 48.166 163.351 47.6533C163.351 47.4004 163.453 47.1885 163.604 46.8672L166.481 40.8584C166.728 40.3457 167.062 40.0791 167.5 40.0791C167.938 40.0791 168.272 40.3457 168.519 40.8584L171.396 46.8672C171.547 47.1885 171.643 47.4004 171.643 47.6533Z"
+        fill="#676767"
+        class="button-label"></path>
+    </a>
+  </g>
+
+  <!-- Menu button -->
+  <g>
+    <path
+      d="M258.246 14.4082C258.246 15.5721 258.487 15.752 260.047 15.752C261.606 15.7519 261.822 15.5835 261.822 14.3477V8.99609H263.358V14.3242C263.358 15.3081 263.238 15.8482 262.938 16.2441C262.699 16.5561 262.35 16.7957 261.895 16.9277C261.583 17.0237 260.958 17.0723 260.034 17.0723C258.858 17.0723 258.319 17.0116 257.851 16.8076C256.987 16.4356 256.711 15.8601 256.711 14.4082V8.99609H258.246V14.4082ZM232.608 12.7041C232.752 13.076 232.836 13.3405 233.172 14.3604L233.352 14.9238H233.4L233.58 14.3721C233.892 13.3641 233.988 13.0878 234.12 12.7158L235.536 8.99609H238.056V17H236.544V12.6318C236.544 12.0561 236.557 11.9 236.604 10.8564L236.628 10.2686H236.58L236.4 10.8203C236.064 11.8642 235.98 12.1403 235.848 12.4883L234.084 17H232.704L230.928 12.5244C230.772 12.1404 230.688 11.8883 230.352 10.8564L230.172 10.3037H230.124L230.16 10.8799C230.208 11.8877 230.22 12.14 230.22 12.6318V17H228.708V8.99609H231.18L232.608 12.7041ZM245.538 10.2686H241.602V12.3438H245.334V13.4717H241.602V15.7285H245.574V17H240.066V8.99609H245.538V10.2686ZM251.955 13.0518C252.255 13.6517 252.351 13.8561 252.891 15.0078L253.203 15.668H253.251L253.239 15.1523C253.203 14.4085 253.203 14.3481 253.203 13.6045V8.99609H254.727V17H252.146L249.854 12.6084C249.71 12.3084 249.555 11.9839 249.075 10.8799L248.811 10.3164H248.763L248.774 10.832C248.81 11.6 248.811 11.6603 248.811 12.4043V17H247.299V8.99609H249.867L251.955 13.0518Z"
+      fill="#919191"
+      class="label"></path>
+    <rect
+      x="211"
+      y="29"
+      width="70"
+      height="30"
+      rx="15"
+      fill="#141414"
+      class="button-inset"></rect>
+    <a href="#" aria-label="Open Menu" id="menu-button">
+      <rect
+        x="214"
+        y="32"
+        width="64"
+        height="24"
+        rx="12"
+        class="button"
+        shape-rendering="geometricPrecision"></rect>
+    </a>
+  </g>
+
+  <defs>
+    <filter
+      id="button-filter"
+      x="-10%"
+      y="-10%"
+      width="120%"
+      height="120%"
+      filterUnits="objectBoundingBox"
+      color-interpolation-filters="sRGB"
+    >
+      <feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
+      <feColorMatrix
+        in="SourceAlpha"
+        type="matrix"
+        values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+        result="hardAlpha"></feColorMatrix>
+      <feOffset dy="4"></feOffset>
+      <feGaussianBlur stdDeviation="2"></feGaussianBlur>
+      <feComposite in2="hardAlpha" operator="out"></feComposite>
+      <feColorMatrix
+        type="matrix"
+        values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.2 0"></feColorMatrix>
+      <feBlend
+        mode="normal"
+        in2="BackgroundImageFix"
+        result="effect1_dropShadow_2001_30"></feBlend>
+      <feBlend
+        mode="normal"
+        in="SourceGraphic"
+        in2="effect1_dropShadow_2001_30"
+        result="shape"></feBlend>
+      <feColorMatrix
+        in="SourceAlpha"
+        type="matrix"
+        values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+        result="hardAlpha"></feColorMatrix>
+      <feMorphology
+        radius="2"
+        operator="erode"
+        in="SourceAlpha"
+        result="effect2_innerShadow_2001_30"></feMorphology>
+      <feOffset dy="8"></feOffset>
+      <feGaussianBlur stdDeviation="4"></feGaussianBlur>
+      <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"
+      ></feComposite>
+      <feColorMatrix
+        type="matrix"
+        values="0 0 0 0 0.412278 0 0 0 0 0.412278 0 0 0 0 0.412278 0 0 0 0.18 0"
+      ></feColorMatrix>
+      <feBlend mode="normal" in2="shape" result="effect2_innerShadow_2001_30"
+      ></feBlend>
+      <feColorMatrix
+        in="SourceAlpha"
+        type="matrix"
+        values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+        result="hardAlpha"></feColorMatrix>
+      <feOffset dy="-4"></feOffset>
+      <feGaussianBlur stdDeviation="2.5"></feGaussianBlur>
+      <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"
+      ></feComposite>
+      <feColorMatrix
+        type="matrix"
+        values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.45 0"></feColorMatrix>
+      <feBlend
+        mode="normal"
+        in2="effect2_innerShadow_2001_30"
+        result="effect3_innerShadow_2001_30"></feBlend>
+      <feColorMatrix
+        in="SourceAlpha"
+        type="matrix"
+        values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+        result="hardAlpha"></feColorMatrix>
+      <feOffset dy="1"></feOffset>
+      <feGaussianBlur stdDeviation="1"></feGaussianBlur>
+      <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"
+      ></feComposite>
+      <feColorMatrix
+        type="matrix"
+        values="0 0 0 0 0.833703 0 0 0 0 0.833703 0 0 0 0 0.833703 0 0 0 0.65 0"
+      ></feColorMatrix>
+      <feBlend
+        mode="normal"
+        in2="effect3_innerShadow_2001_30"
+        result="effect4_innerShadow_2001_30"></feBlend>
+      <feComposite
+        in="effect4_innerShadow_2001_30"
+        in2="SourceAlpha"
+        operator="in"
+        result="clippedResult"></feComposite>
+    </filter>
+    <linearGradient
+      id="button-group-inset-gradient"
+      x1="0.5"
+      y1="0"
+      x2="0.5"
+      y2="1"
+      gradientUnits="objectBoundingBox"
+    >
+      <stop offset="0.25" stop-color="#090909" stop-opacity="0.5"></stop>
+      <stop offset="0.725962" stop-color="#2D2D2D" stop-opacity="0.65"></stop>
+      <stop offset="1" stop-color="#4E4E4E" stop-opacity="0.3"></stop>
+    </linearGradient>
+    <linearGradient
+      id="button-gradient"
+      x1="0.5"
+      y1="0"
+      x2="0.5"
+      y2="1"
+      gradientUnits="objectBoundingBox"
+    >
+      <stop stop-color="#858585"></stop>
+      <stop offset="1" stop-color="#5F5F5F"></stop>
+    </linearGradient>
+    <linearGradient
+      id="button-gradient-active"
+      x1="0.5"
+      y1="0"
+      x2="0.5"
+      y2="1"
+      gradientUnits="objectBoundingBox"
+    >
+      <stop stop-color="#323232"></stop>
+      <stop offset="1" stop-color="#5F5F5F"></stop>
+    </linearGradient>
+    <linearGradient
+      id="button-power-on"
+      x1="0.5"
+      y1="0"
+      x2="0.5"
+      y2="1"
+      gradientUnits="objectBoundingBox"
+    >
+      <stop stop-color="#3A3A3A"></stop>
+      <stop offset="1" stop-color="#6A6A6A"></stop>
+    </linearGradient>
+  </defs>
+</svg>
+
+<script>
+  import * as Fathom from "fathom-client";
+
+  const powerButton = document.getElementById("power");
+  const screen = document.querySelector(".screen");
+  const channelDisplay = document.querySelector("channel-display");
+  const menuButton = document.getElementById("menu-button");
+  const channelButtons = document.querySelectorAll(".channel-button");
+
+  function updateButtonStates(powerState: string) {
+    if (powerState === "off") {
+      menuButton?.setAttribute("data-disabled", "true");
+      channelButtons.forEach((button) =>
+        button.setAttribute("data-disabled", "true"),
+      );
+    } else {
+      menuButton?.removeAttribute("data-disabled");
+      channelButtons.forEach((button) =>
+        button.removeAttribute("data-disabled"),
+      );
+    }
+
+    const isBooting = screen?.hasAttribute("data-booting");
+    const isPoweringOff = screen?.hasAttribute("data-powering-off");
+
+    if (isBooting || isPoweringOff) {
+      powerButton?.setAttribute("data-disabled", "true");
+    } else {
+      powerButton?.removeAttribute("data-disabled");
+    }
+  }
+
+  function handlePowerButtonClick(event: Event) {
+    // Prevent default behavior to avoid any conflicts
+    event.preventDefault();
+
+    if (!screen) return;
+
+    const isTurningOff = screen.getAttribute("data-power") === "on";
+
+    Fathom.trackEvent(`controls: click power ${isTurningOff ? "off" : "on"}`);
+
+    if (isTurningOff) {
+      screen.setAttribute("data-powering-off", "true");
+      updateButtonStates(screen.getAttribute("data-power") || "on");
+    } else {
+      screen.setAttribute("data-power", "on");
+      screen.setAttribute("data-booting", "true");
+      localStorage.setItem("power", "on");
+      updateButtonStates("on");
+    }
+
+    const newPowerState = isTurningOff ? "off" : "on";
+    powerButton?.setAttribute("data-power", newPowerState);
+    channelDisplay?.setAttribute("data-power", newPowerState);
+  }
+
+  function handleChannelButtonClick(event: Event) {
+    const button = event.currentTarget as HTMLAnchorElement;
+    Fathom.trackEvent(
+      `controls: click channel ${button.getAttribute("aria-label")}`,
+    );
+  }
+
+  function initButtons() {
+    const savedPowerState = localStorage.getItem("power") || "on";
+
+    [screen, powerButton, channelDisplay].forEach((element) => {
+      element?.setAttribute("data-power", savedPowerState);
+    });
+
+    updateButtonStates(savedPowerState);
+
+    if (savedPowerState === "off") screen?.removeAttribute("data-booting");
+
+    // Listen to screen animation events to update button states
+    screen?.addEventListener("animationend", function (event) {
+      if ((event as AnimationEvent).animationName === "power-off") {
+        screen.setAttribute("data-power", "off");
+        screen.removeAttribute("data-powering-off");
+        localStorage.setItem("power", "off");
+        updateButtonStates("off");
+      }
+
+      if ((event as AnimationEvent).animationName === "power-on") {
+        screen.removeAttribute("data-booting");
+        updateButtonStates(screen.getAttribute("data-power") || "on");
+      }
+    });
+
+    powerButton?.addEventListener("click", handlePowerButtonClick);
+
+    channelButtons.forEach((button) => {
+      button.addEventListener("click", handleChannelButtonClick);
+    });
+  }
+
+  initButtons();
+</script>
+
+<style>
+  .buttons {
+    grid-area: buttons;
+
+    .button {
+      fill: url(#button-gradient);
+      filter: url(#button-filter);
+    }
+
+    a {
+      touch-action: manipulation; /* Prevent double-tap zoom on iOS */
+
+      &[data-disabled="true"] {
+        pointer-events: none;
+      }
+
+      &[aria-label="Power"] {
+        border-radius: 50%;
+      }
+
+      &[aria-label="Previous Channel"] {
+        border-radius: 1rem 3px 3px 1rem;
+      }
+
+      &[aria-label="Next Channel"] {
+        border-radius: 3px 1rem 1rem 3px;
+      }
+
+      &[aria-label="Open Menu"] {
+        border-radius: 1rem;
+      }
+
+      /* Active state for regular buttons */
+      &:active .button {
+        fill: url(#button-gradient-active);
+        filter: none;
+      }
+
+      /* Power button states: active (darkest), on (medium), off (brightest) */
+      &[aria-label="Power"]:active .button {
+        fill: url(#button-gradient-active);
+        filter: none;
+      }
+
+      &[aria-label="Power"][data-power="on"]:not(:active) .button {
+        fill: url(#button-power-on);
+        filter: none;
+      }
+
+      &[aria-label="Power"][data-power="off"]:not(:active) .button {
+        fill: url(#button-gradient);
+        filter: url(#button-filter);
+      }
+    }
+
+    .label {
+      filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25));
+    }
+
+    .button-inset {
+      filter: drop-shadow(0 1px 1px rgba(255, 255, 255, 0.1));
+    }
+
+    .button-label {
+      fill: rgba(0, 0, 0, 0.3);
+      filter: drop-shadow(0 1px 1px rgba(255, 255, 255, 0.2));
+    }
+  }
+</style>
