@@ -2,8 +2,6 @@
 
 # Hypertext TV
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/43950a45-1b69-4368-bae0-3948cf8b769c/deploy-status)](https://app.netlify.com/sites/hypertext-tv/deploys)
-
 ## What's this?
 
 Hypertext TV is a celebration of small, handmade games and sites. Sites air at a particular day and time each week. Come back at different times to see different sites!

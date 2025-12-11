@@ -9,7 +9,7 @@ import Intro from "./_sections/Intro.astro";
 import Thanks from "./_sections/Thanks.astro";
 
 const response = await GET(Astro);
-const contributors = await response.json();
+const contributors: string[] = await response.json();
 ---
 
 <Layout title="Credits">
