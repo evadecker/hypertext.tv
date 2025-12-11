@@ -10,18 +10,9 @@ const { activeProgram } = Astro.props;
 const { program, startTime, endTime } = activeProgram ?? {};
 const { title, url } = program ?? {};
 
-// Fetch initial visitor data
-let initialVisitorData = { total: 0, history: Array(8).fill(0) };
-if (!import.meta.env.DEV) {
-  try {
-    const response = await fetch("/api/visitors");
-    if (response.ok) {
-      initialVisitorData = await response.json();
-    }
-  } catch (error) {
-    console.error("Failed to fetch initial visitor data:", error);
-  }
-}
+// Initial visitor data will be populated by WebSocket
+// Start at 1 because if someone is viewing this page, there's at least one visitor
+const initialVisitorData = { total: 1, history: Array(8).fill(1) };
 
 const BAR_WIDTH = 3;
 const BAR_GAP = 2;
@@ -149,7 +140,10 @@ const svgWidth = calculateSvgWidth(initialVisitorData.history.length);
   class ChannelDisplay extends HTMLElement {
     intervalId: number | null = null;
     timeoutId: NodeJS.Timeout | null = null;
-    private eventSource: EventSource | null = null;
+    private websocket: WebSocket | null = null;
+    private reconnectTimeout: number | null = null;
+    private reconnectAttempts: number = 0;
+    private readonly MAX_RECONNECT_ATTEMPTS = 10;
     isOnline: boolean = true;
     private visitorHistory: number[] = [];
     private trendBars: SVGGElement | null = null;
@@ -161,63 +155,105 @@ const svgWidth = calculateSvgWidth(initialVisitorData.history.length);
     constructor() {
       super();
 
-      // Initialize visitor history from server-side data
-      try {
-        const initialData = JSON.parse(
-          this.dataset.initialVisitors || '{"total": 0, "history": []}',
-        );
-        this.visitorHistory =
-          initialData.history.length > 0
-            ? initialData.history
-            : new Array(this.MAX_POINTS).fill(0);
-
-        // Update the visitor count display immediately
-        const countElement = this.querySelector("#visitors .count");
-        if (countElement) {
-          countElement.textContent = initialData.total.toString();
-        }
-      } catch (error) {
-        console.error("Failed to parse initial visitor data:", error);
-        this.visitorHistory = new Array(this.MAX_POINTS).fill(0);
-      }
+      // Initialize visitor history with 1 (minimum when page is visible)
+      this.visitorHistory = new Array(this.MAX_POINTS).fill(1);
     }
 
     private setupLiveUpdates() {
-      if (this.eventSource) {
-        this.eventSource.close();
+      // Only attempt WebSocket in production (when deployed)
+      // In dev mode, the component will just show static "1 watching"
+      if (
+        window.location.hostname === "localhost" ||
+        window.location.hostname === "127.0.0.1"
+      ) {
+        return;
       }
 
-      this.eventSource = new EventSource("/api/visitors");
+      if (this.websocket) {
+        this.websocket.close();
+        this.websocket = null;
+      }
 
-      this.eventSource.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          this.updateVisitorHistory(data.history, data.total);
-          this.updateSparkline();
+      // Clear any pending reconnect timeout
+      if (this.reconnectTimeout !== null) {
+        clearTimeout(this.reconnectTimeout);
+        this.reconnectTimeout = null;
+      }
 
-          // Update the count display
-          const countElement = this.querySelector("#visitors .count");
-          if (countElement) {
-            countElement.textContent = data.total.toString();
+      // Determine WebSocket URL - same host as the site
+      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+      const host = window.location.host;
+      const wsUrl = `${protocol}//${host}/api/visitors`;
+
+      try {
+        this.websocket = new WebSocket(wsUrl);
+
+        this.websocket.addEventListener("open", () => {
+          this.reconnectAttempts = 0;
+        });
+
+        this.websocket.addEventListener("message", (event) => {
+          try {
+            const data = JSON.parse(event.data);
+
+            if (data.type === "count") {
+              this.updateVisitorHistory(data.history, data.total);
+              this.updateSparkline();
+
+              // Update the count display
+              const countElement = this.querySelector("#visitors .count");
+              if (countElement) {
+                countElement.textContent = data.total.toString();
+              }
+
+              // Update active state
+              this.updateVisitorActiveState(data.total);
+            }
+          } catch (error) {
+            console.error("Error parsing WebSocket message:", error);
           }
+        });
 
-          // Update active state
-          this.updateVisitorActiveState(data.total);
-        } catch (error) {
-          console.error("Error parsing SSE data:", error);
-        }
-      };
+        this.websocket.addEventListener("close", () => {
+          this.websocket = null;
+          this.attemptReconnect();
+        });
 
-      this.eventSource.onerror = () => {
-        // Close the connection if it exists
-        if (this.eventSource) {
-          this.eventSource.close();
-          this.eventSource = null;
-        }
+        this.websocket.addEventListener("error", () => {
+          if (this.websocket) {
+            this.websocket.close();
+          }
+        });
+      } catch (error) {
+        console.error("Failed to create WebSocket:", error);
+        this.attemptReconnect();
+      }
+    }
 
-        // Attempt to reconnect after a delay
-        setTimeout(() => this.setupLiveUpdates(), 5000);
-      };
+    private attemptReconnect() {
+      // Don't reconnect in dev mode
+      if (
+        window.location.hostname === "localhost" ||
+        window.location.hostname === "127.0.0.1"
+      ) {
+        return;
+      }
+
+      if (!this.isOnline) {
+        return; // Don't reconnect if page is not visible
+      }
+
+      if (this.reconnectAttempts >= this.MAX_RECONNECT_ATTEMPTS) {
+        return;
+      }
+
+      // Exponential backoff: 1s, 2s, 4s, 8s, max 30s
+      const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 30000);
+      this.reconnectAttempts++;
+
+      this.reconnectTimeout = window.setTimeout(() => {
+        this.setupLiveUpdates();
+      }, delay);
     }
 
     private setupSparkline() {
@@ -403,9 +439,14 @@ const svgWidth = calculateSvgWidth(initialVisitorData.history.length);
     disconnectedCallback() {
       this.clearTimers();
 
-      if (this.eventSource) {
-        this.eventSource.close();
-        this.eventSource = null;
+      if (this.websocket) {
+        this.websocket.close();
+        this.websocket = null;
+      }
+
+      if (this.reconnectTimeout !== null) {
+        clearTimeout(this.reconnectTimeout);
+        this.reconnectTimeout = null;
       }
 
       document.removeEventListener(

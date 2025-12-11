@@ -10,7 +10,13 @@ export default defineConfig({
   devToolbar: {
     enabled: false,
   },
-  adapter: cloudflare(),
+  adapter: cloudflare({
+    imageService: "compile",
+    workerEntryPoint: {
+      path: "./src/worker.ts",
+      namedExports: ["VisitorTracker"],
+    },
+  }),
   prefetch: true,
   redirects: {
     "/ch/00": "/",
