@@ -4,7 +4,7 @@ import type { SSRManifest } from "astro";
 import { App } from "astro/app";
 
 interface Env {
-  VISITOR_TRACKER: DurableObjectNamespace;
+  VisitorTracker: DurableObjectNamespace;
 }
 
 interface VisitorMessage {

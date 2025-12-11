@@ -2,14 +2,14 @@
 import "../styles/index.css";
 
 interface Props {
-	title: string;
+  title: string;
 }
 
 const { title } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const pageTitle =
-	Astro.url.pathname === "/" ? title : `${title} | Hypertext TV`;
+  Astro.url.pathname === "/" ? title : `${title} | Hypertext TV`;
 ---
 
 <!doctype html>
