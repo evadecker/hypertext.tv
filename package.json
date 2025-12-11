@@ -23,7 +23,7 @@
     "@astrojs/sitemap": "^3.3.0",
     "@netlify/blobs": "^8.2.0",
     "@netlify/edge-functions": "^2.11.1",
-    "astro": "^5.13.1",
+    "astro": "^5.15.9",
     "fathom-client": "^3.7.2",
     "three": "^0.174.0",
     "typescript": "^5.8.2"
