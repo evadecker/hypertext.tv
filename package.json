@@ -18,11 +18,9 @@
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
+    "@astrojs/cloudflare": "^12.6.12",
     "@astrojs/mdx": "^4.2.2",
-    "@astrojs/netlify": "^6.2.3",
     "@astrojs/sitemap": "^3.3.0",
-    "@netlify/blobs": "^8.2.0",
-    "@netlify/edge-functions": "^2.11.1",
     "astro": "^5.15.9",
     "fathom-client": "^3.7.2",
     "three": "^0.174.0",
@@ -30,10 +28,13 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
+    "@cloudflare/workers-types": "^4.20241218.0",
+    "@types/node": "^25.0.0",
     "@types/three": "^0.174.0",
     "autoprefixer": "^10.4.21",
     "cssnano": "^7.0.6",
     "husky": "^9.1.7",
-    "sharp": "^0.34.0"
+    "sharp": "^0.34.0",
+    "wrangler": "^4.54.0"
   }
 }
