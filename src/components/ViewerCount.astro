@@ -106,356 +106,360 @@ function generateBars(history: number[]) {
   import { SPARKLINE_CONFIG } from "@constants/viewerCount";
   import type { VisitorData } from "@types";
 
-  const WEBSOCKET_CONFIG = {
-    MAX_RECONNECT_ATTEMPTS: 10,
-    INITIAL_BACKOFF_MS: 1000,
-    BACKOFF_MULTIPLIER: 2,
-    MAX_BACKOFF_MS: 30000,
-    API_PATH: "/api/visitors",
-  } as const;
-
-  const DEV_HOSTNAMES = ["localhost", "127.0.0.1"] as const;
-
-  class GlobalVisitorWebSocket {
-    private static instance: GlobalVisitorWebSocket | null = null;
-    private websocket: WebSocket | null = null;
-    private reconnectTimeout: number | null = null;
-    private reconnectAttempts: number = 0;
-    private isOnline: boolean = true;
-    private listeners: Set<(data: VisitorData) => void> = new Set();
-    private lastData: VisitorData | null = null;
-
-    private constructor() {
-      document.addEventListener("visibilitychange", () =>
-        this.handleVisibilityChange(),
-      );
-    }
-
-    static getInstance(): GlobalVisitorWebSocket {
-      if (!GlobalVisitorWebSocket.instance) {
-        GlobalVisitorWebSocket.instance = new GlobalVisitorWebSocket();
-      }
-      return GlobalVisitorWebSocket.instance;
-    }
-
-    private handleVisibilityChange(): void {
-      this.isOnline = document.visibilityState === "visible";
-      if (this.isOnline && !this.websocket) this.connect();
-    }
-
-    private isDevEnvironment(): boolean {
-      return DEV_HOSTNAMES.includes(
-        window.location.hostname as (typeof DEV_HOSTNAMES)[number],
-      );
-    }
-
-    private isConnected(): boolean {
-      return this.websocket?.readyState === WebSocket.OPEN;
-    }
-
-    private shouldAttemptConnection(): boolean {
-      return !this.isDevEnvironment() && this.isOnline;
-    }
-
-    private closeExistingConnection(): void {
-      if (this.websocket) {
-        this.websocket.close();
-        this.websocket = null;
-      }
-    }
-
-    private clearReconnectTimeout(): void {
-      if (this.reconnectTimeout !== null) {
-        clearTimeout(this.reconnectTimeout);
-        this.reconnectTimeout = null;
-      }
-    }
-
-    private getWebSocketUrl(): string {
-      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-      const host = window.location.host;
-      return `${protocol}//${host}${WEBSOCKET_CONFIG.API_PATH}`;
-    }
-
-    private notifyListeners(data: VisitorData): void {
-      this.listeners.forEach((callback) => callback(data));
-    }
-
-    private calculateBackoffDelay(): number {
-      return Math.min(
-        WEBSOCKET_CONFIG.INITIAL_BACKOFF_MS *
-          Math.pow(WEBSOCKET_CONFIG.BACKOFF_MULTIPLIER, this.reconnectAttempts),
-        WEBSOCKET_CONFIG.MAX_BACKOFF_MS,
-      );
-    }
-
-    connect(): void {
-      if (!this.shouldAttemptConnection() || this.isConnected()) return;
-
-      this.closeExistingConnection();
-      this.clearReconnectTimeout();
-
-      try {
-        this.websocket = new WebSocket(this.getWebSocketUrl());
-
-        this.websocket.addEventListener("open", () => {
-          this.reconnectAttempts = 0;
-        });
-
-        this.websocket.addEventListener("message", (event) => {
-          try {
-            const data = JSON.parse(event.data);
-            this.lastData = data;
-            this.notifyListeners(data);
-          } catch (error) {
-            console.error("Error parsing WebSocket message:", error);
-          }
-        });
-
-        this.websocket.addEventListener("close", () => {
-          this.websocket = null;
-          this.attemptReconnect();
-        });
-
-        this.websocket.addEventListener("error", () => {
-          this.closeExistingConnection();
-        });
-      } catch (error) {
-        console.error("Failed to create WebSocket:", error);
-        this.attemptReconnect();
-      }
-    }
-
-    private attemptReconnect(): void {
-      if (!this.shouldAttemptConnection()) return;
-      if (this.reconnectAttempts >= WEBSOCKET_CONFIG.MAX_RECONNECT_ATTEMPTS)
-        return;
-
-      const delay = this.calculateBackoffDelay();
-      this.reconnectAttempts++;
-
-      this.reconnectTimeout = window.setTimeout(() => {
-        this.connect();
-      }, delay);
-    }
-
-    addListener(callback: (data: VisitorData) => void): void {
-      this.listeners.add(callback);
-      // If we already have data, immediately send it to the new listener
-      if (this.lastData) {
-        callback(this.lastData);
-      }
-    }
-
-    removeListener(callback: (data: VisitorData) => void): void {
-      this.listeners.delete(callback);
-    }
-
-    disconnect(): void {
-      this.clearReconnectTimeout();
-      this.closeExistingConnection();
-    }
-  }
-
-  const MESSAGE_TYPE = {
-    COUNT: "count",
-  } as const;
-
-  class ViewerCount extends HTMLElement {
-    private visitorHistory: number[] = [];
-    private messageHandler: ((data: VisitorData) => void) | null = null;
-    private currentVisitorCount: number = 1;
-    private sparklineInterval: number | null = null;
-    private readonly SPARKLINE_UPDATE_INTERVAL_MS = 5000; // 5 seconds
-
-    constructor() {
-      super();
-      this.visitorHistory = new Array(SPARKLINE_CONFIG.MAX_HISTORY_POINTS).fill(
-        SPARKLINE_CONFIG.MIN_VALUE_TO_AVOID_DIVISION_BY_ZERO,
-      );
-    }
-
-    private createVisitorCountHandler(): (data: VisitorData) => void {
-      return (data: VisitorData) => {
-        if (data.type === MESSAGE_TYPE.COUNT) {
-          // Update current visitor count
-          this.currentVisitorCount = data.total ?? 1;
-
-          // Update display immediately
-          this.updateVisitorCountDisplay(this.currentVisitorCount);
-          this.updateActiveState(this.currentVisitorCount);
-
-          // If server provides history, use it to initialize
-          if (
-            data.history &&
-            Array.isArray(data.history) &&
-            data.history.length > 0
-          ) {
-            this.visitorHistory = this.normalizeHistoryLength(data.history);
-            this.updateSparkline();
-          }
-        }
-      };
-    }
-
-    private updateVisitorCountDisplay(count: number): void {
-      const countElement = this.querySelector(".count");
-      if (countElement) {
-        countElement.textContent = count.toString();
-      }
-    }
-
-    private setupLiveUpdates(): void {
-      const globalWS = GlobalVisitorWebSocket.getInstance();
-      this.messageHandler = this.createVisitorCountHandler();
-      globalWS.addListener(this.messageHandler);
-      globalWS.connect();
-    }
-
-    private getSparklineElements(): {
-      trendBars: SVGGElement | null;
-      svgElement: SVGElement | null;
-    } {
-      return {
-        trendBars: this.querySelector(".trend-bars"),
-        svgElement: this.querySelector(".visitor-trend"),
-      };
-    }
-
-    private setupSparkline(): void {
-      this.updateSparkline();
-      this.startSparklineInterval();
-    }
-
-    private startSparklineInterval(): void {
-      // Clear any existing interval
-      if (this.sparklineInterval !== null) {
-        clearInterval(this.sparklineInterval);
-      }
-
-      // Add current visitor count to history every 5 seconds
-      this.sparklineInterval = window.setInterval(() => {
-        this.addDataPointToHistory(this.currentVisitorCount);
-        this.updateSparkline();
-      }, this.SPARKLINE_UPDATE_INTERVAL_MS);
-    }
-
-    private stopSparklineInterval(): void {
-      if (this.sparklineInterval !== null) {
-        clearInterval(this.sparklineInterval);
-        this.sparklineInterval = null;
-      }
-    }
-
-    private addDataPointToHistory(value: number): void {
-      // Shift history forward and add new value
-      this.visitorHistory = [...this.visitorHistory.slice(1), value];
-    }
-
-    private createSparklineBar(
-      value: number,
-      index: number,
-      maxValue: number,
-    ): SVGRectElement {
-      const percentage = value / maxValue;
-      const barHeight = Math.max(
-        SPARKLINE_CONFIG.MIN_BAR_HEIGHT,
-        SPARKLINE_CONFIG.HEIGHT * percentage,
-      );
-      const x = index * (SPARKLINE_CONFIG.BAR_WIDTH + SPARKLINE_CONFIG.BAR_GAP);
-      const y = SPARKLINE_CONFIG.HEIGHT - barHeight;
-
-      const rect = document.createElementNS(
-        SPARKLINE_CONFIG.SVG_NAMESPACE,
-        "rect",
-      ) as SVGRectElement;
-      rect.setAttribute("x", x.toString());
-      rect.setAttribute("y", y.toString());
-      rect.setAttribute("width", SPARKLINE_CONFIG.BAR_WIDTH.toString());
-      rect.setAttribute("height", barHeight.toString());
-      rect.setAttribute("rx", SPARKLINE_CONFIG.BORDER_RADIUS);
-      rect.setAttribute("fill", "currentColor");
-
-      return rect;
-    }
-
-    private renderSparklineBars(
-      trendBars: SVGGElement,
-      maxValue: number,
-    ): void {
-      trendBars.innerHTML = "";
-      this.visitorHistory.forEach((point, idx) => {
-        const bar = this.createSparklineBar(point, idx, maxValue);
-        trendBars.appendChild(bar);
-      });
-    }
-
-    private updateSparkline(): void {
-      const { trendBars, svgElement } = this.getSparklineElements();
-      if (!trendBars || !svgElement) return;
-
-      const maxValue = Math.max(
-        ...this.visitorHistory,
-        SPARKLINE_CONFIG.MIN_VALUE_TO_AVOID_DIVISION_BY_ZERO,
-      );
-
-      this.renderSparklineBars(trendBars, maxValue);
-    }
-
-    private normalizeHistoryLength(history: number[]): number[] {
-      const targetLength = SPARKLINE_CONFIG.MAX_HISTORY_POINTS;
-
-      while (history.length < targetLength) {
-        history.unshift(1);
-      }
-      while (history.length > targetLength) {
-        history.shift();
-      }
-
-      return history;
-    }
-
-    private updateActiveState(count: number): void {
-      this.setAttribute("data-active", (count > 0).toString());
-    }
-
-    connectedCallback(): void {
-      // Initialize from server-rendered data
-      const initialData = this.dataset.initialVisitors;
-      if (initialData) {
-        try {
-          const parsed = JSON.parse(initialData);
-          this.currentVisitorCount = parsed.total ?? 1;
-          if (
-            parsed.history &&
-            Array.isArray(parsed.history) &&
-            parsed.history.length > 0
-          ) {
-            this.visitorHistory = this.normalizeHistoryLength(parsed.history);
-          }
-        } catch (error) {
-          console.error("Failed to parse initial visitor data:", error);
-        }
-      }
-
-      this.setupSparkline();
-      this.setupLiveUpdates();
-    }
-
-    disconnectedCallback(): void {
-      // Clean up WebSocket listener
-      if (this.messageHandler) {
-        const globalWS = GlobalVisitorWebSocket.getInstance();
-        globalWS.removeListener(this.messageHandler);
-        this.messageHandler = null;
-      }
-
-      // Clean up sparkline interval
-      this.stopSparklineInterval();
-    }
-  }
-
   document.addEventListener("astro:page-load", () => {
+    const WEBSOCKET_CONFIG = {
+      MAX_RECONNECT_ATTEMPTS: 10,
+      INITIAL_BACKOFF_MS: 1000,
+      BACKOFF_MULTIPLIER: 2,
+      MAX_BACKOFF_MS: 30000,
+      API_PATH: "/api/visitors",
+    } as const;
+
+    const DEV_HOSTNAMES = ["localhost", "127.0.0.1"] as const;
+
+    class GlobalVisitorWebSocket {
+      private static instance: GlobalVisitorWebSocket | null = null;
+      private websocket: WebSocket | null = null;
+      private reconnectTimeout: number | null = null;
+      private reconnectAttempts: number = 0;
+      private isOnline: boolean = true;
+      private listeners: Set<(data: VisitorData) => void> = new Set();
+      private lastData: VisitorData | null = null;
+
+      private constructor() {
+        document.addEventListener("visibilitychange", () =>
+          this.handleVisibilityChange(),
+        );
+      }
+
+      static getInstance(): GlobalVisitorWebSocket {
+        if (!GlobalVisitorWebSocket.instance) {
+          GlobalVisitorWebSocket.instance = new GlobalVisitorWebSocket();
+        }
+        return GlobalVisitorWebSocket.instance;
+      }
+
+      private handleVisibilityChange(): void {
+        this.isOnline = document.visibilityState === "visible";
+        if (this.isOnline && !this.websocket) this.connect();
+      }
+
+      private isDevEnvironment(): boolean {
+        return DEV_HOSTNAMES.includes(
+          window.location.hostname as (typeof DEV_HOSTNAMES)[number],
+        );
+      }
+
+      private isConnected(): boolean {
+        return this.websocket?.readyState === WebSocket.OPEN;
+      }
+
+      private shouldAttemptConnection(): boolean {
+        return !this.isDevEnvironment() && this.isOnline;
+      }
+
+      private closeExistingConnection(): void {
+        if (this.websocket) {
+          this.websocket.close();
+          this.websocket = null;
+        }
+      }
+
+      private clearReconnectTimeout(): void {
+        if (this.reconnectTimeout !== null) {
+          clearTimeout(this.reconnectTimeout);
+          this.reconnectTimeout = null;
+        }
+      }
+
+      private getWebSocketUrl(): string {
+        const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+        const host = window.location.host;
+        return `${protocol}//${host}${WEBSOCKET_CONFIG.API_PATH}`;
+      }
+
+      private notifyListeners(data: VisitorData): void {
+        this.listeners.forEach((callback) => callback(data));
+      }
+
+      private calculateBackoffDelay(): number {
+        return Math.min(
+          WEBSOCKET_CONFIG.INITIAL_BACKOFF_MS *
+            Math.pow(
+              WEBSOCKET_CONFIG.BACKOFF_MULTIPLIER,
+              this.reconnectAttempts,
+            ),
+          WEBSOCKET_CONFIG.MAX_BACKOFF_MS,
+        );
+      }
+
+      connect(): void {
+        if (!this.shouldAttemptConnection() || this.isConnected()) return;
+
+        this.closeExistingConnection();
+        this.clearReconnectTimeout();
+
+        try {
+          this.websocket = new WebSocket(this.getWebSocketUrl());
+
+          this.websocket.addEventListener("open", () => {
+            this.reconnectAttempts = 0;
+          });
+
+          this.websocket.addEventListener("message", (event) => {
+            try {
+              const data = JSON.parse(event.data);
+              this.lastData = data;
+              this.notifyListeners(data);
+            } catch (error) {
+              console.error("Error parsing WebSocket message:", error);
+            }
+          });
+
+          this.websocket.addEventListener("close", () => {
+            this.websocket = null;
+            this.attemptReconnect();
+          });
+
+          this.websocket.addEventListener("error", () => {
+            this.closeExistingConnection();
+          });
+        } catch (error) {
+          console.error("Failed to create WebSocket:", error);
+          this.attemptReconnect();
+        }
+      }
+
+      private attemptReconnect(): void {
+        if (!this.shouldAttemptConnection()) return;
+        if (this.reconnectAttempts >= WEBSOCKET_CONFIG.MAX_RECONNECT_ATTEMPTS)
+          return;
+
+        const delay = this.calculateBackoffDelay();
+        this.reconnectAttempts++;
+
+        this.reconnectTimeout = window.setTimeout(() => {
+          this.connect();
+        }, delay);
+      }
+
+      addListener(callback: (data: VisitorData) => void): void {
+        this.listeners.add(callback);
+        // If we already have data, immediately send it to the new listener
+        if (this.lastData) {
+          callback(this.lastData);
+        }
+      }
+
+      removeListener(callback: (data: VisitorData) => void): void {
+        this.listeners.delete(callback);
+      }
+
+      disconnect(): void {
+        this.clearReconnectTimeout();
+        this.closeExistingConnection();
+      }
+    }
+
+    const MESSAGE_TYPE = {
+      COUNT: "count",
+    } as const;
+
+    class ViewerCount extends HTMLElement {
+      private visitorHistory: number[] = [];
+      private messageHandler: ((data: VisitorData) => void) | null = null;
+      private currentVisitorCount: number = 1;
+      private sparklineInterval: number | null = null;
+      private readonly SPARKLINE_UPDATE_INTERVAL_MS = 5000; // 5 seconds
+
+      constructor() {
+        super();
+        this.visitorHistory = new Array(
+          SPARKLINE_CONFIG.MAX_HISTORY_POINTS,
+        ).fill(SPARKLINE_CONFIG.MIN_VALUE_TO_AVOID_DIVISION_BY_ZERO);
+      }
+
+      private createVisitorCountHandler(): (data: VisitorData) => void {
+        return (data: VisitorData) => {
+          if (data.type === MESSAGE_TYPE.COUNT) {
+            // Update current visitor count
+            this.currentVisitorCount = data.total ?? 1;
+
+            // Update display immediately
+            this.updateVisitorCountDisplay(this.currentVisitorCount);
+            this.updateActiveState(this.currentVisitorCount);
+
+            // If server provides history, use it to initialize
+            if (
+              data.history &&
+              Array.isArray(data.history) &&
+              data.history.length > 0
+            ) {
+              this.visitorHistory = this.normalizeHistoryLength(data.history);
+              this.updateSparkline();
+            }
+          }
+        };
+      }
+
+      private updateVisitorCountDisplay(count: number): void {
+        const countElement = this.querySelector(".count");
+        if (countElement) {
+          countElement.textContent = count.toString();
+        }
+      }
+
+      private setupLiveUpdates(): void {
+        const globalWS = GlobalVisitorWebSocket.getInstance();
+        this.messageHandler = this.createVisitorCountHandler();
+        globalWS.addListener(this.messageHandler);
+        globalWS.connect();
+      }
+
+      private getSparklineElements(): {
+        trendBars: SVGGElement | null;
+        svgElement: SVGElement | null;
+      } {
+        return {
+          trendBars: this.querySelector(".trend-bars"),
+          svgElement: this.querySelector(".visitor-trend"),
+        };
+      }
+
+      private setupSparkline(): void {
+        this.updateSparkline();
+        this.startSparklineInterval();
+      }
+
+      private startSparklineInterval(): void {
+        // Clear any existing interval
+        if (this.sparklineInterval !== null) {
+          clearInterval(this.sparklineInterval);
+        }
+
+        // Add current visitor count to history every 5 seconds
+        this.sparklineInterval = window.setInterval(() => {
+          this.addDataPointToHistory(this.currentVisitorCount);
+          this.updateSparkline();
+        }, this.SPARKLINE_UPDATE_INTERVAL_MS);
+      }
+
+      private stopSparklineInterval(): void {
+        if (this.sparklineInterval !== null) {
+          clearInterval(this.sparklineInterval);
+          this.sparklineInterval = null;
+        }
+      }
+
+      private addDataPointToHistory(value: number): void {
+        // Shift history forward and add new value
+        this.visitorHistory = [...this.visitorHistory.slice(1), value];
+      }
+
+      private createSparklineBar(
+        value: number,
+        index: number,
+        maxValue: number,
+      ): SVGRectElement {
+        const percentage = value / maxValue;
+        const barHeight = Math.max(
+          SPARKLINE_CONFIG.MIN_BAR_HEIGHT,
+          SPARKLINE_CONFIG.HEIGHT * percentage,
+        );
+        const x =
+          index * (SPARKLINE_CONFIG.BAR_WIDTH + SPARKLINE_CONFIG.BAR_GAP);
+        const y = SPARKLINE_CONFIG.HEIGHT - barHeight;
+
+        const rect = document.createElementNS(
+          SPARKLINE_CONFIG.SVG_NAMESPACE,
+          "rect",
+        ) as SVGRectElement;
+        rect.setAttribute("x", x.toString());
+        rect.setAttribute("y", y.toString());
+        rect.setAttribute("width", SPARKLINE_CONFIG.BAR_WIDTH.toString());
+        rect.setAttribute("height", barHeight.toString());
+        rect.setAttribute("rx", SPARKLINE_CONFIG.BORDER_RADIUS);
+        rect.setAttribute("fill", "currentColor");
+
+        return rect;
+      }
+
+      private renderSparklineBars(
+        trendBars: SVGGElement,
+        maxValue: number,
+      ): void {
+        trendBars.innerHTML = "";
+        this.visitorHistory.forEach((point, idx) => {
+          const bar = this.createSparklineBar(point, idx, maxValue);
+          trendBars.appendChild(bar);
+        });
+      }
+
+      private updateSparkline(): void {
+        const { trendBars, svgElement } = this.getSparklineElements();
+        if (!trendBars || !svgElement) return;
+
+        const maxValue = Math.max(
+          ...this.visitorHistory,
+          SPARKLINE_CONFIG.MIN_VALUE_TO_AVOID_DIVISION_BY_ZERO,
+        );
+
+        this.renderSparklineBars(trendBars, maxValue);
+      }
+
+      private normalizeHistoryLength(history: number[]): number[] {
+        const targetLength = SPARKLINE_CONFIG.MAX_HISTORY_POINTS;
+
+        while (history.length < targetLength) {
+          history.unshift(1);
+        }
+        while (history.length > targetLength) {
+          history.shift();
+        }
+
+        return history;
+      }
+
+      private updateActiveState(count: number): void {
+        this.setAttribute("data-active", (count > 0).toString());
+      }
+
+      connectedCallback(): void {
+        // Initialize from server-rendered data
+        const initialData = this.dataset.initialVisitors;
+        if (initialData) {
+          try {
+            const parsed = JSON.parse(initialData);
+            this.currentVisitorCount = parsed.total ?? 1;
+            if (
+              parsed.history &&
+              Array.isArray(parsed.history) &&
+              parsed.history.length > 0
+            ) {
+              this.visitorHistory = this.normalizeHistoryLength(parsed.history);
+            }
+          } catch (error) {
+            console.error("Failed to parse initial visitor data:", error);
+          }
+        }
+
+        this.setupSparkline();
+        this.setupLiveUpdates();
+      }
+
+      disconnectedCallback(): void {
+        // Clean up WebSocket listener
+        if (this.messageHandler) {
+          const globalWS = GlobalVisitorWebSocket.getInstance();
+          globalWS.removeListener(this.messageHandler);
+          this.messageHandler = null;
+        }
+
+        // Clean up sparkline interval
+        this.stopSparklineInterval();
+      }
+    }
+
     if (!customElements.get("viewer-count")) {
       customElements.define("viewer-count", ViewerCount);
     }
