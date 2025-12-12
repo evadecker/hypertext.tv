@@ -361,7 +361,6 @@ const { prev, next } = await getPagination(channelId);
       }
     });
 
-    // Add sound effects for power button (press, release, and power on)
     if (powerButton) {
       powerButton.addEventListener("click", handlePowerButtonClick);
       powerButton.addEventListener("pointerdown", handlePowerButtonPress);
@@ -369,7 +368,6 @@ const { prev, next } = await getPagination(channelId);
       powerButton.addEventListener("pointercancel", handlePowerButtonRelease);
     }
 
-    // Add sound effects for channel buttons (press and release)
     channelButtons.forEach((button) => {
       button.addEventListener("click", handleChannelButtonClick);
       button.addEventListener("pointerdown", playRandomClickOn);
@@ -377,7 +375,6 @@ const { prev, next } = await getPagination(channelId);
       button.addEventListener("pointercancel", playRandomClickOff);
     });
 
-    // Add sound effects for menu button (press and release)
     if (menuButton) {
       menuButton.addEventListener("pointerdown", playRandomClickOn);
       menuButton.addEventListener("pointerup", playRandomClickOff);
