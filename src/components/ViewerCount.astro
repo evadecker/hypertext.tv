@@ -57,7 +57,10 @@ function generateBars(history: number[]) {
 }
 ---
 
-<viewer-count data-initial-visitors={JSON.stringify(initialVisitorData)}>
+<viewer-count
+  data-initial-visitors={JSON.stringify(initialVisitorData)}
+  transition:persist
+>
   <svg class="visitor-trend" width={SVG_WIDTH} height="15">
     <g class="trend-bars" set:html={generateBars(initialVisitorData.history)} />
   </svg>
@@ -120,6 +123,7 @@ function generateBars(history: number[]) {
     private reconnectAttempts: number = 0;
     private isOnline: boolean = true;
     private listeners: Set<(data: VisitorData) => void> = new Set();
+    private lastData: VisitorData | null = null;
 
     private constructor() {
       document.addEventListener("visibilitychange", () =>
@@ -201,6 +205,7 @@ function generateBars(history: number[]) {
         this.websocket.addEventListener("message", (event) => {
           try {
             const data = JSON.parse(event.data);
+            this.lastData = data;
             this.notifyListeners(data);
           } catch (error) {
             console.error("Error parsing WebSocket message:", error);
@@ -236,6 +241,10 @@ function generateBars(history: number[]) {
 
     addListener(callback: (data: VisitorData) => void): void {
       this.listeners.add(callback);
+      // If we already have data, immediately send it to the new listener
+      if (this.lastData) {
+        callback(this.lastData);
+      }
     }
 
     removeListener(callback: (data: VisitorData) => void): void {
@@ -409,6 +418,12 @@ function generateBars(history: number[]) {
     }
 
     connectedCallback(): void {
+      // Initialize history from server-rendered data before rendering sparkline
+      const initialHistory = this.tryParseInitialVisitorData();
+      if (initialHistory) {
+        this.visitorHistory = this.normalizeHistoryLength(initialHistory);
+      }
+
       this.setupSparkline();
       this.setupLiveUpdates();
     }
