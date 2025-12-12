@@ -589,8 +589,11 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
     }
   }
 
-  // Define the custom element
-  customElements.define("channel-display", ChannelDisplay);
+  document.addEventListener("astro:page-load", () => {
+    if (!customElements.get("channel-display")) {
+      customElements.define("channel-display", ChannelDisplay);
+    }
+  });
 </script>
 
 <style>
