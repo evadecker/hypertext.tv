@@ -1,16 +1,17 @@
 ---
+import { ClientRouter } from "astro:transitions";
 import SoundsPreloader from "src/sounds/SoundsPreloader.astro";
 import "../styles/index.css";
 
 interface Props {
-  title: string;
+	title: string;
 }
 
 const { title } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const pageTitle =
-  Astro.url.pathname === "/" ? title : `${title} | Hypertext TV`;
+	Astro.url.pathname === "/" ? title : `${title} | Hypertext TV`;
 ---
 
 <!doctype html>
@@ -65,6 +66,7 @@ const pageTitle =
 			crossorigin
 		/>
 		<SoundsPreloader />
+		<ClientRouter />
 	</head>
 	<body>
 		<slot />
@@ -72,18 +74,6 @@ const pageTitle =
 </html>
 
 <style>
-	@view-transition {
-		navigation: auto;
-	}
-
-	::view-transition-old(root) {
-		animation: none;
-	}
-
-	::view-transition-new(root) {
-		animation: none;
-	}
-
 	html,
 	body {
 		margin: 0;

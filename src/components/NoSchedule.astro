@@ -34,75 +34,6 @@
   </svg>
 </div>
 
-<script>
-  import * as Fathom from "fathom-client";
-
-  // Get all paths to collect colors
-  const paths = document.querySelectorAll(".no-schedule svg path");
-  let colors = ["#FF0000", "#00FFFF", "#00FF00", "#FF00FF", "#0000FF"];
-
-  Array.from(paths).map((path) => {
-    const color = path.getAttribute("fill");
-    if (color && !colors.includes(color)) colors.push(color);
-  });
-
-  const getRandomColor = (currentColor: string) => {
-    const randomColor = colors[Math.floor(Math.random() * colors.length)];
-    if (randomColor === currentColor) return getRandomColor(currentColor);
-    return randomColor;
-  };
-
-  // Wrap text in spans
-  const text = document.querySelector(".no-schedule .message")?.textContent;
-  const text_wrapped = text?.replace(/./g, "<span>$&</span>");
-
-  const message = document.querySelector(".no-schedule .message") as Element;
-  if (message) {
-    message.innerHTML = text_wrapped as string;
-  }
-
-  // Get the next letter in sequence
-  const getNextLetter = (currentLetter: string) => {
-    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ.!?-:() ";
-    const index = letters.indexOf(currentLetter.toUpperCase());
-    return letters[index + 1] ?? letters[0];
-  };
-
-  // Use event delegation for both SVG paths and text spans
-  const noSchedule = document.querySelector(".no-schedule");
-
-  if (noSchedule) {
-    // Handle both click and touch events for better iOS compatibility
-    const handleInteraction = (event: Event) => {
-      // Prevent default behavior to avoid any conflicts
-      event.preventDefault();
-
-      console.log("clicked!", event);
-
-      const target = event.target as HTMLElement;
-
-      // Handle SVG path clicks
-      if (target.tagName === "path") {
-        console.log("path clicked!", target);
-        target.setAttribute(
-          "fill",
-          getRandomColor(target.getAttribute("fill") ?? ""),
-        );
-        Fathom.trackEvent("no schedule: click path");
-      }
-
-      // Handle text span clicks
-      if (target.tagName === "SPAN" && target.closest(".message")) {
-        console.log("letter clicked!", target);
-        target.textContent = getNextLetter(target.textContent ?? "");
-        Fathom.trackEvent("no schedule: click letter");
-      }
-    };
-
-    noSchedule.addEventListener("click", handleInteraction);
-  }
-</script>
-
 <style>
   .no-schedule {
     width: 100%;
@@ -129,3 +60,74 @@
     }
   }
 </style>
+
+<script>
+  import * as Fathom from "fathom-client";
+
+  document.addEventListener("astro:page-load", () => {
+    // Get all paths to collect colors
+    const paths = document.querySelectorAll(".no-schedule svg path");
+    let colors = ["#FF0000", "#00FFFF", "#00FF00", "#FF00FF", "#0000FF"];
+
+    Array.from(paths).map((path) => {
+      const color = path.getAttribute("fill");
+      if (color && !colors.includes(color)) colors.push(color);
+    });
+
+    const getRandomColor = (currentColor: string) => {
+      const randomColor = colors[Math.floor(Math.random() * colors.length)];
+      if (randomColor === currentColor) return getRandomColor(currentColor);
+      return randomColor;
+    };
+
+    // Wrap text in spans
+    const text = document.querySelector(".no-schedule .message")?.textContent;
+    const text_wrapped = text?.replace(/./g, "<span>$&</span>");
+
+    const message = document.querySelector(".no-schedule .message") as Element;
+    if (message) {
+      message.innerHTML = text_wrapped as string;
+    }
+
+    // Get the next letter in sequence
+    const getNextLetter = (currentLetter: string) => {
+      const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ.!?-:() ";
+      const index = letters.indexOf(currentLetter.toUpperCase());
+      return letters[index + 1] ?? letters[0];
+    };
+
+    // Use event delegation for both SVG paths and text spans
+    const noSchedule = document.querySelector(".no-schedule");
+
+    if (noSchedule) {
+      // Handle both click and touch events for better iOS compatibility
+      const handleInteraction = (event: Event) => {
+        // Prevent default behavior to avoid any conflicts
+        event.preventDefault();
+
+        console.log("clicked!", event);
+
+        const target = event.target as HTMLElement;
+
+        // Handle SVG path clicks
+        if (target.tagName === "path") {
+          console.log("path clicked!", target);
+          target.setAttribute(
+            "fill",
+            getRandomColor(target.getAttribute("fill") ?? ""),
+          );
+          Fathom.trackEvent("no schedule: click path");
+        }
+
+        // Handle text span clicks
+        if (target.tagName === "SPAN" && target.closest(".message")) {
+          console.log("letter clicked!", target);
+          target.textContent = getNextLetter(target.textContent ?? "");
+          Fathom.trackEvent("no schedule: click letter");
+        }
+      };
+
+      noSchedule.addEventListener("click", handleInteraction);
+    }
+  });
+</script>

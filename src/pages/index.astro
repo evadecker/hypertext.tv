@@ -95,40 +95,6 @@ const { timeBlocks, channels } = guideData;
   </Television>
 </Layout>
 
-<script>
-  import { infiniteScrollLoop } from "../utils/infiniteScroll";
-
-  const updateCurrentTime = () => {
-    const currentTimeElement = document.getElementById("current-time");
-    if (currentTimeElement) {
-      const now = new Date();
-      currentTimeElement.textContent = now.toLocaleTimeString();
-    }
-  };
-
-  setInterval(updateCurrentTime, 1000);
-
-  const timeBlocks = document.querySelectorAll(".time-block time");
-
-  // Convert server time to local time
-  timeBlocks.forEach((timeElement) => {
-    const serverTime = new Date(timeElement.getAttribute("datetime") || "");
-    timeElement.textContent = serverTime.toLocaleTimeString([], {
-      hour: "numeric",
-      minute: "2-digit",
-    });
-  });
-
-  const container = document.getElementById("contents")!;
-  const table = container.querySelector("table")!;
-  const content = container.querySelector("tbody")!;
-
-  infiniteScrollLoop(container, content, {
-    scrollSpeed: 20,
-    cloneInto: table,
-  });
-</script>
-
 <style>
   .guide {
     --guide-bg: #0f1414;
@@ -377,3 +343,39 @@ const { timeBlocks, channels } = guideData;
     }
   }
 </style>
+
+<script>
+  import { infiniteScrollLoop } from "../utils/infiniteScroll";
+
+  document.addEventListener("astro:page-load", () => {
+    const updateCurrentTime = () => {
+      const currentTimeElement = document.getElementById("current-time");
+      if (currentTimeElement) {
+        const now = new Date();
+        currentTimeElement.textContent = now.toLocaleTimeString();
+      }
+    };
+
+    setInterval(updateCurrentTime, 1000);
+
+    const timeBlocks = document.querySelectorAll(".time-block time");
+
+    // Convert server time to local time
+    timeBlocks.forEach((timeElement) => {
+      const serverTime = new Date(timeElement.getAttribute("datetime") || "");
+      timeElement.textContent = serverTime.toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit",
+      });
+    });
+
+    const container = document.getElementById("contents")!;
+    const table = container.querySelector("table")!;
+    const content = container.querySelector("tbody")!;
+
+    infiniteScrollLoop(container, content, {
+      scrollSpeed: 20,
+      cloneInto: table,
+    });
+  });
+</script>

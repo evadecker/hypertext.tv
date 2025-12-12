@@ -13,7 +13,7 @@ const { activeProgram, channelId, channelName } = Astro.props;
 ---
 
 <main class="television">
-  <div class="screen" data-power="on">
+  <div class="screen" data-power="on" transition:animate="none">
     <div class="screen-blur" data-brightness="0" data-color="0" data-tint="0">
     </div>
     <div class="scanlines" data-active="true"></div>
@@ -26,99 +26,6 @@ const { activeProgram, channelId, channelName } = Astro.props;
   </div>
   <Controls activeProgram={activeProgram} channelId={channelId} />
 </main>
-
-<script>
-  function setAttributeOnElement(
-    selector: string,
-    attribute: string,
-    value: string,
-  ): void {
-    const element = document.querySelector(selector);
-    if (element) element.setAttribute(attribute, value);
-  }
-
-  function initializeFromLocalStorage(
-    selector: string,
-    attribute: string,
-    defaultValue: string = "0",
-    detailProperty: string,
-  ): void {
-    const savedValue = localStorage.getItem(detailProperty) || defaultValue;
-    setAttributeOnElement(selector, attribute, savedValue);
-  }
-
-  function createEventListener(
-    eventName: string,
-    selector: string,
-    attribute: string,
-    detailProperty: string,
-  ): void {
-    document.addEventListener(eventName, ((e: CustomEvent) => {
-      const value = e.detail[detailProperty];
-      setAttributeOnElement(selector, attribute, value);
-    }) as EventListener);
-  }
-
-  const settings = [
-    {
-      event: "scanlineToggle",
-      selector: ".scanlines",
-      attribute: "data-active",
-      defaultValue: "true",
-      detailProperty: "scanlines",
-    },
-    {
-      event: "brightnessChange",
-      selector: ".screen-blur",
-      attribute: "data-brightness",
-      detailProperty: "brightness",
-    },
-    {
-      event: "colorChange",
-      selector: ".screen-blur",
-      attribute: "data-color",
-      detailProperty: "color",
-    },
-    {
-      event: "tintChange",
-      selector: ".screen-blur",
-      attribute: "data-tint",
-      detailProperty: "tint",
-    },
-    {
-      event: "horizontalChange",
-      selector: ".screen-content",
-      attribute: "data-horizontal",
-      defaultValue: "0",
-      detailProperty: "horizontal",
-    },
-    {
-      event: "verticalChange",
-      selector: ".screen-content",
-      attribute: "data-vertical",
-      defaultValue: "0",
-      detailProperty: "vertical",
-    },
-  ];
-
-  settings.forEach((setting) => {
-    initializeFromLocalStorage(
-      setting.selector,
-      setting.attribute,
-      setting.defaultValue,
-      setting.detailProperty,
-    );
-  });
-
-  settings.forEach((setting) => {
-    createEventListener(
-      setting.event,
-      setting.selector,
-      setting.attribute,
-      setting.detailProperty,
-    );
-  });
-</script>
 
 <style>
   .television {
@@ -205,7 +112,7 @@ const { activeProgram, channelId, channelName } = Astro.props;
           rgba(0, 0, 0, 1) 99%
         ),
         /* Left and right */
-          radial-gradient(
+        radial-gradient(
             ellipse 50% 250%,
             rgba(0, 0, 0, 0) 0%,
             rgba(0, 0, 0, 0) 95%,
@@ -213,7 +120,7 @@ const { activeProgram, channelId, channelName } = Astro.props;
             rgba(0, 0, 0, 1) 99%
           ),
         /* Corners */
-          radial-gradient(
+        radial-gradient(
             farthest-corner,
             rgba(0, 0, 0, 0) 93%,
             rgba(0, 0, 0, 0.1) 94%,
@@ -390,11 +297,8 @@ const { activeProgram, channelId, channelName } = Astro.props;
     z-index: 4;
     overflow: hidden;
     pointer-events: none;
-    background-image: linear-gradient(
-        to bottom,
-        transparent 60%,
-        rgba(0, 0, 0, 0.7) 10%
-      ),
+    background-image:
+      linear-gradient(to bottom, transparent 60%, rgba(0, 0, 0, 0.7) 10%),
       linear-gradient(to right, transparent 80%, rgba(0, 0, 0, 0.1) 10%);
     background-size: 3px 3px;
 
@@ -467,3 +371,98 @@ const { activeProgram, channelId, channelName } = Astro.props;
     right: max(5vw, 24px);
   }
 </style>
+
+<script>
+  document.addEventListener("astro:page-load", () => {
+    function setAttributeOnElement(
+      selector: string,
+      attribute: string,
+      value: string,
+    ): void {
+      const element = document.querySelector(selector);
+      if (element) element.setAttribute(attribute, value);
+    }
+
+    function initializeFromLocalStorage(
+      selector: string,
+      attribute: string,
+      defaultValue: string = "0",
+      detailProperty: string,
+    ): void {
+      const savedValue = localStorage.getItem(detailProperty) || defaultValue;
+      setAttributeOnElement(selector, attribute, savedValue);
+    }
+
+    function createEventListener(
+      eventName: string,
+      selector: string,
+      attribute: string,
+      detailProperty: string,
+    ): void {
+      document.addEventListener(eventName, ((e: CustomEvent) => {
+        const value = e.detail[detailProperty];
+        setAttributeOnElement(selector, attribute, value);
+      }) as EventListener);
+    }
+
+    const settings = [
+      {
+        event: "scanlineToggle",
+        selector: ".scanlines",
+        attribute: "data-active",
+        defaultValue: "true",
+        detailProperty: "scanlines",
+      },
+      {
+        event: "brightnessChange",
+        selector: ".screen-blur",
+        attribute: "data-brightness",
+        detailProperty: "brightness",
+      },
+      {
+        event: "colorChange",
+        selector: ".screen-blur",
+        attribute: "data-color",
+        detailProperty: "color",
+      },
+      {
+        event: "tintChange",
+        selector: ".screen-blur",
+        attribute: "data-tint",
+        detailProperty: "tint",
+      },
+      {
+        event: "horizontalChange",
+        selector: ".screen-content",
+        attribute: "data-horizontal",
+        defaultValue: "0",
+        detailProperty: "horizontal",
+      },
+      {
+        event: "verticalChange",
+        selector: ".screen-content",
+        attribute: "data-vertical",
+        defaultValue: "0",
+        detailProperty: "vertical",
+      },
+    ];
+
+    settings.forEach((setting) => {
+      initializeFromLocalStorage(
+        setting.selector,
+        setting.attribute,
+        setting.defaultValue,
+        setting.detailProperty,
+      );
+    });
+
+    settings.forEach((setting) => {
+      createEventListener(
+        setting.event,
+        setting.selector,
+        setting.attribute,
+        setting.detailProperty,
+      );
+    });
+  });
+</script>
