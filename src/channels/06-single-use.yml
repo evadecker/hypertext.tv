@@ -14,6 +14,11 @@ schedule:
     - "03:00":
     - "03:30":
     - "04:00":
+        title: Heavyweight
+        author:
+          - Morry Kolman
+          - Kendra Albert
+        url: https://heavyweight.cc/
     - "04:30":
     - "05:00":
     - "05:30":
@@ -80,6 +85,8 @@ schedule:
     - "04:00":
     - "04:30":
     - "05:00":
+        title: Gridlover
+        url: https://gridlover.net/
     - "05:30":
     - "06:00":
     - "06:30":
@@ -113,6 +120,9 @@ schedule:
     - "16:00":
     - "16:30":
     - "17:00":
+        title: Elevator.js
+        author: Tim Holman
+        url: https://tholman.com/elevator.js/
     - "17:30":
     - "18:00":
     - "18:30":
@@ -120,6 +130,9 @@ schedule:
     - "19:30":
     - "20:00":
     - "20:30":
+        title: Meet the Ipsums
+        author: Tim Holman
+        url: https://meettheipsums.com/
     - "21:00":
     - "21:30":
     - "22:00":
@@ -146,6 +159,9 @@ schedule:
     - "06:30":
     - "07:00":
     - "07:30":
+        title: Reaction Diffusion Explorer
+        author: Karl Sims
+        url: https://karlsims.com/rdtool.html
     - "08:00":
     - "08:30":
     - "09:00":
@@ -176,11 +192,17 @@ schedule:
     - "17:00":
     - "17:30":
     - "18:00":
+        title: Nature Keyboard
+        author: Katarina Lingat
+        url: https://geokash.com/nature-keyboard
     - "18:30":
     - "19:00":
     - "19:30":
     - "20:00":
     - "20:30":
+        title: Pointilliser
+        author: Ben Elwyn
+        url: https://pointilliser.elwyn.co/
     - "21:00":
     - "21:30":
     - "22:00":
@@ -199,15 +221,17 @@ schedule:
     - "03:00":
     - "03:30":
     - "04:00":
+        title: ASCIIzify
+        url: https://asciizify.studiodev.xyz/
     - "04:30":
     - "05:00":
     - "05:30":
     - "06:00":
     - "06:30":
     - "07:00":
-        title: Every screen resolution
-        author: Michael Lascarides
-        url: http://lascarid.es/screenres.html
+        title: Seamless Texture Checker
+        author: Eric Cheung
+        url: https://www.pycheung.com/checker/
     - "07:30":
     - "08:00":
     - "08:30":
@@ -216,6 +240,9 @@ schedule:
     - "10:00":
     - "10:30":
     - "11:00":
+        title: Infowars
+        author: Greg Sadetsky
+        url: https://infowars.greg.technology/
     - "11:30":
     - "12:00":
     - "12:30":
@@ -233,11 +260,17 @@ schedule:
     - "17:00":
     - "17:30":
     - "18:00":
+        title: Colour Mapper
+        author: Michael Norman
+        url: https://colour-mapper.michaelnorman.au/
     - "18:30":
     - "19:00":
     - "19:30":
     - "20:00":
     - "20:30":
+        title: Harmonizer
+        author: Evil Martians
+        url: https://harmonizer-web.web.app/
     - "21:00":
     - "21:30":
     - "22:00":
@@ -272,6 +305,8 @@ schedule:
     - "09:00":
     - "09:30":
     - "10:00":
+        title: Darning Space
+        url: https://darning.space/
     - "10:30":
     - "11:00":
     - "11:30":
@@ -319,6 +354,9 @@ schedule:
     - "02:30":
     - "03:00":
     - "03:30":
+        title: Earthbound Text
+        author: Bill Eager
+        url: https://www.earthboundtext.com/
     - "04:00":
     - "04:30":
     - "05:00":
@@ -337,6 +375,9 @@ schedule:
     - "10:00":
     - "10:30":
     - "11:00":
+        title: Comic Caption Swapper
+        author: SolarSands
+        url: https://comicswap.art
     - "11:30":
     - "12:00":
     - "12:30":
@@ -394,6 +435,8 @@ schedule:
     - "08:30":
     - "09:00":
     - "09:30":
+        title: Don't Forget To Take A Selfie With Your Herbs
+        url: https://websitesite.xyz/dontforgettotakeaselfiewithyourherbs/
     - "10:00":
     - "10:30":
     - "11:00":
@@ -412,6 +455,8 @@ schedule:
     - "16:00":
     - "16:30":
     - "17:00":
+        title: Unicode Snowman For You
+        url: https://unicodesnowmanforyou.com/
     - "17:30":
     - "18:00":
     - "18:30":

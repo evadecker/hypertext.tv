@@ -12,8 +12,14 @@ schedule:
     - "02:00":
     - "02:30":
     - "03:00":
+        title: Sightless Scribbles
+        author: Robert Kingett
+        url: https://sightlessscribbles.com/    
     - "03:30":
     - "04:00":
+        title: GENOSADNESS
+        author: Genosad
+        url: https://genosadness.neocities.org/
     - "04:30":
     - "05:00":
     - "05:30":
@@ -21,6 +27,9 @@ schedule:
     - "06:30":
     - "07:00":
     - "07:30":
+        title: Aprils Cable
+        author: April 
+        url: https://aprilscable.neocities.org/
     - "08:00":
     - "08:30":
     - "09:00":
@@ -33,6 +42,9 @@ schedule:
     - "11:00":
     - "11:30":
     - "12:00":
+        title: Maciek Palmowski
+        author: Maciek Palmowski
+        url: https://maciekpalmowski.dev/
     - "12:30":
     - "13:00":
     - "13:30":
@@ -73,17 +85,23 @@ schedule:
     - "02:00":
     - "02:30":
     - "03:00":
+        title: Greg Technology
+        author: Greg Sadetsky
+        url: https://greg.technology/
     - "03:30":
     - "04:00":
     - "04:30":
     - "05:00":
     - "05:30":
+        title: Benjamin Earl
+        author: Benjamin Earl
+        url: https://bnjmnearl.eu/
     - "06:00":
-        title: Mariana Sissia
-        author: Mariana Sissia
-        url: https://marianasissia.com/index.php/en
     - "06:30":
     - "07:00":
+        title: Tesseralis
+        author: Tesseralis
+        url: https://tesseralis.site/
     - "07:30":
     - "08:00":
     - "08:30":
@@ -93,6 +111,9 @@ schedule:
     - "10:30":
     - "11:00":
     - "11:30":
+        title: Kit Mills
+        author: Kit Mills
+        url: https://mitkills.com/
     - "12:00":
     - "12:30":
     - "13:00":
@@ -111,6 +132,9 @@ schedule:
     - "18:00":
     - "18:30":
     - "19:00":
+        title: World Playground Deceit
+        author: UltramarineWeather
+        url: https://world-playground-deceit.net/
     - "19:30":
     - "20:00":
     - "20:30":
@@ -133,16 +157,28 @@ schedule:
     - "01:30":
     - "02:00":
     - "02:30":
+        title: Michael Norman
+        author: Michael Norman
+        url: https://www.michaelnorman.au/
     - "03:00":
     - "03:30":
     - "04:00":
+        title: Yihui
+        author: Yihui H
+        url: https://www.yihui.work
     - "04:30":
     - "05:00":
     - "05:30":
+        title: Ben Elwyn
+        author: Ben Elwyn
+        url: https://www.elwyn.co/
     - "06:00":
     - "06:30":
     - "07:00":
     - "07:30":
+        title: Junior Vigneault
+        author: Junior Vigneault
+        url: https://www.juniorvigneault.com/
     - "08:00":
     - "08:30":
     - "09:00":
@@ -159,14 +195,23 @@ schedule:
         author: Maggie Appleton
         url: https://maggieappleton.com/
     - "12:30":
+        title: proto_P
+        author: P
+        url: https://proto-p.neocities.org/
     - "13:00":
     - "13:30":
     - "14:00":
     - "14:30":
+        title: Tiger Dingsun
+        author: Tiger Dingsun
+        url: https://tiger.exposed/
     - "15:00":
     - "15:30":
     - "16:00":
     - "16:30":
+        title: Henry Heffernan
+        author: Henry Heffernan
+        url: https://henryheffernan.com/
     - "17:00":
     - "17:30":
     - "18:00":
@@ -174,7 +219,13 @@ schedule:
     - "19:00":
     - "19:30":
     - "20:00":
+        title: Karl Sims
+        author: Karl Sims
+        url: https://karlsims.com/
     - "20:30":
+        title: The Alex Zee Show!
+        author: Alex Zee
+        url: https://alexzeecomedy.com
     - "21:00":
     - "21:30":
     - "22:00":
@@ -191,6 +242,9 @@ schedule:
     - "01:30":
     - "02:00":
     - "02:30":
+        title: Pippin Barr
+        author: Pippin Barr
+        url: https://pippinbarr.com/
     - "03:00":
     - "03:30":
     - "04:00":
@@ -206,6 +260,9 @@ schedule:
     - "07:30":
     - "08:00":
     - "08:30":
+        title: Bennett Feely
+        author: Bennett Feely
+        url: https://bennettfeely.com/
     - "09:00":
     - "09:30":
     - "10:00":
@@ -224,6 +281,9 @@ schedule:
     - "15:00":
     - "15:30":
     - "16:00":
+        title: Anton Basistov
+        author: Anton Basistov
+        url: https://basistov.com
     - "16:30":
     - "17:00":
     - "17:30":
@@ -234,6 +294,9 @@ schedule:
     - "20:00":
     - "20:30":
     - "21:00":
+        title: Walrus Island
+        author: HammerKoopa
+        url: https://walrus-island.neocities.org/
     - "21:30":
     - "22:00":
     - "22:30":
@@ -315,6 +378,9 @@ schedule:
     - "04:00":
     - "04:30":
     - "05:00":
+        title: Punp's Pog Dungeon
+        author: Punp
+        url: https://punp.neocities.org/pog_dungeon
     - "05:30":
     - "06:00":
     - "06:30":
@@ -333,6 +399,9 @@ schedule:
     - "13:00":
     - "13:30":
     - "14:00":
+        title: Charles Wang
+        author: Charles Wang
+        url: https://charleszw.com/
     - "14:30":
     - "15:00":
     - "15:30":
@@ -354,6 +423,9 @@ schedule:
     - "22:00":
     - "22:30":
     - "23:00":
+        title: The absolute realm
+        author: shinto
+        url: https://theabsoluterealm.com/
     - "23:30":
   sunday:
     - "00:00":
@@ -384,13 +456,15 @@ schedule:
     - "09:30":
     - "10:00":
     - "10:30":
-    - "11:00":
     - "11:30":
     - "12:00":
     - "12:30":
     - "13:00":
     - "13:30":
     - "14:00":
+        title: elly loel
+        author: elly loel 
+        url: https://ellyloel.com 
     - "14:30":
     - "15:00":
     - "15:30":

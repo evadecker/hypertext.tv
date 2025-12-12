@@ -7,6 +7,9 @@ schedule:
         author: Nicky Case
         url: https://ncase.me/sim/
     - "00:30":
+        title: FORTUNE.EXE
+        author: Packard Bell 95
+        url: https://packardbell95.com/fortune/
     - "01:00":
     - "01:30":
     - "02:00":
@@ -79,6 +82,9 @@ schedule:
     - "05:00":
     - "05:30":
     - "06:00":
+        title: The Labyrinth of Polyominoes
+        author: Tesseralis
+        url: https://minos.tessera.li/
     - "06:30":
     - "07:00":
     - "07:30":
@@ -106,12 +112,18 @@ schedule:
     - "17:00":
     - "17:30":
     - "18:00":
+        title: Polyhedra Viewer
+        author: Tesseralis
+        url: https://polyhedra.tessera.li/
     - "18:30":
     - "19:00":
     - "19:30":
     - "20:00":
     - "20:30":
     - "21:00":
+        title: Making Software
+        author: Dan Hollick
+        url: https://www.makingsoftware.com/
     - "21:30":
     - "22:00":
     - "22:30":
@@ -129,6 +141,11 @@ schedule:
     - "03:00":
     - "03:30":
     - "04:00":
+        title: Waterworks
+        author:
+          - Arjan Rietveld
+          - Sébastien Robert
+        url: https://waterworks-swart.vercel.app/en
     - "04:30":
     - "05:00":
     - "05:30":
@@ -152,25 +169,36 @@ schedule:
     - "13:00":
     - "13:30":
     - "14:00":
+        title: Nat Notation
+        author: Tesseralis
+        url: https://tesseralis.site/nat-notation
     - "14:30":
     - "15:00":
     - "15:30":
     - "16:00":
-        title: Defense Against Dishonest Charts
-        author: Nathan Yau
-        url: https://flowingdata.com/projects/dishonest-charts/
     - "16:30":
     - "17:00":
     - "17:30":
     - "18:00":
+        title: Practical Typography
+        author: Matthew Butterick
+        url: https://practicaltypography.com/
     - "18:30":
     - "19:00":
     - "19:30":
     - "20:00":
     - "20:30":
+        title: San Francisco Government
+        url: https://sfgov.civlab.org/
     - "21:00":
     - "21:30":
     - "22:00":
+        title: Antimander
+        author:
+          - Joel Simon
+          - Joel Lehman
+          - Nio Ono
+        url: https://antimander.org/
     - "22:30":
     - "23:00":
     - "23:30":
@@ -187,6 +215,9 @@ schedule:
     - "03:00":
     - "03:30":
     - "04:00":
+        title: NYC Boundaries Map
+        author: BetaNYC
+        url: https://boundaries.beta.nyc/
     - "04:30":
     - "05:00":
     - "05:30":
@@ -270,6 +301,9 @@ schedule:
     - "03:30":
     - "04:00":
     - "04:30":
+        title: Icy and Rocky Worlds
+        author: Luke Steuber
+        url: https://assisted.site/viewport/full/graphics/typonomy/science/icy_and_rocky/index.html
     - "05:00":
     - "05:30":
     - "06:00":
@@ -354,6 +388,9 @@ schedule:
     - "13:00":
     - "13:30":
     - "14:00":
+        title: Historical Tech Tree
+        author: Étienne Fortier-Dubois
+        url: https://www.historicaltechtree.com/
     - "14:30":
     - "15:00":
     - "15:30":
@@ -395,6 +432,8 @@ schedule:
     - "07:30":
     - "08:00":
     - "08:30":
+        title: The Indie Web
+        url: https://theindieweb.com/
     - "09:00":
     - "09:30":
     - "10:00":

@@ -3,6 +3,9 @@ name: Music
 schedule:
   monday:
     - "00:00":
+        title: moon musiq netlabel
+        author: moon musiq
+        url: https://moonmusiq.com/
     - "00:30":
     - "01:00":
     - "01:30":
@@ -53,6 +56,9 @@ schedule:
     - "21:00":
     - "21:30":
     - "22:00":
+        title: Youtube Sequencer
+        author: Andrew Boylan
+        url: https://youtubesequencer.com/
     - "22:30":
     - "23:00":
     - "23:30":
@@ -71,6 +77,8 @@ schedule:
     - "04:30":
     - "05:00":
     - "05:30":
+        title: Nest
+        url: https://nest.oo8.be/
     - "06:00":
     - "06:30":
     - "07:00":
@@ -99,6 +107,8 @@ schedule:
     - "17:00":
     - "17:30":
     - "18:00":
+        title: Radio Garden
+        url: https://radio.garden/
     - "18:30":
     - "19:00":
     - "19:30":
@@ -125,6 +135,9 @@ schedule:
     - "04:30":
     - "05:00":
     - "05:30":
+        title: George and Jonathan
+        author: George and Jonathan
+        url: https://www.georgeandjonathan.com/
     - "06:00":
     - "06:30":
     - "07:00":
@@ -155,6 +168,9 @@ schedule:
     - "17:00":
     - "17:30":
     - "18:00":
+        title: Yamanotes
+        author: Morgan Sleeper
+        url: https://yamanot.es/
     - "18:30":
     - "19:00":
     - "19:30":
@@ -196,6 +212,8 @@ schedule:
     - "11:00":
     - "11:30":
     - "12:00":
+        title: OverClocked ReMix
+        url: https://ocremix.org/
     - "12:30":
     - "13:00":
     - "13:30":
@@ -207,8 +225,17 @@ schedule:
     - "16:30":
     - "17:00":
     - "17:30":
+        title: Blokdust
+        author: Luke Phillips
+        url: https://femurdesign.com/blokdust/
     - "18:00":
+        title: Omni
+        author: Luke Phillips
+        url: https://femurdesign.com/omni/
     - "18:30":
+        title: Theremin
+        author: Luke Phillips
+        url: https://www.femurdesign.com/theremin/
     - "19:00":
     - "19:30":
     - "20:00":
@@ -236,6 +263,9 @@ schedule:
     - "04:00":
     - "04:30":
     - "05:00":
+        title: 10,000 Drum Machines
+        author: Maxwell Neely-Cohen
+        url: https://10kdrummachines.com/
     - "05:30":
     - "06:00":
     - "06:30":
@@ -246,6 +276,8 @@ schedule:
     - "09:00":
     - "09:30":
     - "10:00":
+        title: WFMU
+        url: https://wfmu.org/
     - "10:30":
     - "11:00":
     - "11:30":
@@ -258,8 +290,6 @@ schedule:
     - "15:00":
     - "15:30":
     - "16:00":
-        title: WFMU
-        url: https://wfmu.org/
     - "16:30":
         title: Ear Association
         author:
@@ -297,6 +327,8 @@ schedule:
     - "04:00":
     - "04:30":
     - "05:00":
+        title: Radio Gardening Summer School
+        url: https://radio.robidacollective.com/
     - "05:30":
     - "06:00":
     - "06:30":
@@ -307,6 +339,8 @@ schedule:
     - "09:00":
     - "09:30":
     - "10:00":
+        title: Radio Punctum
+        url: https://www.radiopunctum.cz/
     - "10:30":
     - "11:00":
     - "11:30":

@@ -137,11 +137,17 @@ schedule:
     - "10:30":
     - "11:00":
     - "11:30":
+        title: PONGS
+        author: Pippin Barr
+        url: https://pippinbarr.com/pongs/
     - "12:00":
     - "12:30":
     - "13:00":
     - "13:30":
     - "14:00":
+        title: Chesses
+        author: Pippin Barr
+        url: https://pippinbarr.com/chesses/
     - "14:30":
     - "15:00":
     - "15:30":
@@ -173,6 +179,9 @@ schedule:
     - "01:00":
     - "01:30":
     - "02:00":
+        title: Horse Dot Com
+        author: Junior Vigneault
+        url: https://www.juniorvigneault.com/projects/horsedotcom/index.html
     - "02:30":
     - "03:00":
     - "03:30":
@@ -182,6 +191,9 @@ schedule:
     - "05:30":
     - "06:00":
     - "06:30":
+        title: Nomido
+        author: The Browser
+        url: https://thebrowser.com/nomido-game/
     - "07:00":
     - "07:30":
     - "08:00":
@@ -323,6 +335,9 @@ schedule:
     - "17:30":
     - "18:00":
     - "18:30":
+        title: Sandwich Alignment Game
+        author: Andrew Boylan
+        url: https://sandwich-alignment.vercel.app/game
     - "19:00":
     - "19:30":
     - "20:00":

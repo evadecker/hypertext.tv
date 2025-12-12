@@ -19,12 +19,18 @@ schedule:
     - "05:30":
     - "06:00":
     - "06:30":
+        title: On A Sunbeam
+        author: Tillie Walden
+        url: https://www.onasunbeam.com/
     - "07:00":
     - "07:30":
     - "08:00":
     - "08:30":
     - "09:00":
     - "09:30":
+        title: Traffic Cam Photobooth
+        author: WTTDOTM
+        url: https://trafficcamphotobooth.com/
     - "10:00":
     - "10:30":
     - "11:00":
@@ -51,6 +57,8 @@ schedule:
     - "19:00":
     - "19:30":
     - "20:00":
+        title: Robida Collective
+        url: https://robidacollective.com/
     - "20:30":
     - "21:00":
     - "21:30":
@@ -86,6 +94,8 @@ schedule:
     - "07:00":
     - "07:30":
     - "08:00":
+        title: Sun Clock
+        url: https://sunclock.net/
     - "08:30":
     - "09:00":
     - "09:30":
@@ -101,6 +111,9 @@ schedule:
     - "12:00":
     - "12:30":
     - "13:00":
+        title: Damsels Don't Wear Glasses
+        author: J. Alice Bown
+        url: https://damsels-dont-wear-glasses.com/
     - "13:30":
     - "14:00":
     - "14:30":
@@ -117,6 +130,9 @@ schedule:
     - "19:00":
     - "19:30":
     - "20:00":
+        title: Ninety Nine Plus Nine
+        author: Tiger Dingsun
+        url: https://108.tiger.exposed/
     - "20:30":
     - "21:00":
     - "21:30":
@@ -139,6 +155,9 @@ schedule:
     - "03:00":
     - "03:30":
     - "04:00":
+        title: ASCII Theater
+        author: MSCHF
+        url: https://ascii.theater/
     - "04:30":
     - "05:00":
     - "05:30":
@@ -147,12 +166,18 @@ schedule:
     - "07:00":
     - "07:30":
     - "08:00":
+        title: XKCD
+        author: Randall Munroe
+        url: https://xkcd.com/
     - "08:30":
     - "09:00":
     - "09:30":
     - "10:00":
     - "10:30":
     - "11:00":
+        title: Fungal Page
+        author: Raphaël Bastide
+        url: https://fungal.page/
     - "11:30":
     - "12:00":
     - "12:30":
@@ -168,10 +193,16 @@ schedule:
     - "16:00":
     - "16:30":
     - "17:00":
+        title: David Lanham
+        author: David Lanham
+        url: https://www.dlanham.com/
     - "17:30":
     - "18:00":
     - "18:30":
     - "19:00":
+        title: Mondrian and Me
+        author: Tim Holman
+        url: https://mondrianandme.com/
     - "19:30":
     - "20:00":
     - "20:30":
@@ -204,12 +235,18 @@ schedule:
     - "07:00":
     - "07:30":
     - "08:00":
-    - "08:30":
+    - "08:30": 
+        title: Digital Collage Gallery
+        author: Oritsemughone Ogbemi
+        url: https://tsemone.com/gallery.html
     - "09:00":
     - "09:30":
     - "10:00":
     - "10:30":
     - "11:00":
+        title: Three Word Phrase
+        author: Ryan Pequin
+        url: https://threewordphrase.com/
     - "11:30":
     - "12:00":
     - "12:30":
@@ -219,6 +256,9 @@ schedule:
     - "14:30":
     - "15:00":
     - "15:30":
+        title: Floor 796
+        author: Pavel Sannikau
+        url: https://floor796.com/
     - "16:00":
     - "16:30":
     - "17:00":
@@ -246,6 +286,8 @@ schedule:
     - "02:00":
     - "02:30":
     - "03:00":
+        title: Lorem Ipsum
+        url: https://t-h-e-s-p-a-c-e.com/lorem-ipsum/
     - "03:30":
     - "04:00":
     - "04:30":
@@ -255,11 +297,19 @@ schedule:
     - "06:30":
     - "07:00":
     - "07:30":
+        title: Jordan Belson Landscapes
+        author: Jordan Belson
+        url: https://matthewmarks.com/online/jordan-belson
     - "08:00":
     - "08:30":
     - "09:00":
     - "09:30":
     - "10:00":
+        title: C0DA
+        author:
+          - Michael Kirkbride
+          - Many Elder Scrolls fans
+        url: https://c0da.es/
     - "10:30":
     - "11:00":
     - "11:30":
@@ -269,6 +319,9 @@ schedule:
         url: https://proto.sh/
     - "12:30":
     - "13:00":
+        title: Objectified
+        author: Chester Fernandez
+        url: https://www.objectifiedcomic.com/
     - "13:30":
     - "14:00":
     - "14:30":
@@ -278,12 +331,20 @@ schedule:
     - "16:30":
     - "17:00":
     - "17:30":
+        title: Unseen Garden
+        author: 
+          - Chris Hamamoto
+          - Federico Perez Villoro
+        url: https://www.unseen.garden/
     - "18:00":
     - "18:30":
     - "19:00":
     - "19:30":
     - "20:00":
     - "20:30":
+        title: I Never Want to See the Same Image Twice
+        author: Tiger Dingsun
+        url: https://tdingsun.github.io/dp/
     - "21:00":
     - "21:30":
     - "22:00":
@@ -306,12 +367,17 @@ schedule:
     - "05:00":
     - "05:30":
     - "06:00":
+        title: these are clouds
+        author: Dana Teagle
+        url: https://clouds.danateagle.com/
     - "06:30":
     - "07:00":
     - "07:30":
     - "08:00":
     - "08:30":
     - "09:00":
+        title: Cloudgazing Online
+        url: https://cloudgazing.online/
     - "09:30":
     - "10:00":
     - "10:30":
@@ -327,6 +393,9 @@ schedule:
     - "14:00":
     - "14:30":
     - "15:00":
+        title: Body Language, A Collaborative Collage
+        author: Andrew Boylan
+        url: https://freewaterhouse.com/collage/
     - "15:30":
     - "16:00":
     - "16:30":

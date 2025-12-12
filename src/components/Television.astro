@@ -41,12 +41,9 @@ const { activeProgram, channelId, channelName } = Astro.props;
     selector: string,
     attribute: string,
     defaultValue: string = "0",
-    detailProperty?: string,
+    detailProperty: string,
   ): void {
-    // Use the specified detail property or fall back to the attribute name without 'data-' prefix
-    const localStorageKey = detailProperty || attribute.replace("data-", "");
-
-    const savedValue = localStorage.getItem(localStorageKey) || defaultValue;
+    const savedValue = localStorage.getItem(detailProperty) || defaultValue;
     setAttributeOnElement(selector, attribute, savedValue);
   }
 
@@ -54,12 +51,10 @@ const { activeProgram, channelId, channelName } = Astro.props;
     eventName: string,
     selector: string,
     attribute: string,
-    detailProperty?: string,
+    detailProperty: string,
   ): void {
     document.addEventListener(eventName, ((e: CustomEvent) => {
-      // Use the specified detail property or fall back to the attribute name without 'data-' prefix
-      const propertyName = detailProperty || attribute.replace("data-", "");
-      const value = e.detail[propertyName];
+      const value = e.detail[detailProperty];
       setAttributeOnElement(selector, attribute, value);
     }) as EventListener);
   }
@@ -70,7 +65,7 @@ const { activeProgram, channelId, channelName } = Astro.props;
       selector: ".scanlines",
       attribute: "data-active",
       defaultValue: "true",
-      detailProperty: "enabled",
+      detailProperty: "scanlines",
     },
     {
       event: "brightnessChange",
@@ -111,6 +106,7 @@ const { activeProgram, channelId, channelName } = Astro.props;
       setting.selector,
       setting.attribute,
       setting.defaultValue,
+      setting.detailProperty,
     );
   });
 

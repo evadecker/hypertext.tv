@@ -46,6 +46,9 @@ schedule:
     - "18:00":
     - "18:30":
     - "19:00":
+        title: Subway Jingles
+        author: Greg Sadetsky
+        url: https://subwayjingles.com/
     - "19:30":
     - "20:00":
     - "20:30":
@@ -61,6 +64,9 @@ schedule:
     - "01:00":
     - "01:30":
     - "02:00":
+        title: macOS Screenshot Library
+        author: Stephen Hackett
+        url: https://512pixels.net/projects/aqua-screenshot-library/
     - "02:30":
     - "03:00":
     - "03:30":
@@ -79,6 +85,9 @@ schedule:
     - "09:00":
     - "09:30":
     - "10:00":
+        title: Reccs
+        author: Greg Sadetsky
+        url: https://reccs.greg.technology/
     - "10:30":
     - "11:00":
     - "11:30":
@@ -99,6 +108,8 @@ schedule:
     - "18:00":
     - "18:30":
     - "19:00":
+        title: Animated GIFs Lines
+        url: https://caccioppoli.com/Animated%20gifs%20lines.html
     - "19:30":
     - "20:00":
     - "20:30":
@@ -120,6 +131,9 @@ schedule:
     - "02:30":
     - "03:00":
     - "03:30":
+        title: Mac Themes Garden
+        author: Damien Erambert
+        url: https://macthemes.garden
     - "04:00":
     - "04:30":
     - "05:00":
@@ -127,12 +141,17 @@ schedule:
     - "06:00":
     - "06:30":
     - "07:00":
+        title: Guidebook
+        url: https://guidebookgallery.org/
     - "07:30":
     - "08:00":
     - "08:30":
     - "09:00":
     - "09:30":
     - "10:00":
+        title: The Ultimate Collection of Weapons
+        author: Luke Steuber
+        url: https://assisted.site/viewport/full/graphics/typonomy/things/weapons/
     - "10:30":
     - "11:00":
     - "11:30":
@@ -143,6 +162,8 @@ schedule:
     - "14:00":
     - "14:30":
     - "15:00":
+        title: Site of Sites
+        url: https://www.siteofsites.co/
     - "15:30":
     - "16:00":
     - "16:30":
@@ -176,6 +197,8 @@ schedule:
     - "03:00":
     - "03:30":
     - "04:00":
+        title: Pokémon TCG Archive
+        url: https://ptcgarchive.com/
     - "04:30":
     - "05:00":
     - "05:30":
@@ -183,6 +206,9 @@ schedule:
     - "06:30":
     - "07:00":
     - "07:30":
+        title: Geokash
+        author: Katarina Lingat
+        url: https://geokash.com/
     - "08:00":
     - "08:30":
     - "09:00":
@@ -207,12 +233,17 @@ schedule:
     - "17:00":
     - "17:30":
     - "18:00":
+        title: Fictional Brands Archive
+        author: Lorenzo Bernini
+        url: https://fictionalbrandsarchive.com/
     - "18:30":
     - "19:00":
     - "19:30":
     - "20:00":
     - "20:30":
     - "21:00":
+        title: Fifty Thousand Names
+        url: https://fiftythousandnames.org/
     - "21:30":
     - "22:00":
     - "22:30":
@@ -229,6 +260,8 @@ schedule:
     - "03:30":
     - "04:00":
     - "04:30":
+        title: Exercise Book Archive
+        url: https://www.exercisebookarchive.org/
     - "05:00":
     - "05:30":
     - "06:00":
@@ -238,18 +271,21 @@ schedule:
     - "08:00":
     - "08:30":
     - "09:00":
+        title: The Hydrant Directory
+        author: day lane
+        url: https://www.dayroselane.com/hydrants
     - "09:30":
     - "10:00":
     - "10:30":
     - "11:00":
     - "11:30":
+        title: Websitesite
+        author: Jisu
+        url: https://websitesite.xyz/
     - "12:00":
     - "12:30":
     - "13:00":
     - "13:30":
-        title: The Hydrant Directory
-        author: day lane
-        url: https://www.dayroselane.com/hydrants
     - "14:00":
         title: Hardware Archive
         author: Liang-Jung Chen
@@ -259,11 +295,17 @@ schedule:
     - "15:30":
     - "16:00":
     - "16:30":
+        title: Roddenberry Archive
+        author: Eugene Roddenberry
+        url: https://archive.x.io/
     - "17:00":
     - "17:30":
     - "18:00":
     - "18:30":
     - "19:00":
+        title: The Frutiger Aero Archive
+        author: Daniele
+        url: https://frutigeraeroarchive.org/
     - "19:30":
     - "20:00":
     - "20:30":
@@ -290,6 +332,9 @@ schedule:
     - "05:00":
     - "05:30":
     - "06:00":
+        title: Public Domain Image Archive
+        author: The Public Domain Review
+        url: https://pdimagearchive.org/
     - "06:30":
     - "07:00":
     - "07:30":
@@ -298,10 +343,15 @@ schedule:
     - "09:00":
     - "09:30":
     - "10:00":
+        title: Fictional Brands Archive
+        author: Lorenzo Bernini
+        url: https://fictionalbrandsarchive.com/
     - "10:30":
     - "11:00":
     - "11:30":
     - "12:00":
+        title: Consumed Today
+        url: https://consumed.today/
     - "12:30":
     - "13:00":
     - "13:30":
@@ -317,6 +367,9 @@ schedule:
     - "17:30":
     - "18:00":
     - "18:30":
+        title: Arabic Design Archive
+        author: Design Repository
+        url: https://arabicdesignarchive.com/
     - "19:00":
     - "19:30":
     - "20:00":
@@ -336,6 +389,9 @@ schedule:
     - "02:30":
     - "03:00":
     - "03:30":
+        title: Black Film Archive
+        author: Maya S. Cade
+        url: https://blackfilmarchive.com/
     - "04:00":
     - "04:30":
     - "05:00":
@@ -345,6 +401,8 @@ schedule:
     - "07:00":
     - "07:30":
     - "08:00":
+        title: NYPL Digital Collections
+        url: https://digitalcollections.nypl.org/
     - "08:30":
     - "09:00":
     - "09:30":
@@ -366,6 +424,9 @@ schedule:
     - "15:00":
     - "15:30":
     - "16:00":
+        title: Unparalleled Misalignments
+        author: Ricki Heicklen
+        url: https://rickiheicklen.com/unparalleled-misalignments.html
     - "16:30":
     - "17:00":
     - "17:30":
@@ -378,6 +439,13 @@ schedule:
     - "19:30":
     - "20:00":
     - "20:30":
+        title: Thinking with Moss
+        author: 
+          - Elaine Ayers
+          - Ahmed Ansari
+          - Tega Brain
+          - Laura Briscoe
+        url: https://www.thinkingwithmoss.net/
     - "21:00":
     - "21:30":
     - "22:00":

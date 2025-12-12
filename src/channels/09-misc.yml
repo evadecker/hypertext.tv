@@ -50,6 +50,9 @@ schedule:
     - "20:00":
     - "20:30":
     - "21:00":
+        title: tarotmancer
+        author: tyler broussard
+        url: https://tarotmancer.com/
     - "21:30":
     - "22:00":
     - "22:30":
@@ -72,6 +75,9 @@ schedule:
     - "05:00":
     - "05:30":
     - "06:00":
+        title: Resizabill
+        author: Anatoly Zenkov
+        url: https://anatolyzenkov.com/resizabill
     - "06:30":
     - "07:00":
     - "07:30":
@@ -84,6 +90,9 @@ schedule:
     - "11:00":
     - "11:30":
     - "12:00":
+        title: Nokia 3250
+        author: Chaz.Fun
+        url: https://chaz.fun/phone/3250/
     - "12:30":
     - "13:00":
     - "13:30":
@@ -122,6 +131,9 @@ schedule:
     - "04:30":
     - "05:00":
     - "05:30":
+        title: Pug in a Rug
+        author: Tim Holman
+        url: https://puginarug.com/
     - "06:00":
     - "06:30":
     - "07:00":
@@ -137,6 +149,9 @@ schedule:
     - "12:00":
     - "12:30":
     - "13:00":
+        title: The Finger
+        author: Tim Holman
+        url: https://thatsthefinger.com/
     - "13:30":
     - "14:00":
     - "14:30":
@@ -182,6 +197,8 @@ schedule:
     - "09:00":
     - "09:30":
     - "10:00":
+        title: Carveat Emptor
+        url: https://snell.zone/carveat/
     - "10:30":
     - "11:00":
     - "11:30":
@@ -320,6 +337,9 @@ schedule:
     - "23:30":
   sunday:
     - "00:00":
+        title: The Parodical Periodical.
+        author: Fulvous Top
+        url: https://www.parodicalperiodical.org/
     - "00:30":
     - "01:00":
     - "01:30":

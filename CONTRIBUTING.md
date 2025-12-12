@@ -7,13 +7,15 @@ Add your sites to Hypertext TV.
 We'll air [handmade websites](https://luckysoap.com/statements/handmadeweb.html) of any size! Games, personal sites, art, poetry, interactive experiences, toys, explorations—anything special. It can be a small as [a single photo of a potato](https://po.ta.to/) or as large as an [interactive explorable about mechanical watches](https://ciechanow.ski/mechanical-watch/).
 
 > [!IMPORTANT]  
-> We do not accept:
-> 
-> - Links to large platforms like YouTube, Instagram, Spotify, Soundcloud, Medium, etc.
-> - Marketing sites or anything with ads
-> - AI-generated content
-> - Sites promoting racism, homophobia, transphobia, fatphobia, or other assholery
-> - Insecure sites (sites *must* use the `https://` protocol, not `http://`)
+> Acceptance criteria:
+>
+> 1. No sites promoting racism, homophobia, transphobia, sexism, fatphobia, or other assholery
+> 2. No links to large platforms like YouTube, Instagram, Spotify, Soundcloud, Medium, etc.
+> 3. No marketing sites or anything with ads
+> 4. No AI-generated content
+> 5. No insecure sites (sites must use the `https://` protocol)
+
+Right now, all sites on HTTV must be in English. However, there is an open [discussion](https://github.com/evadecker/hypertext.tv/discussions/64) about accepting non-English sites. If you have a site in a language other than English which you want to submit, please [add it to the discussion thread](https://github.com/evadecker/hypertext.tv/discussions/64) so I can gauge interest.
 
 ## How do I add my site?
 
@@ -25,17 +27,31 @@ Create a pull request against this repository by [forking it](https://docs.githu
 4. Add your site details. For example:
 
 ```yml
-# The selected day of the week
 - wednesday:
-  # The selected time to air, formatted as 24h time, within quotes
   - "14:00": 
-      # The title of your website
       title: Design Is 
-      # (Optional) Your name, nickname, or handle, to be displayed on the credits page
-      # Multiple authors can be listed
+      # (Optional) Your name, nickname, or handle
+      # To be displayed on the credits page
       author: Eva Decker 
       # A link to your website, using https://
       url: https://design.eva.town 
+
+      # Important: YAML is whitespace-sensitive.
+      # Make sure your entries are indented 2 spaces beneath the time block!
+```
+
+If you need to credit multiple authors, you can do so like this:
+
+```yml
+- friday:
+  - "16:30"
+      title: Ear Association
+      author:
+        - Evy Kassirer
+        - Jacob deGroot-Maggetti
+      url: https://ear-association.github.io/
+
+      # Again: make sure YAML is indented correctly!
 ```
 
 5. Save and commit your changes, then [open a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request).

@@ -173,6 +173,9 @@ schedule:
     - "14:30":
     - "15:00":
     - "15:30":
+        title: Virtual Free Little Library
+        author: Andrew Boylan
+        url: https://freewaterhouse.com/library/lending_library.php
     - "16:00":
     - "16:30":
     - "17:00":
@@ -245,7 +248,7 @@ schedule:
     - "00:00":
         title: i feel so much shame
         author: Jackie Liu
-        url: https://ifeelsomuchshame.me/
+        url: https://ifeelsomuchsha.me/
     - "00:30":
     - "01:00":
     - "01:30":

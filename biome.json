@@ -13,7 +13,10 @@
       "**/node_modules",
       "**/playwright-report",
       ".netlify",
-      ".astro"
+      ".astro",
+      ".wrangler",
+      "env.d.ts",
+      "worker-configuration.d.ts"
     ]
   },
   "formatter": {
