@@ -161,13 +161,14 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
 
     .title-background {
       color: var(--phosphor-inactive);
+      opacity: 0.6;
       z-index: 0;
       pointer-events: none;
     }
 
     .secondary {
       color: color-mix(in srgb, var(--phosphor-active) 40%, transparent);
-      font-size: 0.48em;
+      font-size: 0.55em;
       margin-bottom: -0.4rem;
       display: flex;
       justify-content: space-between;
@@ -191,6 +192,7 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
       background: var(--phosphor-inactive);
       border-radius: 50%;
       margin-right: 0.5em;
+      transform: translateY(-0.05em);
     }
 
     .airing-container {
@@ -210,7 +212,6 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
       .airing-indicator {
         background: var(--phosphor-active);
         box-shadow: var(--phosphor-glow);
-        animation: live-pulse 3s ease infinite;
       }
     }
   }
