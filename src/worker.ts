@@ -1,16 +1,11 @@
 import { DurableObject } from "cloudflare:workers";
 import { handle } from "@astrojs/cloudflare/handler";
+import type { VisitorData } from "@types";
 import type { SSRManifest } from "astro";
 import { App } from "astro/app";
 
 export interface Env {
   VISITOR_TRACKER: DurableObjectNamespace<VisitorTracker>;
-}
-
-interface VisitorMessage {
-  type: "count" | "history";
-  total?: number;
-  history?: number[];
 }
 
 export class VisitorTracker extends DurableObject<Env> {
@@ -96,7 +91,7 @@ export class VisitorTracker extends DurableObject<Env> {
 
   private broadcastCount(): void {
     const actualCount = Math.max(1, this.connections.size);
-    const message: VisitorMessage = {
+    const message: VisitorData = {
       type: "count",
       total: actualCount,
       history: this.history,
@@ -114,7 +109,7 @@ export class VisitorTracker extends DurableObject<Env> {
     }
   }
 
-  private sendToClient(ws: WebSocket, message: VisitorMessage): void {
+  private sendToClient(ws: WebSocket, message: VisitorData): void {
     try {
       ws.send(JSON.stringify(message));
     } catch (e) {

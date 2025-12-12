@@ -1,10 +1,37 @@
 ---
 import { SPARKLINE_CONFIG, SVG_WIDTH } from "@constants/viewerCount";
+import type { VisitorData } from "@types";
 
-const initialVisitorData = {
+// Fetch real visitor data server-side
+let initialVisitorData = {
   total: 1,
   history: Array(SPARKLINE_CONFIG.MAX_HISTORY_POINTS).fill(1),
 };
+
+try {
+  const VisitorTrackerNamespace = Astro.locals.runtime?.env?.VisitorTracker;
+
+  if (VisitorTrackerNamespace) {
+    const id = VisitorTrackerNamespace.idFromName("global");
+    const stub = VisitorTrackerNamespace.get(id);
+
+    const response = await stub.fetch(new Request("http://internal/visitors"));
+
+    if (response.ok) {
+      const data = (await response.json()) as VisitorData;
+      initialVisitorData = {
+        total: data.total ?? 1,
+        history:
+          Array.isArray(data.history) && data.history.length > 0
+            ? data.history
+            : initialVisitorData.history,
+      };
+    }
+  }
+} catch (error) {
+  // Fallback to default data if fetching fails
+  console.warn("Failed to fetch initial visitor data:", error);
+}
 
 function generateBars(history: number[]) {
   const SOFT_MIN = 5;
@@ -30,10 +57,7 @@ function generateBars(history: number[]) {
 }
 ---
 
-<viewer-count
-  data-initial-visitors={JSON.stringify(initialVisitorData)}
-  transition:persist
->
+<viewer-count data-initial-visitors={JSON.stringify(initialVisitorData)}>
   <svg class="visitor-trend" width={SVG_WIDTH} height="15">
     <g class="trend-bars" set:html={generateBars(initialVisitorData.history)} />
   </svg>
@@ -77,6 +101,7 @@ function generateBars(history: number[]) {
 
 <script>
   import { SPARKLINE_CONFIG } from "@constants/viewerCount";
+  import type { VisitorData } from "@types";
 
   const WEBSOCKET_CONFIG = {
     MAX_RECONNECT_ATTEMPTS: 10,
@@ -87,12 +112,6 @@ function generateBars(history: number[]) {
   } as const;
 
   const DEV_HOSTNAMES = ["localhost", "127.0.0.1"] as const;
-
-  type VisitorData = {
-    type: string;
-    total?: number;
-    history?: number[];
-  };
 
   class GlobalVisitorWebSocket {
     private static instance: GlobalVisitorWebSocket | null = null;
