@@ -1,12 +1,7 @@
 ---
-import { SPARKLINE_CONFIG, SVG_WIDTH } from "@constants/viewerCount";
 import type { VisitorData } from "@types";
 
-// Fetch real visitor data server-side
-let initialVisitorData = {
-  total: 1,
-  history: Array(SPARKLINE_CONFIG.MAX_HISTORY_POINTS).fill(1),
-};
+let initialVisitorCount = 1;
 
 try {
   const VisitorTrackerNamespace = Astro.locals.runtime?.env?.VisitorTracker;
@@ -19,52 +14,31 @@ try {
 
     if (response.ok) {
       const data = (await response.json()) as VisitorData;
-      initialVisitorData = {
-        total: data.total ?? 1,
-        history:
-          Array.isArray(data.history) && data.history.length > 0
-            ? data.history
-            : initialVisitorData.history,
-      };
+      initialVisitorCount = data.total ?? 1;
     }
   }
 } catch (error) {
   // Fallback to default data if fetching fails
-  console.warn("Failed to fetch initial visitor data:", error);
+  console.warn("Failed to fetch initial visitor count:", error);
 }
 
-function generateBars(history: number[]) {
-  const SOFT_MIN = 5;
-  const maxValue = Math.max(...history, SOFT_MIN);
+function formatCountWithLeadingZeros(count: number): string {
+  const formatted = count.toString().padStart(3, "0");
+  const leadingZeros = formatted.match(/^0+/)?.[0] || "";
+  const actualNumber = formatted.slice(leadingZeros.length);
 
-  return history
-    .map((point, i) => {
-      const availableHeight =
-        SPARKLINE_CONFIG.HEIGHT - SPARKLINE_CONFIG.MIN_BAR_HEIGHT;
-      const scaledHeight =
-        point <= SOFT_MIN
-          ? SPARKLINE_CONFIG.MIN_BAR_HEIGHT +
-            availableHeight * (point / SOFT_MIN)
-          : SPARKLINE_CONFIG.HEIGHT *
-            (1 - (point - SOFT_MIN) / (maxValue - SOFT_MIN));
-      const barHeight = Math.max(SPARKLINE_CONFIG.MIN_BAR_HEIGHT, scaledHeight);
-      const x = i * (SPARKLINE_CONFIG.BAR_WIDTH + SPARKLINE_CONFIG.BAR_GAP);
-      const y = SPARKLINE_CONFIG.HEIGHT - barHeight;
-
-      return `<rect x="${x}" y="${y}" width="${SPARKLINE_CONFIG.BAR_WIDTH}" height="${barHeight}" rx="${SPARKLINE_CONFIG.BORDER_RADIUS}" fill="currentColor" />`;
-    })
-    .join("");
+  if (leadingZeros) {
+    return `<span class="leading-zeros">${leadingZeros}</span>${actualNumber}`;
+  }
+  return actualNumber;
 }
 ---
 
-<viewer-count
-  data-initial-visitors={JSON.stringify(initialVisitorData)}
-  transition:persist
->
-  <svg class="visitor-trend" width={SVG_WIDTH} height="15">
-    <g class="trend-bars" set:html={generateBars(initialVisitorData.history)} />
-  </svg>
-  <span class="count">{initialVisitorData.total}</span> watching
+<viewer-count data-initial-count={initialVisitorCount} transition:persist>
+  <span
+    class="count"
+    set:html={formatCountWithLeadingZeros(initialVisitorCount)}
+  /> watching
 </viewer-count>
 
 <style>
@@ -76,392 +50,168 @@ function generateBars(history: number[]) {
     text-shadow: var(--phosphor-glow);
   }
 
-  .visitor-trend {
-    overflow: visible;
-    position: relative;
-    /* Optical alignment */
-    transform: translateY(2px);
-  }
-
-  viewer-count .visitor-trend rect {
-    filter: drop-shadow(
-        0 0 2px color-mix(in srgb, currentColor 30%, transparent)
-      )
-      drop-shadow(0 0 4px color-mix(in srgb, currentColor 20%, transparent))
-      drop-shadow(0 0 8px color-mix(in srgb, currentColor 15%, transparent));
-  }
-
   :global([data-power="off"]) viewer-count {
     color: var(--phosphor-inactive);
     text-shadow: none;
   }
 
-  :global([data-power="off"]) viewer-count .visitor-trend rect {
-    fill: var(--phosphor-inactive);
-    filter: none;
+  viewer-count :global(.leading-zeros) {
+    color: var(--phosphor-inactive) !important;
+    text-shadow: none !important;
   }
 </style>
 
 <script>
-  import { SPARKLINE_CONFIG } from "@constants/viewerCount";
   import type { VisitorData } from "@types";
 
-  document.addEventListener("astro:page-load", () => {
-    const WEBSOCKET_CONFIG = {
-      MAX_RECONNECT_ATTEMPTS: 10,
-      INITIAL_BACKOFF_MS: 1000,
-      BACKOFF_MULTIPLIER: 2,
-      MAX_BACKOFF_MS: 30000,
-      API_PATH: "/api/visitors",
-    } as const;
+  const WEBSOCKET_CONFIG = {
+    MAX_RECONNECT_ATTEMPTS: 10,
+    INITIAL_BACKOFF_MS: 1000,
+    BACKOFF_MULTIPLIER: 2,
+    MAX_BACKOFF_MS: 30000,
+    API_PATH: "/api/visitors",
+  } as const;
 
-    const DEV_HOSTNAMES = ["localhost", "127.0.0.1"] as const;
+  const DEV_HOSTNAMES = ["localhost", "127.0.0.1"] as const;
 
-    class GlobalVisitorWebSocket {
-      private static instance: GlobalVisitorWebSocket | null = null;
-      private websocket: WebSocket | null = null;
-      private reconnectTimeout: number | null = null;
-      private reconnectAttempts: number = 0;
-      private isOnline: boolean = true;
-      private listeners: Set<(data: VisitorData) => void> = new Set();
-      private lastData: VisitorData | null = null;
+  class GlobalVisitorWebSocket {
+    private static instance: GlobalVisitorWebSocket | null = null;
+    private websocket: WebSocket | null = null;
+    private reconnectTimeout: number | null = null;
+    private reconnectAttempts: number = 0;
+    private isOnline: boolean = true;
+    private listeners: Set<(data: VisitorData) => void> = new Set();
 
-      private constructor() {
-        document.addEventListener("visibilitychange", () =>
-          this.handleVisibilityChange(),
-        );
+    private constructor() {
+      document.addEventListener("visibilitychange", () =>
+        this.handleVisibilityChange(),
+      );
+    }
+
+    static getInstance(): GlobalVisitorWebSocket {
+      if (!GlobalVisitorWebSocket.instance) {
+        GlobalVisitorWebSocket.instance = new GlobalVisitorWebSocket();
+      }
+      return GlobalVisitorWebSocket.instance;
+    }
+
+    private handleVisibilityChange(): void {
+      this.isOnline = document.visibilityState === "visible";
+      if (this.isOnline && !this.websocket) this.connect();
+    }
+
+    private shouldAttemptConnection(): boolean {
+      const isDevEnvironment = DEV_HOSTNAMES.includes(
+        window.location.hostname as (typeof DEV_HOSTNAMES)[number],
+      );
+      return !isDevEnvironment && this.isOnline;
+    }
+
+    connect(): void {
+      if (!this.shouldAttemptConnection()) return;
+      if (this.websocket?.readyState === WebSocket.OPEN) return;
+
+      // Close existing connection and clear timeout
+      if (this.websocket) {
+        this.websocket.close();
+        this.websocket = null;
+      }
+      if (this.reconnectTimeout !== null) {
+        clearTimeout(this.reconnectTimeout);
+        this.reconnectTimeout = null;
       }
 
-      static getInstance(): GlobalVisitorWebSocket {
-        if (!GlobalVisitorWebSocket.instance) {
-          GlobalVisitorWebSocket.instance = new GlobalVisitorWebSocket();
-        }
-        return GlobalVisitorWebSocket.instance;
-      }
-
-      private handleVisibilityChange(): void {
-        this.isOnline = document.visibilityState === "visible";
-        if (this.isOnline && !this.websocket) this.connect();
-      }
-
-      private isDevEnvironment(): boolean {
-        return DEV_HOSTNAMES.includes(
-          window.location.hostname as (typeof DEV_HOSTNAMES)[number],
-        );
-      }
-
-      private isConnected(): boolean {
-        return this.websocket?.readyState === WebSocket.OPEN;
-      }
-
-      private shouldAttemptConnection(): boolean {
-        return !this.isDevEnvironment() && this.isOnline;
-      }
-
-      private closeExistingConnection(): void {
-        if (this.websocket) {
-          this.websocket.close();
-          this.websocket = null;
-        }
-      }
-
-      private clearReconnectTimeout(): void {
-        if (this.reconnectTimeout !== null) {
-          clearTimeout(this.reconnectTimeout);
-          this.reconnectTimeout = null;
-        }
-      }
-
-      private getWebSocketUrl(): string {
+      try {
         const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-        const host = window.location.host;
-        return `${protocol}//${host}${WEBSOCKET_CONFIG.API_PATH}`;
-      }
-
-      private notifyListeners(data: VisitorData): void {
-        this.listeners.forEach((callback) => callback(data));
-      }
-
-      private calculateBackoffDelay(): number {
-        return Math.min(
-          WEBSOCKET_CONFIG.INITIAL_BACKOFF_MS *
-            Math.pow(
-              WEBSOCKET_CONFIG.BACKOFF_MULTIPLIER,
-              this.reconnectAttempts,
-            ),
-          WEBSOCKET_CONFIG.MAX_BACKOFF_MS,
+        this.websocket = new WebSocket(
+          `${protocol}//${window.location.host}${WEBSOCKET_CONFIG.API_PATH}`,
         );
-      }
 
-      connect(): void {
-        if (!this.shouldAttemptConnection() || this.isConnected()) return;
-
-        this.closeExistingConnection();
-        this.clearReconnectTimeout();
-
-        try {
-          this.websocket = new WebSocket(this.getWebSocketUrl());
-
-          this.websocket.addEventListener("open", () => {
-            this.reconnectAttempts = 0;
-          });
-
-          this.websocket.addEventListener("message", (event) => {
-            try {
-              const data = JSON.parse(event.data);
-              this.lastData = data;
-              this.notifyListeners(data);
-            } catch (error) {
-              console.error("Error parsing WebSocket message:", error);
-            }
-          });
-
-          this.websocket.addEventListener("close", () => {
-            this.websocket = null;
-            this.attemptReconnect();
-          });
-
-          this.websocket.addEventListener("error", () => {
-            this.closeExistingConnection();
-          });
-        } catch (error) {
-          console.error("Failed to create WebSocket:", error);
-          this.attemptReconnect();
-        }
-      }
-
-      private attemptReconnect(): void {
-        if (!this.shouldAttemptConnection()) return;
-        if (this.reconnectAttempts >= WEBSOCKET_CONFIG.MAX_RECONNECT_ATTEMPTS)
-          return;
-
-        const delay = this.calculateBackoffDelay();
-        this.reconnectAttempts++;
-
-        this.reconnectTimeout = window.setTimeout(() => {
-          this.connect();
-        }, delay);
-      }
-
-      addListener(callback: (data: VisitorData) => void): void {
-        this.listeners.add(callback);
-        // If we already have data, immediately send it to the new listener
-        if (this.lastData) {
-          callback(this.lastData);
-        }
-      }
-
-      removeListener(callback: (data: VisitorData) => void): void {
-        this.listeners.delete(callback);
-      }
-
-      disconnect(): void {
-        this.clearReconnectTimeout();
-        this.closeExistingConnection();
-      }
-    }
-
-    const MESSAGE_TYPE = {
-      COUNT: "count",
-    } as const;
-
-    class ViewerCount extends HTMLElement {
-      private visitorHistory: number[] = [];
-      private messageHandler: ((data: VisitorData) => void) | null = null;
-      private currentVisitorCount: number = 1;
-      private sparklineInterval: number | null = null;
-      private readonly SPARKLINE_UPDATE_INTERVAL_MS = 5000; // 5 seconds
-
-      constructor() {
-        super();
-        this.visitorHistory = new Array(
-          SPARKLINE_CONFIG.MAX_HISTORY_POINTS,
-        ).fill(SPARKLINE_CONFIG.MIN_VALUE_TO_AVOID_DIVISION_BY_ZERO);
-      }
-
-      private createVisitorCountHandler(): (data: VisitorData) => void {
-        return (data: VisitorData) => {
-          if (data.type === MESSAGE_TYPE.COUNT) {
-            // Update current visitor count
-            this.currentVisitorCount = data.total ?? 1;
-
-            // Update display immediately
-            this.updateVisitorCountDisplay(this.currentVisitorCount);
-            this.updateActiveState(this.currentVisitorCount);
-
-            // If server provides history, use it to initialize
-            if (
-              data.history &&
-              Array.isArray(data.history) &&
-              data.history.length > 0
-            ) {
-              this.visitorHistory = this.normalizeHistoryLength(data.history);
-              this.updateSparkline();
-            }
-          }
-        };
-      }
-
-      private updateVisitorCountDisplay(count: number): void {
-        const countElement = this.querySelector(".count");
-        if (countElement) {
-          countElement.textContent = count.toString();
-        }
-      }
-
-      private setupLiveUpdates(): void {
-        const globalWS = GlobalVisitorWebSocket.getInstance();
-        this.messageHandler = this.createVisitorCountHandler();
-        globalWS.addListener(this.messageHandler);
-        globalWS.connect();
-      }
-
-      private getSparklineElements(): {
-        trendBars: SVGGElement | null;
-        svgElement: SVGElement | null;
-      } {
-        return {
-          trendBars: this.querySelector(".trend-bars"),
-          svgElement: this.querySelector(".visitor-trend"),
-        };
-      }
-
-      private setupSparkline(): void {
-        this.updateSparkline();
-        this.startSparklineInterval();
-      }
-
-      private startSparklineInterval(): void {
-        // Clear any existing interval
-        if (this.sparklineInterval !== null) {
-          clearInterval(this.sparklineInterval);
-        }
-
-        // Add current visitor count to history every 5 seconds
-        this.sparklineInterval = window.setInterval(() => {
-          this.addDataPointToHistory(this.currentVisitorCount);
-          this.updateSparkline();
-        }, this.SPARKLINE_UPDATE_INTERVAL_MS);
-      }
-
-      private stopSparklineInterval(): void {
-        if (this.sparklineInterval !== null) {
-          clearInterval(this.sparklineInterval);
-          this.sparklineInterval = null;
-        }
-      }
-
-      private addDataPointToHistory(value: number): void {
-        // Shift history forward and add new value
-        this.visitorHistory = [...this.visitorHistory.slice(1), value];
-      }
-
-      private createSparklineBar(
-        value: number,
-        index: number,
-        maxValue: number,
-      ): SVGRectElement {
-        const percentage = value / maxValue;
-        const barHeight = Math.max(
-          SPARKLINE_CONFIG.MIN_BAR_HEIGHT,
-          SPARKLINE_CONFIG.HEIGHT * percentage,
-        );
-        const x =
-          index * (SPARKLINE_CONFIG.BAR_WIDTH + SPARKLINE_CONFIG.BAR_GAP);
-        const y = SPARKLINE_CONFIG.HEIGHT - barHeight;
-
-        const rect = document.createElementNS(
-          SPARKLINE_CONFIG.SVG_NAMESPACE,
-          "rect",
-        ) as SVGRectElement;
-        rect.setAttribute("x", x.toString());
-        rect.setAttribute("y", y.toString());
-        rect.setAttribute("width", SPARKLINE_CONFIG.BAR_WIDTH.toString());
-        rect.setAttribute("height", barHeight.toString());
-        rect.setAttribute("rx", SPARKLINE_CONFIG.BORDER_RADIUS);
-        rect.setAttribute("fill", "currentColor");
-
-        return rect;
-      }
-
-      private renderSparklineBars(
-        trendBars: SVGGElement,
-        maxValue: number,
-      ): void {
-        trendBars.innerHTML = "";
-        this.visitorHistory.forEach((point, idx) => {
-          const bar = this.createSparklineBar(point, idx, maxValue);
-          trendBars.appendChild(bar);
+        this.websocket.addEventListener("open", () => {
+          this.reconnectAttempts = 0;
         });
-      }
 
-      private updateSparkline(): void {
-        const { trendBars, svgElement } = this.getSparklineElements();
-        if (!trendBars || !svgElement) return;
-
-        const maxValue = Math.max(
-          ...this.visitorHistory,
-          SPARKLINE_CONFIG.MIN_VALUE_TO_AVOID_DIVISION_BY_ZERO,
-        );
-
-        this.renderSparklineBars(trendBars, maxValue);
-      }
-
-      private normalizeHistoryLength(history: number[]): number[] {
-        const targetLength = SPARKLINE_CONFIG.MAX_HISTORY_POINTS;
-
-        while (history.length < targetLength) {
-          history.unshift(1);
-        }
-        while (history.length > targetLength) {
-          history.shift();
-        }
-
-        return history;
-      }
-
-      private updateActiveState(count: number): void {
-        this.setAttribute("data-active", (count > 0).toString());
-      }
-
-      connectedCallback(): void {
-        // Initialize from server-rendered data
-        const initialData = this.dataset.initialVisitors;
-        if (initialData) {
+        this.websocket.addEventListener("message", (event) => {
           try {
-            const parsed = JSON.parse(initialData);
-            this.currentVisitorCount = parsed.total ?? 1;
-            if (
-              parsed.history &&
-              Array.isArray(parsed.history) &&
-              parsed.history.length > 0
-            ) {
-              this.visitorHistory = this.normalizeHistoryLength(parsed.history);
-            }
+            const data = JSON.parse(event.data);
+            this.listeners.forEach((callback) => callback(data));
           } catch (error) {
-            console.error("Failed to parse initial visitor data:", error);
+            console.error("Error parsing WebSocket message:", error);
           }
-        }
+        });
 
-        this.setupSparkline();
-        this.setupLiveUpdates();
-      }
+        this.websocket.addEventListener("close", () => {
+          this.websocket = null;
+          this.attemptReconnect();
+        });
 
-      disconnectedCallback(): void {
-        // Clean up WebSocket listener
-        if (this.messageHandler) {
-          const globalWS = GlobalVisitorWebSocket.getInstance();
-          globalWS.removeListener(this.messageHandler);
-          this.messageHandler = null;
-        }
-
-        // Clean up sparkline interval
-        this.stopSparklineInterval();
+        this.websocket.addEventListener("error", () => {
+          if (this.websocket) {
+            this.websocket.close();
+            this.websocket = null;
+          }
+        });
+      } catch (error) {
+        console.error("Failed to create WebSocket:", error);
+        this.attemptReconnect();
       }
     }
 
-    if (!customElements.get("viewer-count")) {
-      customElements.define("viewer-count", ViewerCount);
+    private attemptReconnect(): void {
+      if (!this.shouldAttemptConnection()) return;
+      if (this.reconnectAttempts >= WEBSOCKET_CONFIG.MAX_RECONNECT_ATTEMPTS)
+        return;
+
+      const delay = Math.min(
+        WEBSOCKET_CONFIG.INITIAL_BACKOFF_MS *
+          Math.pow(WEBSOCKET_CONFIG.BACKOFF_MULTIPLIER, this.reconnectAttempts),
+        WEBSOCKET_CONFIG.MAX_BACKOFF_MS,
+      );
+      this.reconnectAttempts++;
+
+      this.reconnectTimeout = window.setTimeout(() => {
+        this.connect();
+      }, delay);
     }
-  });
+
+    addListener(callback: (data: VisitorData) => void): void {
+      this.listeners.add(callback);
+    }
+
+    removeListener(callback: (data: VisitorData) => void): void {
+      this.listeners.delete(callback);
+    }
+  }
+
+  class ViewerCount extends HTMLElement {
+    private messageHandler = (data: VisitorData) => {
+      const count = data.total ?? 1;
+      const formatted = count.toString().padStart(3, "0");
+      const leadingZeros = formatted.match(/^0+/)?.[0] || "";
+      const actualNumber = formatted.slice(leadingZeros.length);
+
+      const countElement = this.querySelector(".count");
+      if (countElement) {
+        if (leadingZeros) {
+          countElement.innerHTML = `<span class="leading-zeros">${leadingZeros}</span>${actualNumber}`;
+        } else {
+          countElement.textContent = actualNumber;
+        }
+      }
+    };
+
+    connectedCallback(): void {
+      const globalWS = GlobalVisitorWebSocket.getInstance();
+      globalWS.addListener(this.messageHandler);
+      globalWS.connect();
+    }
+
+    disconnectedCallback(): void {
+      GlobalVisitorWebSocket.getInstance().removeListener(this.messageHandler);
+    }
+  }
+
+  if (!customElements.get("viewer-count")) {
+    customElements.define("viewer-count", ViewerCount);
+  }
 </script>

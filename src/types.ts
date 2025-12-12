@@ -37,7 +37,5 @@ export type GuideData = {
 };
 
 export interface VisitorData {
-  type?: "count" | "history";
   total?: number;
-  history?: number[];
 }

@@ -10,13 +10,10 @@ export interface Env {
 
 export class VisitorTracker extends DurableObject<Env> {
   private connections: Set<WebSocket>;
-  private history: number[];
-  private readonly MAX_HISTORY = 8;
 
   constructor(ctx: DurableObjectState, env: Env) {
     super(ctx, env);
     this.connections = new Set();
-    this.history = new Array(this.MAX_HISTORY).fill(1);
   }
 
   async fetch(request: Request): Promise<Response> {
@@ -37,7 +34,6 @@ export class VisitorTracker extends DurableObject<Env> {
     return new Response(
       JSON.stringify({
         total: Math.max(1, this.connections.size),
-        history: this.history,
       }),
       {
         headers: {
@@ -55,14 +51,9 @@ export class VisitorTracker extends DurableObject<Env> {
     // Add to connections set
     this.connections.add(websocket);
 
-    // Update history with new count
-    this.updateHistory(this.connections.size);
-
     // Send initial count to the new connection (minimum 1)
     this.sendToClient(websocket, {
-      type: "count",
       total: Math.max(1, this.connections.size),
-      history: this.history,
     });
 
     // Broadcast updated count to all connections
@@ -71,30 +62,19 @@ export class VisitorTracker extends DurableObject<Env> {
     // Handle disconnection
     websocket.addEventListener("close", () => {
       this.connections.delete(websocket);
-      this.updateHistory(this.connections.size);
       this.broadcastCount();
     });
 
     websocket.addEventListener("error", () => {
       this.connections.delete(websocket);
-      this.updateHistory(this.connections.size);
       this.broadcastCount();
     });
-  }
-
-  private updateHistory(count: number): void {
-    this.history.push(Math.max(1, count));
-    if (this.history.length > this.MAX_HISTORY) {
-      this.history.shift();
-    }
   }
 
   private broadcastCount(): void {
     const actualCount = Math.max(1, this.connections.size);
     const message: VisitorData = {
-      type: "count",
       total: actualCount,
-      history: this.history,
     };
 
     const messageStr = JSON.stringify(message);
