@@ -98,8 +98,9 @@ const svgWidth = calculateSvgWidth(initialVisitorData.history.length);
         <div
           class="airing"
           data-active={isAiring || title === "What's Airing Now"}
+          transition:persist
         >
-          <div class="airing-indicator"></div>
+          <div class="airing-indicator" transition:persist></div>
           Live
         </div>
         <div class="times">
@@ -123,7 +124,7 @@ const svgWidth = calculateSvgWidth(initialVisitorData.history.length);
           </span>
         </div>
       </div>
-      <div id="visitors" data-active="true">
+      <div id="visitors" data-active="true" transition:persist>
         <svg class="visitor-trend" width={svgWidth} height="15">
           <g
             class="trend-bars"
@@ -137,56 +138,102 @@ const svgWidth = calculateSvgWidth(initialVisitorData.history.length);
 </channel-display>
 
 <script>
-  class ChannelDisplay extends HTMLElement {
-    intervalId: number | null = null;
-    timeoutId: NodeJS.Timeout | null = null;
+  const WEBSOCKET_CONFIG = {
+    MAX_RECONNECT_ATTEMPTS: 10,
+    INITIAL_BACKOFF_MS: 1000,
+    BACKOFF_MULTIPLIER: 2,
+    MAX_BACKOFF_MS: 30000,
+    API_PATH: "/api/visitors",
+  } as const;
+
+  const DEV_HOSTNAMES = ["localhost", "127.0.0.1"] as const;
+
+  type VisitorData = {
+    type: string;
+    total?: number;
+    history?: number[];
+  };
+
+  class GlobalVisitorWebSocket {
+    private static instance: GlobalVisitorWebSocket | null = null;
     private websocket: WebSocket | null = null;
     private reconnectTimeout: number | null = null;
     private reconnectAttempts: number = 0;
-    private readonly MAX_RECONNECT_ATTEMPTS = 10;
-    isOnline: boolean = true;
-    private visitorHistory: number[] = [];
-    private trendBars: SVGGElement | null = null;
-    private svgElement: SVGElement | null = null;
-    private readonly MAX_POINTS = 8;
-    private readonly BAR_WIDTH = 3;
-    private readonly BAR_GAP = 2;
+    private isOnline: boolean = true;
+    private listeners: Set<(data: VisitorData) => void> = new Set();
 
-    constructor() {
-      super();
-
-      // Initialize visitor history with 1 (minimum when page is visible)
-      this.visitorHistory = new Array(this.MAX_POINTS).fill(1);
+    private constructor() {
+      document.addEventListener("visibilitychange", () =>
+        this.handleVisibilityChange(),
+      );
     }
 
-    private setupLiveUpdates() {
-      // Only attempt WebSocket in production (when deployed)
-      // In dev mode, the component will just show static "1 watching"
-      if (
-        window.location.hostname === "localhost" ||
-        window.location.hostname === "127.0.0.1"
-      ) {
-        return;
+    static getInstance(): GlobalVisitorWebSocket {
+      if (!GlobalVisitorWebSocket.instance) {
+        GlobalVisitorWebSocket.instance = new GlobalVisitorWebSocket();
       }
+      return GlobalVisitorWebSocket.instance;
+    }
 
+    private handleVisibilityChange(): void {
+      this.isOnline = document.visibilityState === "visible";
+      if (this.isOnline && !this.websocket) this.connect();
+    }
+
+    private isDevEnvironment(): boolean {
+      return DEV_HOSTNAMES.includes(
+        window.location.hostname as (typeof DEV_HOSTNAMES)[number],
+      );
+    }
+
+    private isConnected(): boolean {
+      return this.websocket?.readyState === WebSocket.OPEN;
+    }
+
+    private shouldAttemptConnection(): boolean {
+      return !this.isDevEnvironment() && this.isOnline;
+    }
+
+    private closeExistingConnection(): void {
       if (this.websocket) {
         this.websocket.close();
         this.websocket = null;
       }
+    }
 
-      // Clear any pending reconnect timeout
+    private clearReconnectTimeout(): void {
       if (this.reconnectTimeout !== null) {
         clearTimeout(this.reconnectTimeout);
         this.reconnectTimeout = null;
       }
+    }
 
-      // Determine WebSocket URL - same host as the site
+    private getWebSocketUrl(): string {
       const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
       const host = window.location.host;
-      const wsUrl = `${protocol}//${host}/api/visitors`;
+      return `${protocol}//${host}${WEBSOCKET_CONFIG.API_PATH}`;
+    }
+
+    private notifyListeners(data: VisitorData): void {
+      this.listeners.forEach((callback) => callback(data));
+    }
+
+    private calculateBackoffDelay(): number {
+      return Math.min(
+        WEBSOCKET_CONFIG.INITIAL_BACKOFF_MS *
+          Math.pow(WEBSOCKET_CONFIG.BACKOFF_MULTIPLIER, this.reconnectAttempts),
+        WEBSOCKET_CONFIG.MAX_BACKOFF_MS,
+      );
+    }
+
+    connect(): void {
+      if (!this.shouldAttemptConnection() || this.isConnected()) return;
+
+      this.closeExistingConnection();
+      this.clearReconnectTimeout();
 
       try {
-        this.websocket = new WebSocket(wsUrl);
+        this.websocket = new WebSocket(this.getWebSocketUrl());
 
         this.websocket.addEventListener("open", () => {
           this.reconnectAttempts = 0;
@@ -195,20 +242,7 @@ const svgWidth = calculateSvgWidth(initialVisitorData.history.length);
         this.websocket.addEventListener("message", (event) => {
           try {
             const data = JSON.parse(event.data);
-
-            if (data.type === "count") {
-              this.updateVisitorHistory(data.history, data.total);
-              this.updateSparkline();
-
-              // Update the count display
-              const countElement = this.querySelector("#visitors .count");
-              if (countElement) {
-                countElement.textContent = data.total.toString();
-              }
-
-              // Update active state
-              this.updateVisitorActiveState(data.total);
-            }
+            this.notifyListeners(data);
           } catch (error) {
             console.error("Error parsing WebSocket message:", error);
           }
@@ -220,9 +254,7 @@ const svgWidth = calculateSvgWidth(initialVisitorData.history.length);
         });
 
         this.websocket.addEventListener("error", () => {
-          if (this.websocket) {
-            this.websocket.close();
-          }
+          this.closeExistingConnection();
         });
       } catch (error) {
         console.error("Failed to create WebSocket:", error);
@@ -230,33 +262,99 @@ const svgWidth = calculateSvgWidth(initialVisitorData.history.length);
       }
     }
 
-    private attemptReconnect() {
-      // Don't reconnect in dev mode
-      if (
-        window.location.hostname === "localhost" ||
-        window.location.hostname === "127.0.0.1"
-      ) {
+    private attemptReconnect(): void {
+      if (!this.shouldAttemptConnection()) return;
+      if (this.reconnectAttempts >= WEBSOCKET_CONFIG.MAX_RECONNECT_ATTEMPTS)
         return;
-      }
 
-      if (!this.isOnline) {
-        return; // Don't reconnect if page is not visible
-      }
-
-      if (this.reconnectAttempts >= this.MAX_RECONNECT_ATTEMPTS) {
-        return;
-      }
-
-      // Exponential backoff: 1s, 2s, 4s, 8s, max 30s
-      const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 30000);
+      const delay = this.calculateBackoffDelay();
       this.reconnectAttempts++;
 
       this.reconnectTimeout = window.setTimeout(() => {
-        this.setupLiveUpdates();
+        this.connect();
       }, delay);
     }
 
-    private setupSparkline() {
+    addListener(callback: (data: VisitorData) => void): void {
+      this.listeners.add(callback);
+    }
+
+    removeListener(callback: (data: VisitorData) => void): void {
+      this.listeners.delete(callback);
+    }
+
+    disconnect(): void {
+      this.clearReconnectTimeout();
+      this.closeExistingConnection();
+    }
+  }
+
+  const DISPLAY_CONFIG = {
+    TITLE_MAX_CHARS: 17,
+    TITLE_SCROLL_START_DELAY_MS: 100,
+    TITLE_SCROLL_INTERVAL_MS: 300,
+    TITLE_SCROLL_PAUSE_AT_START: 16,
+    TITLE_SCROLL_PAUSE_AT_END: 8,
+    SCROLL_DIRECTION_FORWARD: 1,
+    SCROLL_DIRECTION_BACKWARD: -1,
+  } as const;
+
+  const SPARKLINE_CONFIG = {
+    MAX_HISTORY_POINTS: 8,
+    BAR_WIDTH: 3,
+    BAR_GAP: 2,
+    HEIGHT: 10,
+    MIN_BAR_HEIGHT: 2,
+    MIN_VALUE_TO_AVOID_DIVISION_BY_ZERO: 1,
+    SVG_NAMESPACE: "http://www.w3.org/2000/svg",
+    BORDER_RADIUS: "1",
+  } as const;
+
+  const MESSAGE_TYPE = {
+    COUNT: "count",
+  } as const;
+
+  class ChannelDisplay extends HTMLElement {
+    intervalId: number | null = null;
+    timeoutId: NodeJS.Timeout | null = null;
+    private visitorHistory: number[] = [];
+    private trendBars: SVGGElement | null = null;
+    private svgElement: SVGElement | null = null;
+    private messageHandler: ((data: VisitorData) => void) | null = null;
+
+    constructor() {
+      super();
+      this.visitorHistory = new Array(SPARKLINE_CONFIG.MAX_HISTORY_POINTS).fill(
+        SPARKLINE_CONFIG.MIN_VALUE_TO_AVOID_DIVISION_BY_ZERO,
+      );
+    }
+
+    private createVisitorCountHandler(): (data: VisitorData) => void {
+      return (data: VisitorData) => {
+        if (data.type === MESSAGE_TYPE.COUNT) {
+          this.updateVisitorHistory(data.history, data.total);
+          this.updateSparkline();
+          this.updateVisitorCountDisplay(data.total ?? 0);
+          this.updateVisitorActiveState(data.total ?? 0);
+        }
+      };
+    }
+
+    private updateVisitorCountDisplay(count: number): void {
+      const countElement = this.querySelector("#visitors .count");
+      if (countElement) {
+        countElement.textContent = count.toString();
+      }
+    }
+
+    private setupLiveUpdates(): void {
+      const globalWS = GlobalVisitorWebSocket.getInstance();
+      this.messageHandler = this.createVisitorCountHandler();
+      globalWS.addListener(this.messageHandler);
+      globalWS.connect();
+    }
+
+    private setupSparkline(): void {
       this.trendBars = this.querySelector(".trend-bars");
       this.svgElement = this.querySelector(".visitor-trend");
       if (!this.trendBars || !this.svgElement) return;
@@ -264,98 +362,116 @@ const svgWidth = calculateSvgWidth(initialVisitorData.history.length);
       this.updateSparkline();
     }
 
-    // Calculate SVG width dynamically based on bar width and gap
     private calculateSvgWidth(totalBars: number): number {
-      return this.BAR_WIDTH * totalBars + this.BAR_GAP * (totalBars - 1);
+      return (
+        SPARKLINE_CONFIG.BAR_WIDTH * totalBars +
+        SPARKLINE_CONFIG.BAR_GAP * (totalBars - 1)
+      );
     }
 
-    private updateSparkline() {
-      if (!this.trendBars || !this.svgElement) return;
+    private createSparklineBar(
+      value: number,
+      index: number,
+      maxValue: number,
+    ): SVGRectElement {
+      const percentage = value / maxValue;
+      const barHeight = Math.max(
+        SPARKLINE_CONFIG.MIN_BAR_HEIGHT,
+        SPARKLINE_CONFIG.HEIGHT * percentage,
+      );
+      const x = index * (SPARKLINE_CONFIG.BAR_WIDTH + SPARKLINE_CONFIG.BAR_GAP);
+      const y = SPARKLINE_CONFIG.HEIGHT - barHeight;
 
-      // Update SVG width based on number of bars
-      const svgWidth = this.calculateSvgWidth(this.visitorHistory.length);
-      this.svgElement.setAttribute("width", svgWidth.toString());
+      const rect = document.createElementNS(
+        SPARKLINE_CONFIG.SVG_NAMESPACE,
+        "rect",
+      );
+      rect.setAttribute("x", x.toString());
+      rect.setAttribute("y", y.toString());
+      rect.setAttribute("width", SPARKLINE_CONFIG.BAR_WIDTH.toString());
+      rect.setAttribute("height", barHeight.toString());
+      rect.setAttribute("rx", SPARKLINE_CONFIG.BORDER_RADIUS);
+      rect.setAttribute("fill", "currentColor");
 
-      // Calculate dimensions
-      const height = 10; // height in pixels
-      const MIN_HEIGHT = 2; // minimum height of a bar
-      const maxValue = Math.max(...this.visitorHistory, 1); // Use 1 as minimum to avoid division by zero
-      const startX = 0; // No need to center since SVG width is dynamic
+      return rect;
+    }
 
-      // Clear existing bars
+    private renderSparklineBars(maxValue: number): void {
+      if (!this.trendBars) return;
+
       this.trendBars.innerHTML = "";
-
-      // Create bars
       this.visitorHistory.forEach((point, idx) => {
-        // Calculate height as percentage of max value
-        const percentage = point / maxValue;
-        const barHeight = Math.max(MIN_HEIGHT, height * percentage);
-        const x = startX + idx * (this.BAR_WIDTH + this.BAR_GAP);
-        const y = height - barHeight;
-
-        const rect = document.createElementNS(
-          "http://www.w3.org/2000/svg",
-          "rect",
-        );
-        rect.setAttribute("x", x.toString());
-        rect.setAttribute("y", y.toString());
-        rect.setAttribute("width", this.BAR_WIDTH.toString());
-        rect.setAttribute("height", barHeight.toString());
-        rect.setAttribute("rx", "1");
-        rect.setAttribute("fill", "currentColor");
-
-        this.trendBars?.appendChild(rect);
+        const bar = this.createSparklineBar(point, idx, maxValue);
+        this.trendBars?.appendChild(bar);
       });
     }
 
-    /**
-     * Updates the visitor history with new data
-     * @param history - Array of historical visitor counts from the API
-     * @param currentCount - Current visitor count
-     */
-    updateVisitorHistory(
-      history: number[] | undefined,
-      currentCount: number,
-    ): void {
-      // If we have history from the API, use it
-      if (history && Array.isArray(history) && history.length > 0) {
-        this.visitorHistory = history;
-      } else {
-        // If no history provided, try to get initial data from the dataset
-        const initialData = this.dataset.initialVisitors;
-        if (initialData) {
-          try {
-            const parsed = JSON.parse(initialData);
-            if (
-              parsed.history &&
-              Array.isArray(parsed.history) &&
-              parsed.history.length > 0
-            ) {
-              this.visitorHistory = parsed.history;
-              return;
-            }
-          } catch (error) {
-            console.error("Failed to parse initial visitor data:", error);
-          }
-        }
+    private updateSparkline(): void {
+      if (!this.trendBars || !this.svgElement) return;
 
-        // Fallback to updating with just the current count
-        this.visitorHistory = [...this.visitorHistory.slice(1), currentCount];
-      }
+      const svgWidth = this.calculateSvgWidth(this.visitorHistory.length);
+      this.svgElement.setAttribute("width", svgWidth.toString());
 
-      // Ensure we always have MAX_POINTS
-      while (this.visitorHistory.length < this.MAX_POINTS) {
-        this.visitorHistory.unshift(0);
-      }
-      while (this.visitorHistory.length > this.MAX_POINTS) {
-        this.visitorHistory.pop();
+      const maxValue = Math.max(
+        ...this.visitorHistory,
+        SPARKLINE_CONFIG.MIN_VALUE_TO_AVOID_DIVISION_BY_ZERO,
+      );
+
+      this.renderSparklineBars(maxValue);
+    }
+
+    private hasValidHistory(history: unknown): history is number[] {
+      return Array.isArray(history) && history.length > 0;
+    }
+
+    private tryParseInitialVisitorData(): number[] | null {
+      const initialData = this.dataset.initialVisitors;
+      if (!initialData) return null;
+
+      try {
+        const parsed = JSON.parse(initialData);
+        return this.hasValidHistory(parsed.history) ? parsed.history : null;
+      } catch (error) {
+        console.error("Failed to parse initial visitor data:", error);
+        return null;
       }
     }
 
-    /**
-     * Updates the active state of the visitors element based on count
-     * @param count - Current visitor count
-     */
+    private appendToHistory(currentCount: number): void {
+      this.visitorHistory = [...this.visitorHistory.slice(1), currentCount];
+    }
+
+    private normalizeHistoryLength(history: number[]): number[] {
+      const targetLength = SPARKLINE_CONFIG.MAX_HISTORY_POINTS;
+
+      while (history.length < targetLength) {
+        history.unshift(0);
+      }
+      while (history.length > targetLength) {
+        history.pop();
+      }
+
+      return history;
+    }
+
+    updateVisitorHistory(
+      history: number[] | undefined,
+      currentCount: number | undefined,
+    ): void {
+      if (this.hasValidHistory(history)) {
+        this.visitorHistory = history;
+      } else {
+        const initialHistory = this.tryParseInitialVisitorData();
+        if (initialHistory) {
+          this.visitorHistory = initialHistory;
+          return;
+        }
+        this.appendToHistory(currentCount ?? 0);
+      }
+
+      this.visitorHistory = this.normalizeHistoryLength(this.visitorHistory);
+    }
+
     updateVisitorActiveState(count: number): void {
       const visitorsElement = this.querySelector("#visitors");
       if (visitorsElement) {
@@ -363,61 +479,57 @@ const svgWidth = calculateSvgWidth(initialVisitorData.history.length);
       }
     }
 
-    connectedCallback() {
+    private shouldScrollTitle(): boolean {
       const title = this.dataset.title;
-      const totalChars = 17;
       const isActive = this.dataset.power === "on";
-
-      if (title && title.length > totalChars && isActive) {
-        this.timeoutId = setTimeout(
-          () => this.scrollTitle(title, totalChars),
-          100,
-        );
-      }
-
-      // Update time display if there's an end time
-      const timeElement = this.querySelector("time");
-      if (timeElement?.getAttribute("datetime")) {
-        this.updateTimeDisplay();
-      }
-
-      // Set up sparkline
-      this.setupSparkline();
-
-      // Set up live updates
-      this.setupLiveUpdates();
-
-      // Add visibility change listener
-      document.addEventListener(
-        "visibilitychange",
-        this.handleVisibilityChange.bind(this),
+      return Boolean(
+        title && title.length > DISPLAY_CONFIG.TITLE_MAX_CHARS && isActive,
       );
     }
 
-    updateTimeDisplay() {
+    private initializeTitleScroll(): void {
+      if (!this.shouldScrollTitle()) return;
+
+      const title = this.dataset.title!;
+      this.timeoutId = setTimeout(() => {
+        this.scrollTitle(title, DISPLAY_CONFIG.TITLE_MAX_CHARS);
+      }, DISPLAY_CONFIG.TITLE_SCROLL_START_DELAY_MS);
+    }
+
+    private shouldUpdateTimeDisplay(): boolean {
       const timeElement = this.querySelector("time");
-      if (!timeElement) return;
+      return Boolean(timeElement?.getAttribute("datetime"));
+    }
 
-      const timeStr = timeElement.getAttribute("datetime");
-      if (!timeStr) return;
+    connectedCallback(): void {
+      this.initializeTitleScroll();
 
-      // Parse the time string and convert to local time
+      if (this.shouldUpdateTimeDisplay()) {
+        this.updateTimeDisplay();
+      }
+
+      this.setupSparkline();
+      this.setupLiveUpdates();
+    }
+
+    private parseUtcTimeString(timeStr: string): Date {
       const [hours, minutes] = timeStr.split(":").map(Number);
       const date = new Date();
       date.setUTCHours(hours, minutes, 0, 0);
+      return date;
+    }
 
-      // Format the time
-      const formattedTime = date.toLocaleTimeString("en-US", {
+    private formatTimeForDisplay(date: Date): { time: string; period: string } {
+      const formatted = date.toLocaleTimeString("en-US", {
         hour: "2-digit",
         minute: "2-digit",
         hour12: true,
       });
+      const [time, period] = formatted.split(" ");
+      return { time, period };
+    }
 
-      // Update the time display
-      timeElement.textContent = formattedTime.split(" ")[0];
-
-      // Update AM/PM indicators
-      const isAm = formattedTime.split(" ")[1] === "AM";
+    private updateAmPmIndicators(isAm: boolean): void {
       const amElement = this.querySelector(".am-pm.am");
       const pmElement = this.querySelector(".am-pm.pm");
 
@@ -429,30 +541,29 @@ const svgWidth = calculateSvgWidth(initialVisitorData.history.length);
       }
     }
 
-    handleVisibilityChange() {
-      this.isOnline = document.visibilityState === "visible";
-      if (this.isOnline) {
-        this.setupLiveUpdates();
-      }
+    updateTimeDisplay(): void {
+      const timeElement = this.querySelector("time");
+      if (!timeElement) return;
+
+      const timeStr = timeElement.getAttribute("datetime");
+      if (!timeStr) return;
+
+      const date = this.parseUtcTimeString(timeStr);
+      const { time, period } = this.formatTimeForDisplay(date);
+
+      timeElement.textContent = time;
+      this.updateAmPmIndicators(period === "AM");
     }
 
     disconnectedCallback() {
       this.clearTimers();
 
-      if (this.websocket) {
-        this.websocket.close();
-        this.websocket = null;
+      // Remove this component's listener from the global WebSocket
+      if (this.messageHandler) {
+        const globalWS = GlobalVisitorWebSocket.getInstance();
+        globalWS.removeListener(this.messageHandler);
+        this.messageHandler = null;
       }
-
-      if (this.reconnectTimeout !== null) {
-        clearTimeout(this.reconnectTimeout);
-        this.reconnectTimeout = null;
-      }
-
-      document.removeEventListener(
-        "visibilitychange",
-        this.handleVisibilityChange.bind(this),
-      );
     }
 
     clearTimers() {
@@ -466,16 +577,28 @@ const svgWidth = calculateSvgWidth(initialVisitorData.history.length);
       }
     }
 
-    scrollTitle(title: string, totalChars: number) {
+    scrollTitle(title: string, totalChars: number): void {
       const titleLink = this.querySelector(".title a");
       if (!titleLink) return;
 
       let startIndex = 0;
-      let direction = 1; // 1 for right, -1 for left
+      let direction = DISPLAY_CONFIG.SCROLL_DIRECTION_FORWARD;
       const maxIndex = Math.max(0, title.length - totalChars);
       let pauseCount = 0;
-      const pauseDurationEnd = 8; // How many ticks to pause at each end
-      const pauseDurationStart = 16;
+
+      const isAtStart = () => startIndex <= 0;
+      const isAtEnd = () => startIndex >= maxIndex;
+      const isMovingForward = () =>
+        direction === DISPLAY_CONFIG.SCROLL_DIRECTION_FORWARD;
+      const shouldReverse = () =>
+        (isAtEnd() && isMovingForward()) || (isAtStart() && !isMovingForward());
+
+      const reverseDirection = () => {
+        direction *= -1;
+        pauseCount = isMovingForward()
+          ? DISPLAY_CONFIG.TITLE_SCROLL_PAUSE_AT_START
+          : DISPLAY_CONFIG.TITLE_SCROLL_PAUSE_AT_END;
+      };
 
       this.intervalId = setInterval(() => {
         if (pauseCount > 0) {
@@ -483,24 +606,16 @@ const svgWidth = calculateSvgWidth(initialVisitorData.history.length);
           return;
         }
 
-        const activeChars = title.slice(startIndex, startIndex + totalChars);
-        titleLink.textContent = activeChars;
+        const visibleChars = title.slice(startIndex, startIndex + totalChars);
+        titleLink.textContent = visibleChars;
 
-        if (
-          (startIndex >= maxIndex && direction === 1) ||
-          (startIndex <= 0 && direction === -1)
-        ) {
-          direction *= -1; // Reverse direction
-          if (direction === 1) {
-            pauseCount = pauseDurationStart;
-          } else {
-            pauseCount = pauseDurationEnd;
-          }
+        if (shouldReverse()) {
+          reverseDirection();
           return;
         }
 
         startIndex += direction;
-      }, 300) as unknown as number;
+      }, DISPLAY_CONFIG.TITLE_SCROLL_INTERVAL_MS) as unknown as number;
     }
   }
 
