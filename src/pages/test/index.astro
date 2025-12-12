@@ -33,27 +33,6 @@ import Layout from "@layouts/Layout.astro";
   </Television>
 </Layout>
 
-<script>
-  import * as Fathom from "fathom-client";
-  document.getElementById("url-form")?.addEventListener("submit", (e) => {
-    e.preventDefault();
-
-    const form = e.target as HTMLFormElement;
-    const urlInput = form.querySelector(
-      'input[name="url"]',
-    ) as HTMLInputElement;
-    const url = urlInput.value.trim();
-
-    // Strip protocol (http:// or https://) if present
-    const urlWithoutProtocol = url.replace(/^https?:\/\//, "");
-
-    Fathom.trackEvent("test preview: submit form");
-
-    // Navigate to the new URL
-    window.location.href = `/test/${urlWithoutProtocol}`;
-  });
-</script>
-
 <style>
   .test-form {
     width: 100%;
@@ -117,3 +96,27 @@ import Layout from "@layouts/Layout.astro";
     background-color: rgba(255, 255, 255, 0.2);
   }
 </style>
+
+<script>
+  import * as Fathom from "fathom-client";
+
+  document.addEventListener("astro:page-load", () => {
+    document.getElementById("url-form")?.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const form = e.target as HTMLFormElement;
+      const urlInput = form.querySelector(
+        'input[name="url"]',
+      ) as HTMLInputElement;
+      const url = urlInput.value.trim();
+
+      // Strip protocol (http:// or https://) if present
+      const urlWithoutProtocol = url.replace(/^https?:\/\//, "");
+
+      Fathom.trackEvent("test preview: submit form");
+
+      // Navigate to the new URL
+      window.location.href = `/test/${urlWithoutProtocol}`;
+    });
+  });
+</script>

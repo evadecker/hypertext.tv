@@ -32,17 +32,6 @@ const contributors: string[] = await response.json();
   </Television>
 </Layout>
 
-<script>
-  import { infiniteScrollLoop } from "@utils/infiniteScroll";
-
-  const wrapper = document.getElementById("credits");
-  const content = wrapper?.querySelector(".credits-content") as HTMLElement;
-
-  if (wrapper && content) {
-    infiniteScrollLoop(wrapper, content);
-  }
-</script>
-
 <style is:global>
   #credits {
     width: 100%;
@@ -92,3 +81,16 @@ const contributors: string[] = await response.json();
     padding-block: 4rem;
   }
 </style>
+
+<script>
+  import { infiniteScrollLoop } from "@utils/infiniteScroll";
+
+  document.addEventListener("astro:page-load", () => {
+    const wrapper = document.getElementById("credits");
+    const content = wrapper?.querySelector(".credits-content") as HTMLElement;
+
+    if (wrapper && content) {
+      infiniteScrollLoop(wrapper, content);
+    }
+  });
+</script>

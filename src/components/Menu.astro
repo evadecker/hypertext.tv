@@ -72,348 +72,6 @@
   </div>
 </div>
 
-<script>
-  import * as Fathom from "fathom-client";
-
-  class MenuFocusGroup {
-    private el: HTMLElement;
-    private items: HTMLElement[];
-    private selectedIndex: number;
-    private settings: {
-      name: string;
-      localStorageKey: string;
-      defaultValue: string;
-      eventName: string;
-      eventProperty: string;
-      type: "slider" | "toggle";
-    }[];
-
-    constructor(selector: string) {
-      this.el = document.querySelector(selector)!;
-      this.items = Array.from(this.el.querySelectorAll('[role="menuitem"]'));
-      this.selectedIndex = 0;
-
-      this.settings = [
-        {
-          name: "scanlines",
-          localStorageKey: "scanlines",
-          defaultValue: "true",
-          eventName: "scanlineToggle",
-          eventProperty: "scanlines",
-          type: "toggle",
-        },
-        {
-          name: "brightness",
-          localStorageKey: "brightness",
-          defaultValue: "0",
-          eventName: "brightnessChange",
-          eventProperty: "brightness",
-          type: "slider",
-        },
-        {
-          name: "color",
-          localStorageKey: "color",
-          defaultValue: "0",
-          eventName: "colorChange",
-          eventProperty: "color",
-          type: "slider",
-        },
-        {
-          name: "tint",
-          localStorageKey: "tint",
-          defaultValue: "0",
-          eventName: "tintChange",
-          eventProperty: "tint",
-          type: "slider",
-        },
-        {
-          name: "horizontal",
-          localStorageKey: "horizontal",
-          defaultValue: "0",
-          eventName: "horizontalChange",
-          eventProperty: "horizontal",
-          type: "slider",
-        },
-        {
-          name: "vertical",
-          localStorageKey: "vertical",
-          defaultValue: "0",
-          eventName: "verticalChange",
-          eventProperty: "vertical",
-          type: "slider",
-        },
-      ];
-
-      this.el.addEventListener("keydown", this.handleKeyDown.bind(this));
-
-      // Set up event listeners for all items
-      this.items.forEach((item) => {
-        item.addEventListener("click", this.handleClick.bind(this));
-
-        // Set up input listeners for all sliders
-        this.settings.forEach((setting) => {
-          if (setting.type === "slider") {
-            const input = item.querySelector(`input[name='${setting.name}']`);
-            if (input) {
-              input.addEventListener("input", (e: Event) => {
-                const inputElement = e.target as HTMLInputElement;
-                this.handleSettingChange(setting.name, inputElement.value);
-              });
-            }
-          }
-        });
-      });
-
-      // Initialize all settings
-      this.initializeSettings();
-    }
-
-    // Public method to set the selected index and update focus
-    public setSelectedIndex(index: number): void {
-      if (index >= 0 && index < this.items.length) {
-        this.selectedIndex = index;
-        this.changeFocus(this.selectedIndex);
-      }
-    }
-
-    private initializeSettings(): void {
-      this.settings.forEach((setting) => {
-        if (setting.type === "slider") {
-          // Initialize slider settings
-          const input = this.el.querySelector(
-            `input[name='${setting.name}']`,
-          ) as HTMLInputElement;
-
-          if (input) {
-            const savedValue =
-              localStorage.getItem(setting.localStorageKey) ||
-              setting.defaultValue;
-            input.value = savedValue;
-            this.handleSettingChange(setting.name, savedValue, {
-              doNotTrack: true,
-            });
-          }
-        } else if (setting.type === "toggle") {
-          // Initialize toggle settings
-          const toggleElement = this.el.querySelector(
-            `[data-setting="${setting.name}"]`,
-          );
-          if (toggleElement) {
-            const savedState = localStorage.getItem(setting.localStorageKey);
-            const isOn =
-              savedState === null
-                ? setting.defaultValue === "true"
-                : savedState === "true";
-            toggleElement.setAttribute("data-on", isOn ? "true" : "false");
-
-            // Also trigger the setting change to ensure the event is fired
-            this.handleSettingChange(setting.name, isOn.toString(), {
-              doNotTrack: true,
-            });
-          }
-        }
-      });
-    }
-
-    private handleSettingChange(
-      settingName: string,
-      value: string,
-      options: { doNotTrack?: boolean } = { doNotTrack: false },
-    ) {
-      const setting = this.settings.find((s) => s.name === settingName);
-      if (!setting) return;
-
-      localStorage.setItem(setting.localStorageKey, value);
-
-      const event = new CustomEvent(setting.eventName, {
-        detail: { [setting.eventProperty]: value },
-        bubbles: true,
-      });
-      this.el.dispatchEvent(event);
-
-      if (options.doNotTrack === false) {
-        Fathom.trackEvent(`menu: ${setting.eventName}`, {
-          _value: Number(value),
-        });
-      }
-    }
-
-    private handleKeyDown(e: KeyboardEvent) {
-      const currentItem = this.items[this.selectedIndex];
-      const input = currentItem.querySelector("input");
-
-      switch (e.key) {
-        case "ArrowUp": {
-          e.preventDefault();
-          if (this.selectedIndex === 0) {
-            this.selectedIndex = this.items.length - 1;
-          } else {
-            this.selectedIndex--;
-          }
-          break;
-        }
-        case "ArrowDown": {
-          e.preventDefault();
-          if (this.selectedIndex === this.items.length - 1) {
-            this.selectedIndex = 0;
-          } else {
-            this.selectedIndex++;
-          }
-          break;
-        }
-        case "ArrowLeft": {
-          e.preventDefault();
-          if (input instanceof HTMLInputElement && input.type === "range") {
-            const newValue = Math.max(
-              parseFloat(input.min),
-              parseFloat(input.value) - 1,
-            );
-            input.value = newValue.toString();
-            this.handleSettingChange(input.name, input.value);
-          } else {
-            this.toggleItem(currentItem);
-          }
-          return;
-        }
-        case "ArrowRight": {
-          e.preventDefault();
-          if (input instanceof HTMLInputElement && input.type === "range") {
-            const newValue = Math.min(
-              parseFloat(input.max),
-              parseFloat(input.value) + 1,
-            );
-            input.value = newValue.toString();
-            this.handleSettingChange(input.name, input.value);
-          } else {
-            this.toggleItem(currentItem);
-          }
-          return;
-        }
-        case "Enter":
-        case " ": {
-          // Allow default behavior for links
-          if (currentItem.tagName === "A") {
-            return;
-          }
-
-          e.preventDefault();
-          if (currentItem.textContent?.trim().startsWith("Exit")) {
-            closeMenu();
-          } else if (!input) {
-            this.toggleItem(currentItem);
-          }
-          return;
-        }
-        case "Tab": {
-          e.preventDefault();
-          if (e.shiftKey) {
-            if (this.selectedIndex === 0) {
-              this.selectedIndex = this.items.length - 1;
-            } else {
-              this.selectedIndex--;
-            }
-          } else {
-            if (this.selectedIndex === this.items.length - 1) {
-              this.selectedIndex = 0;
-            } else {
-              this.selectedIndex++;
-            }
-          }
-          break;
-        }
-      }
-      this.changeFocus(this.selectedIndex);
-    }
-
-    private handleClick(e: MouseEvent) {
-      const clickedItem = e.target as HTMLElement;
-      const menuItem = clickedItem.closest('[role="menuitem"]') as HTMLElement;
-      const newIndex = this.items.indexOf(menuItem);
-
-      if (newIndex !== -1) {
-        this.selectedIndex = newIndex;
-        this.changeFocus(this.selectedIndex);
-
-        if (menuItem.hasAttribute("data-on")) {
-          this.toggleItem(menuItem);
-        } else if (menuItem.textContent?.trim().startsWith("Exit")) {
-          closeMenu();
-        }
-      }
-    }
-
-    private toggleItem(
-      item: HTMLElement,
-      options: { doNotTrack?: boolean } = { doNotTrack: false },
-    ) {
-      if (item.hasAttribute("data-on")) {
-        const isOn = item.getAttribute("data-on") === "true";
-        const newState = !isOn;
-        item.setAttribute("data-on", newState ? "true" : "false");
-
-        // Check if this is a toggleable setting
-        const settingName = item.getAttribute("data-setting");
-        if (settingName) {
-          this.handleSettingChange(settingName, newState.toString(), options);
-        }
-      }
-    }
-
-    private changeFocus(idx: number) {
-      this.items.forEach((item) => {
-        item.tabIndex = -1;
-      });
-      const newFocusedItem = this.items[idx];
-      newFocusedItem.tabIndex = 0;
-
-      // If the menu item contains an input, focus that instead
-      const input = newFocusedItem.querySelector("input");
-      if (input instanceof HTMLInputElement) {
-        input.focus();
-      } else {
-        newFocusedItem.focus();
-      }
-    }
-  }
-
-  let menuFocusGroup: MenuFocusGroup;
-  const menu = document.getElementById("menu");
-
-  function openMenu() {
-    menu?.setAttribute("data-open", "true");
-    if (menuFocusGroup) menuFocusGroup.setSelectedIndex(0);
-    Fathom.trackEvent("menu: open");
-  }
-
-  function closeMenu() {
-    menu?.setAttribute("data-open", "false");
-    const menuItems = menu?.querySelectorAll(
-      '[role="menuitem"]',
-    ) as NodeListOf<HTMLElement>;
-    menuItems?.forEach((item) => {
-      item.tabIndex = -1;
-    });
-    const menuButton = document.getElementById("menu");
-    menuButton?.focus();
-    Fathom.trackEvent("menu: close");
-  }
-
-  function toggleMenu() {
-    const isOpen = menu?.getAttribute("data-open") === "true";
-    isOpen ? closeMenu() : openMenu();
-  }
-
-  menu?.setAttribute("data-open", "false");
-  menuFocusGroup = new MenuFocusGroup(".menu-content");
-
-  const menuButton = document.getElementById("menu-button");
-  menuButton?.addEventListener("click", toggleMenu);
-
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") closeMenu();
-  });
-</script>
-
 <style>
   #menu {
     display: none;
@@ -525,3 +183,352 @@
     content: "OFF";
   }
 </style>
+
+<script>
+  import * as Fathom from "fathom-client";
+
+  document.addEventListener("astro:page-load", () => {
+    class MenuFocusGroup {
+      private el: HTMLElement;
+      private items: HTMLElement[];
+      private selectedIndex: number;
+      private settings: {
+        name: string;
+        localStorageKey: string;
+        defaultValue: string;
+        eventName: string;
+        eventProperty: string;
+        type: "slider" | "toggle";
+      }[];
+
+      constructor(selector: string) {
+        this.el = document.querySelector(selector)!;
+        this.items = Array.from(this.el.querySelectorAll('[role="menuitem"]'));
+        this.selectedIndex = 0;
+
+        this.settings = [
+          {
+            name: "scanlines",
+            localStorageKey: "scanlines",
+            defaultValue: "true",
+            eventName: "scanlineToggle",
+            eventProperty: "scanlines",
+            type: "toggle",
+          },
+          {
+            name: "brightness",
+            localStorageKey: "brightness",
+            defaultValue: "0",
+            eventName: "brightnessChange",
+            eventProperty: "brightness",
+            type: "slider",
+          },
+          {
+            name: "color",
+            localStorageKey: "color",
+            defaultValue: "0",
+            eventName: "colorChange",
+            eventProperty: "color",
+            type: "slider",
+          },
+          {
+            name: "tint",
+            localStorageKey: "tint",
+            defaultValue: "0",
+            eventName: "tintChange",
+            eventProperty: "tint",
+            type: "slider",
+          },
+          {
+            name: "horizontal",
+            localStorageKey: "horizontal",
+            defaultValue: "0",
+            eventName: "horizontalChange",
+            eventProperty: "horizontal",
+            type: "slider",
+          },
+          {
+            name: "vertical",
+            localStorageKey: "vertical",
+            defaultValue: "0",
+            eventName: "verticalChange",
+            eventProperty: "vertical",
+            type: "slider",
+          },
+        ];
+
+        this.el.addEventListener("keydown", this.handleKeyDown.bind(this));
+
+        // Set up event listeners for all items
+        this.items.forEach((item) => {
+          item.addEventListener("click", this.handleClick.bind(this));
+
+          // Set up input listeners for all sliders
+          this.settings.forEach((setting) => {
+            if (setting.type === "slider") {
+              const input = item.querySelector(`input[name='${setting.name}']`);
+              if (input) {
+                input.addEventListener("input", (e: Event) => {
+                  const inputElement = e.target as HTMLInputElement;
+                  this.handleSettingChange(setting.name, inputElement.value);
+                });
+              }
+            }
+          });
+        });
+
+        // Initialize all settings
+        this.initializeSettings();
+      }
+
+      // Public method to set the selected index and update focus
+      public setSelectedIndex(index: number): void {
+        if (index >= 0 && index < this.items.length) {
+          this.selectedIndex = index;
+          this.changeFocus(this.selectedIndex);
+        }
+      }
+
+      private initializeSettings(): void {
+        this.settings.forEach((setting) => {
+          if (setting.type === "slider") {
+            // Initialize slider settings
+            const input = this.el.querySelector(
+              `input[name='${setting.name}']`,
+            ) as HTMLInputElement;
+
+            if (input) {
+              const savedValue =
+                localStorage.getItem(setting.localStorageKey) ||
+                setting.defaultValue;
+              input.value = savedValue;
+              this.handleSettingChange(setting.name, savedValue, {
+                doNotTrack: true,
+              });
+            }
+          } else if (setting.type === "toggle") {
+            // Initialize toggle settings
+            const toggleElement = this.el.querySelector(
+              `[data-setting="${setting.name}"]`,
+            );
+            if (toggleElement) {
+              const savedState = localStorage.getItem(setting.localStorageKey);
+              const isOn =
+                savedState === null
+                  ? setting.defaultValue === "true"
+                  : savedState === "true";
+              toggleElement.setAttribute("data-on", isOn ? "true" : "false");
+
+              // Also trigger the setting change to ensure the event is fired
+              this.handleSettingChange(setting.name, isOn.toString(), {
+                doNotTrack: true,
+              });
+            }
+          }
+        });
+      }
+
+      private handleSettingChange(
+        settingName: string,
+        value: string,
+        options: { doNotTrack?: boolean } = { doNotTrack: false },
+      ) {
+        const setting = this.settings.find((s) => s.name === settingName);
+        if (!setting) return;
+
+        localStorage.setItem(setting.localStorageKey, value);
+
+        const event = new CustomEvent(setting.eventName, {
+          detail: { [setting.eventProperty]: value },
+          bubbles: true,
+        });
+        this.el.dispatchEvent(event);
+
+        if (options.doNotTrack === false) {
+          Fathom.trackEvent(`menu: ${setting.eventName}`, {
+            _value: Number(value),
+          });
+        }
+      }
+
+      private handleKeyDown(e: KeyboardEvent) {
+        const currentItem = this.items[this.selectedIndex];
+        const input = currentItem.querySelector("input");
+
+        switch (e.key) {
+          case "ArrowUp": {
+            e.preventDefault();
+            if (this.selectedIndex === 0) {
+              this.selectedIndex = this.items.length - 1;
+            } else {
+              this.selectedIndex--;
+            }
+            break;
+          }
+          case "ArrowDown": {
+            e.preventDefault();
+            if (this.selectedIndex === this.items.length - 1) {
+              this.selectedIndex = 0;
+            } else {
+              this.selectedIndex++;
+            }
+            break;
+          }
+          case "ArrowLeft": {
+            e.preventDefault();
+            if (input instanceof HTMLInputElement && input.type === "range") {
+              const newValue = Math.max(
+                parseFloat(input.min),
+                parseFloat(input.value) - 1,
+              );
+              input.value = newValue.toString();
+              this.handleSettingChange(input.name, input.value);
+            } else {
+              this.toggleItem(currentItem);
+            }
+            return;
+          }
+          case "ArrowRight": {
+            e.preventDefault();
+            if (input instanceof HTMLInputElement && input.type === "range") {
+              const newValue = Math.min(
+                parseFloat(input.max),
+                parseFloat(input.value) + 1,
+              );
+              input.value = newValue.toString();
+              this.handleSettingChange(input.name, input.value);
+            } else {
+              this.toggleItem(currentItem);
+            }
+            return;
+          }
+          case "Enter":
+          case " ": {
+            // Allow default behavior for links
+            if (currentItem.tagName === "A") {
+              return;
+            }
+
+            e.preventDefault();
+            if (currentItem.textContent?.trim().startsWith("Exit")) {
+              closeMenu();
+            } else if (!input) {
+              this.toggleItem(currentItem);
+            }
+            return;
+          }
+          case "Tab": {
+            e.preventDefault();
+            if (e.shiftKey) {
+              if (this.selectedIndex === 0) {
+                this.selectedIndex = this.items.length - 1;
+              } else {
+                this.selectedIndex--;
+              }
+            } else {
+              if (this.selectedIndex === this.items.length - 1) {
+                this.selectedIndex = 0;
+              } else {
+                this.selectedIndex++;
+              }
+            }
+            break;
+          }
+        }
+        this.changeFocus(this.selectedIndex);
+      }
+
+      private handleClick(e: MouseEvent) {
+        const clickedItem = e.target as HTMLElement;
+        const menuItem = clickedItem.closest(
+          '[role="menuitem"]',
+        ) as HTMLElement;
+        const newIndex = this.items.indexOf(menuItem);
+
+        if (newIndex !== -1) {
+          this.selectedIndex = newIndex;
+          this.changeFocus(this.selectedIndex);
+
+          if (menuItem.hasAttribute("data-on")) {
+            this.toggleItem(menuItem);
+          } else if (menuItem.textContent?.trim().startsWith("Exit")) {
+            closeMenu();
+          }
+        }
+      }
+
+      private toggleItem(
+        item: HTMLElement,
+        options: { doNotTrack?: boolean } = { doNotTrack: false },
+      ) {
+        if (item.hasAttribute("data-on")) {
+          const isOn = item.getAttribute("data-on") === "true";
+          const newState = !isOn;
+          item.setAttribute("data-on", newState ? "true" : "false");
+
+          // Check if this is a toggleable setting
+          const settingName = item.getAttribute("data-setting");
+          if (settingName) {
+            this.handleSettingChange(settingName, newState.toString(), options);
+          }
+        }
+      }
+
+      private changeFocus(idx: number) {
+        this.items.forEach((item) => {
+          item.tabIndex = -1;
+        });
+        const newFocusedItem = this.items[idx];
+        newFocusedItem.tabIndex = 0;
+
+        // If the menu item contains an input, focus that instead
+        const input = newFocusedItem.querySelector("input");
+        if (input instanceof HTMLInputElement) {
+          input.focus();
+        } else {
+          newFocusedItem.focus();
+        }
+      }
+    }
+
+    let menuFocusGroup: MenuFocusGroup;
+    const menu = document.getElementById("menu");
+
+    function openMenu() {
+      menu?.setAttribute("data-open", "true");
+      if (menuFocusGroup) menuFocusGroup.setSelectedIndex(0);
+      Fathom.trackEvent("menu: open");
+    }
+
+    function closeMenu() {
+      menu?.setAttribute("data-open", "false");
+      const menuItems = menu?.querySelectorAll(
+        '[role="menuitem"]',
+      ) as NodeListOf<HTMLElement>;
+      menuItems?.forEach((item) => {
+        item.tabIndex = -1;
+      });
+      const menuButton = document.getElementById("menu");
+      menuButton?.focus();
+      Fathom.trackEvent("menu: close");
+    }
+
+    function toggleMenu() {
+      const isOpen = menu?.getAttribute("data-open") === "true";
+      isOpen ? closeMenu() : openMenu();
+    }
+
+    menu?.setAttribute("data-open", "false");
+    menuFocusGroup = new MenuFocusGroup(".menu-content");
+
+    const menuButton = document.getElementById("menu-button");
+    menuButton?.addEventListener("click", (e: MouseEvent) => {
+      e.preventDefault();
+      toggleMenu();
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closeMenu();
+    });
+  });
+</script>

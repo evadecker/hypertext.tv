@@ -16,62 +16,6 @@ const { src }: Props = Astro.props;
 </iframe>
 <canvas id="static"></canvas>
 
-<script>
-  const canvas = document.getElementById("static") as HTMLCanvasElement;
-
-  if (canvas) {
-    const ctx = canvas.getContext("2d");
-
-    function setCanvasSize() {
-      canvas.width = window.innerWidth / 3;
-      canvas.height = (window.innerHeight * 0.5625) / 3;
-    }
-
-    // Generate CRT noise
-    function snow() {
-      if (!ctx) return;
-
-      const w = ctx.canvas.width;
-      const h = ctx.canvas.height;
-      const d = ctx.createImageData(w, h);
-      const b = new Uint32Array(d.data.buffer);
-      const len = b.length;
-
-      for (let i = 0; i < len; i++) {
-        b[i] = ((255 * Math.random()) | 0) << 24;
-      }
-
-      ctx.putImageData(d, 0, 0);
-    }
-
-    function animate() {
-      snow();
-      requestAnimationFrame(animate);
-    }
-
-    // resize the canvas to fill browser window dynamically
-    window.addEventListener("resize", resizeCanvas, false);
-
-    function resizeCanvas() {
-      setCanvasSize();
-      animate();
-    }
-
-    setCanvasSize();
-    animate();
-  }
-
-  const iframe = document.querySelector(".iframe");
-
-  if (iframe) {
-    iframe.addEventListener("load", () => {
-      iframe.classList.add("loaded");
-      // Remove background static
-      canvas.remove();
-    });
-  }
-</script>
-
 <style>
   .iframe {
     width: 100%;
@@ -96,3 +40,61 @@ const { src }: Props = Astro.props;
       repeat scroll 0 0;
   }
 </style>
+
+<script>
+  document.addEventListener("astro:page-load", () => {
+    const canvas = document.getElementById("static") as HTMLCanvasElement;
+
+    if (canvas) {
+      const ctx = canvas.getContext("2d");
+
+      function setCanvasSize() {
+        canvas.width = window.innerWidth / 3;
+        canvas.height = (window.innerHeight * 0.5625) / 3;
+      }
+
+      // Generate CRT noise
+      function snow() {
+        if (!ctx) return;
+
+        const w = ctx.canvas.width;
+        const h = ctx.canvas.height;
+        const d = ctx.createImageData(w, h);
+        const b = new Uint32Array(d.data.buffer);
+        const len = b.length;
+
+        for (let i = 0; i < len; i++) {
+          b[i] = ((255 * Math.random()) | 0) << 24;
+        }
+
+        ctx.putImageData(d, 0, 0);
+      }
+
+      function animate() {
+        snow();
+        requestAnimationFrame(animate);
+      }
+
+      // resize the canvas to fill browser window dynamically
+      window.addEventListener("resize", resizeCanvas, false);
+
+      function resizeCanvas() {
+        setCanvasSize();
+        animate();
+      }
+
+      setCanvasSize();
+      animate();
+    }
+
+    const iframe = document.querySelector(".iframe");
+
+    if (iframe) {
+      iframe.addEventListener("load", () => {
+        iframe.classList.add("loaded");
+        // Remove background static
+        canvas.remove();
+      });
+    }
+  });
+</script>

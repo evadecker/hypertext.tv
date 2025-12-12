@@ -17,7 +17,10 @@ const { prev, next } = await getPagination(channelId);
   fill="none"
   xmlns="http://www.w3.org/2000/svg"
   class="buttons"
+  role="group"
 >
+  <title>Hypertext TV Controls</title>
+
   <!-- Button group inset -->
   <g>
     <path
@@ -35,7 +38,8 @@ const { prev, next } = await getPagination(channelId);
       rx="27"
       fill="#141414"
       class="button-inset"></rect>
-    <a href="#" aria-label="Power" id="power" data-power="on">
+
+    <a href="#" role="button" aria-label="Power" id="power" data-power="on">
       <rect
         x="8"
         y="8"
@@ -101,7 +105,7 @@ const { prev, next } = await getPagination(channelId);
       rx="15"
       fill="#141414"
       class="button-inset"></rect>
-    <a href="#" aria-label="Open Menu" id="menu-button">
+    <a href="#" role="button" aria-label="Open Menu" id="menu-button">
       <rect
         x="214"
         y="32"
@@ -251,140 +255,6 @@ const { prev, next } = await getPagination(channelId);
   </defs>
 </svg>
 
-<script>
-  import * as Fathom from "fathom-client";
-  import {
-    playRandomClickOn,
-    playRandomClickOff,
-    playBigClickOn,
-    playBigClickOff,
-    playRandomPowerOn,
-  } from "../sounds/buttons";
-
-  const powerButton = document.getElementById("power");
-  const screen = document.querySelector(".screen");
-  const channelDisplay = document.querySelector("channel-display");
-  const menuButton = document.getElementById("menu-button");
-  const channelButtons = document.querySelectorAll(".channel-button");
-
-  function updateButtonStates(powerState: string) {
-    if (powerState === "off") {
-      menuButton?.setAttribute("data-disabled", "true");
-      channelButtons.forEach((button) =>
-        button.setAttribute("data-disabled", "true"),
-      );
-    } else {
-      menuButton?.removeAttribute("data-disabled");
-      channelButtons.forEach((button) =>
-        button.removeAttribute("data-disabled"),
-      );
-    }
-
-    const isBooting = screen?.hasAttribute("data-booting");
-    const isPoweringOff = screen?.hasAttribute("data-powering-off");
-
-    if (isBooting || isPoweringOff) {
-      powerButton?.setAttribute("data-disabled", "true");
-    } else {
-      powerButton?.removeAttribute("data-disabled");
-    }
-  }
-
-  function handlePowerButtonClick(event: Event) {
-    // Prevent default behavior to avoid any conflicts
-    event.preventDefault();
-
-    if (!screen) return;
-
-    const isTurningOff = screen.getAttribute("data-power") === "on";
-
-    Fathom.trackEvent(`controls: click power ${isTurningOff ? "off" : "on"}`);
-
-    if (isTurningOff) {
-      screen.setAttribute("data-powering-off", "true");
-      updateButtonStates(screen.getAttribute("data-power") || "on");
-    } else {
-      screen.setAttribute("data-power", "on");
-      screen.setAttribute("data-booting", "true");
-      localStorage.setItem("power", "on");
-      updateButtonStates("on");
-    }
-
-    const newPowerState = isTurningOff ? "off" : "on";
-    powerButton?.setAttribute("data-power", newPowerState);
-    channelDisplay?.setAttribute("data-power", newPowerState);
-  }
-
-  function handlePowerButtonPress() {
-    const isTurningOff = screen?.getAttribute("data-power") === "on";
-    isTurningOff ? playBigClickOn() : playRandomPowerOn();
-  }
-
-  function handlePowerButtonRelease() {
-    // Only play big click release when turning off
-    const isTurningOff = screen?.getAttribute("data-power") === "on";
-    if (isTurningOff) {
-      playBigClickOff();
-    }
-  }
-
-  function handleChannelButtonClick(event: Event) {
-    const button = event.currentTarget as HTMLAnchorElement;
-    Fathom.trackEvent(
-      `controls: click channel ${button.getAttribute("aria-label")}`,
-    );
-  }
-
-  function initButtons() {
-    const savedPowerState = localStorage.getItem("power") || "on";
-
-    [screen, powerButton, channelDisplay].forEach((element) => {
-      element?.setAttribute("data-power", savedPowerState);
-    });
-
-    updateButtonStates(savedPowerState);
-
-    if (savedPowerState === "off") screen?.removeAttribute("data-booting");
-
-    // Listen to screen animation events to update button states
-    screen?.addEventListener("animationend", function (event) {
-      if ((event as AnimationEvent).animationName === "power-off") {
-        screen.setAttribute("data-power", "off");
-        screen.removeAttribute("data-powering-off");
-        localStorage.setItem("power", "off");
-        updateButtonStates("off");
-      }
-
-      if ((event as AnimationEvent).animationName === "power-on") {
-        screen.removeAttribute("data-booting");
-        updateButtonStates(screen.getAttribute("data-power") || "on");
-      }
-    });
-
-    if (powerButton) {
-      powerButton.addEventListener("click", handlePowerButtonClick);
-      powerButton.addEventListener("pointerdown", handlePowerButtonPress);
-      powerButton.addEventListener("pointerup", handlePowerButtonRelease);
-      powerButton.addEventListener("pointercancel", handlePowerButtonRelease);
-    }
-
-    channelButtons.forEach((button) => {
-      button.addEventListener("click", handleChannelButtonClick);
-      button.addEventListener("pointerdown", playRandomClickOn);
-      button.addEventListener("pointerup", playRandomClickOff);
-      button.addEventListener("pointercancel", playRandomClickOff);
-    });
-
-    if (menuButton) {
-      menuButton.addEventListener("pointerdown", playRandomClickOn);
-      menuButton.addEventListener("pointerup", playRandomClickOff);
-      menuButton.addEventListener("pointercancel", playRandomClickOff);
-    }
-  }
-
-  initButtons();
-</script>
-
 <style>
   .buttons {
     grid-area: buttons;
@@ -454,3 +324,138 @@ const { prev, next } = await getPagination(channelId);
     }
   }
 </style>
+
+<script>
+  import * as Fathom from "fathom-client";
+  import {
+    playRandomClickOn,
+    playRandomClickOff,
+    playBigClickOn,
+    playBigClickOff,
+    playRandomPowerOn,
+  } from "../sounds/buttons";
+
+  document.addEventListener("astro:page-load", () => {
+    const powerButton = document.getElementById("power");
+    const screen = document.querySelector(".screen");
+    const channelDisplay = document.querySelector("channel-display");
+    const menuButton = document.getElementById("menu-button");
+    const channelButtons = document.querySelectorAll(".channel-button");
+
+    function updateButtonStates(powerState: string) {
+      if (powerState === "off") {
+        menuButton?.setAttribute("data-disabled", "true");
+        channelButtons.forEach((button) =>
+          button.setAttribute("data-disabled", "true"),
+        );
+      } else {
+        menuButton?.removeAttribute("data-disabled");
+        channelButtons.forEach((button) =>
+          button.removeAttribute("data-disabled"),
+        );
+      }
+
+      const isBooting = screen?.hasAttribute("data-booting");
+      const isPoweringOff = screen?.hasAttribute("data-powering-off");
+
+      if (isBooting || isPoweringOff) {
+        powerButton?.setAttribute("data-disabled", "true");
+      } else {
+        powerButton?.removeAttribute("data-disabled");
+      }
+    }
+
+    function handlePowerButtonClick(event: Event) {
+      event.preventDefault();
+
+      if (!screen) return;
+
+      const isTurningOff = screen.getAttribute("data-power") === "on";
+
+      Fathom.trackEvent(`controls: click power ${isTurningOff ? "off" : "on"}`);
+
+      if (isTurningOff) {
+        screen.setAttribute("data-powering-off", "true");
+        updateButtonStates(screen.getAttribute("data-power") || "on");
+      } else {
+        screen.setAttribute("data-power", "on");
+        screen.setAttribute("data-booting", "true");
+        localStorage.setItem("power", "on");
+        updateButtonStates("on");
+      }
+
+      const newPowerState = isTurningOff ? "off" : "on";
+      powerButton?.setAttribute("data-power", newPowerState);
+      channelDisplay?.setAttribute("data-power", newPowerState);
+    }
+
+    function handlePowerButtonPress() {
+      const isTurningOff = screen?.getAttribute("data-power") === "on";
+      isTurningOff ? playBigClickOn() : playRandomPowerOn();
+    }
+
+    function handlePowerButtonRelease() {
+      // Only play big click release when turning off
+      const isTurningOff = screen?.getAttribute("data-power") === "on";
+      if (isTurningOff) {
+        playBigClickOff();
+      }
+    }
+
+    function handleChannelButtonClick(event: Event) {
+      const button = event.currentTarget as HTMLAnchorElement;
+      Fathom.trackEvent(
+        `controls: click channel ${button.getAttribute("aria-label")}`,
+      );
+    }
+
+    function initButtons() {
+      const savedPowerState = localStorage.getItem("power") || "on";
+
+      [screen, powerButton, channelDisplay].forEach((element) => {
+        element?.setAttribute("data-power", savedPowerState);
+      });
+
+      updateButtonStates(savedPowerState);
+
+      if (savedPowerState === "off") screen?.removeAttribute("data-booting");
+
+      // Listen to screen animation events to update button states
+      screen?.addEventListener("animationend", function (event) {
+        if ((event as AnimationEvent).animationName === "power-off") {
+          screen.setAttribute("data-power", "off");
+          screen.removeAttribute("data-powering-off");
+          localStorage.setItem("power", "off");
+          updateButtonStates("off");
+        }
+
+        if ((event as AnimationEvent).animationName === "power-on") {
+          screen.removeAttribute("data-booting");
+          updateButtonStates(screen.getAttribute("data-power") || "on");
+        }
+      });
+
+      if (powerButton) {
+        powerButton.addEventListener("click", handlePowerButtonClick);
+        powerButton.addEventListener("pointerdown", handlePowerButtonPress);
+        powerButton.addEventListener("pointerup", handlePowerButtonRelease);
+        powerButton.addEventListener("pointercancel", handlePowerButtonRelease);
+      }
+
+      channelButtons.forEach((button) => {
+        button.addEventListener("click", handleChannelButtonClick);
+        button.addEventListener("pointerdown", playRandomClickOn);
+        button.addEventListener("pointerup", playRandomClickOff);
+        button.addEventListener("pointercancel", playRandomClickOff);
+      });
+
+      if (menuButton) {
+        menuButton.addEventListener("pointerdown", playRandomClickOn);
+        menuButton.addEventListener("pointerup", playRandomClickOff);
+        menuButton.addEventListener("pointercancel", playRandomClickOff);
+      }
+    }
+
+    initButtons();
+  });
+</script>

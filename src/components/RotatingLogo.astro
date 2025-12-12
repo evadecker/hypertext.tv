@@ -6,327 +6,6 @@
   <div id="canvas"></div>
 </div>
 
-<script>
-  import * as THREE from "three";
-  import { SVGLoader } from "three/addons/loaders/SVGLoader.js";
-  import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
-  import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
-  import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
-  import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
-  import { LUTPass } from "three/addons/postprocessing/LUTPass.js";
-  import { LUTCubeLoader } from "three/addons/loaders/LUTCubeLoader.js";
-  import { ColorTrailPass } from "../shaders/ColorTrailPass";
-  import { DragControls } from "three/examples/jsm/Addons.js";
-
-  const svg = `<svg width="199" height="71" viewBox="0 0 199 71" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path fill-rule="evenodd" clip-rule="evenodd" d="M26.5 5.5H172.5C173.466 5.5 173.834 5.50062 174.128 5.50987C184.681 5.84151 193.158 14.3189 193.49 24.8718C193.499 25.166 193.5 25.5335 193.5 26.5C193.5 27.4665 193.499 27.834 193.49 28.1282C193.158 38.6811 184.681 47.1585 174.128 47.4901C173.834 47.4994 173.466 47.5 172.5 47.5H26.5C25.5335 47.5 25.166 47.4994 24.8718 47.4901C14.3189 47.1585 5.84151 38.6811 5.50987 28.1282C5.50062 27.834 5.5 27.4665 5.5 26.5C5.5 25.5335 5.50062 25.166 5.50987 24.8718C5.84151 14.3189 14.3189 5.84151 24.8718 5.50987C25.166 5.50062 25.5335 5.5 26.5 5.5ZM0.5 26.5C0.5 25.5715 0.5 25.1073 0.512336 24.7147C0.926882 11.5236 11.5236 0.926882 24.7147 0.512336C25.1073 0.5 25.5715 0.5 26.5 0.5H172.5C173.428 0.5 173.893 0.5 174.285 0.512336C187.476 0.926882 198.073 11.5236 198.488 24.7147C198.5 25.1073 198.5 25.5715 198.5 26.5C198.5 27.4285 198.5 27.8927 198.488 28.2853C198.073 41.4764 187.476 52.0731 174.285 52.4877C173.893 52.5 173.428 52.5 172.5 52.5H26.5C25.5715 52.5 25.1073 52.5 24.7147 52.4877C11.5236 52.0731 0.926882 41.4764 0.512336 28.2853C0.5 27.8927 0.5 27.4285 0.5 26.5ZM136.984 12.6521L152.648 42.0001H163.956L180.192 12.6521H170.248L158.412 34.8281L146.84 12.6521H136.984ZM113.251 42.0001V19.9121H100.183V12.6521H135.251V19.9121H122.183V42.0001H113.251ZM76.048 19.9121V42.0001H84.98V19.9121H98.048V12.6521H62.98V19.9121H76.048ZM21.3281 42.0001V12.6521H30.2601V23.5201H50.5881V12.6521H59.5201V42.0001H50.5881V30.7801H30.2601V42.0001H21.3281ZM173.357 57.6599H170.677L168.217 65.2199C167.857 66.3199 167.777 66.5999 167.157 68.8399H167.097C166.717 67.4399 166.237 65.7799 166.037 65.2199L163.537 57.6599H160.917L165.177 70.9999H169.057L173.357 57.6599ZM155.047 59.8999V70.9999H152.487V59.8999H148.627V57.6599H158.987V59.8999H155.047ZM137.062 70.9999V59.8999H141.002V57.6599H130.642V59.8999H134.502V70.9999H137.062ZM128.616 57.6599L124.616 64.1199L128.876 70.9999H125.916L123.996 67.7999C123.556 67.0399 123.416 66.7799 122.876 65.7599L122.596 65.2399H122.556L122.116 66.0799L122.089 66.1305C121.856 66.5571 121.598 67.0305 121.136 67.7999L119.196 70.9999H116.156L120.536 64.1199L116.476 57.6599H119.476L121.276 60.6399C121.756 61.4599 121.836 61.5999 122.536 62.9599H122.576L122.836 62.4799C123.276 61.6399 123.416 61.3799 123.856 60.6399L125.636 57.6599H128.616ZM107.331 63.2399V59.7799H113.891V57.6599H104.771V70.9999H113.951V68.8799H107.331V65.1199H113.551V63.2399H107.331ZM98.2662 59.8999V70.9999H95.7062V59.8999H91.8462V57.6599H102.206V59.8999H98.2662ZM78.6987 57.6599V70.9999H81.2587V66.5599H84.8587C86.2787 66.5199 86.8987 67.1399 86.8587 68.5999V70.9999H89.4387V68.0999C89.4587 66.4799 88.6987 65.5799 87.1787 65.4999V65.3999C89.1187 65.0199 89.5787 64.2999 89.5787 61.6399C89.5787 58.6599 88.4787 57.6599 85.2587 57.6599H78.6987ZM84.8387 64.3799H81.2587V59.8599H85.0187C86.6587 59.8599 86.9787 60.2199 86.9787 62.0999C86.9787 63.2399 86.8787 63.6399 86.4587 63.9799C86.1587 64.2599 85.6387 64.3799 84.8387 64.3799ZM69.0038 59.7799V63.2399H75.2238V65.1199H69.0038V68.8799H75.6238V70.9999H66.4438V57.6599H75.5638V59.7799H69.0038ZM53.0566 57.6599V70.9999H55.6166V66.6999H58.5966C61.0166 66.6599 61.0166 66.6599 61.5566 66.4799C63.0966 66.0199 63.7166 64.7999 63.7166 62.3199C63.7166 60.6999 63.5566 59.8399 63.1166 59.0999C62.6166 58.2799 61.6966 57.7799 60.5166 57.6999C60.0166 57.6599 59.8766 57.6599 58.4566 57.6599H53.0566ZM58.4966 64.4999H55.6166V59.7799H58.7566C59.8366 59.7799 60.0766 59.8199 60.4366 59.9799C60.9566 60.2599 61.1166 60.7999 61.1166 62.2799C61.1166 64.1999 60.7566 64.4999 58.4966 64.4999ZM50.7097 57.6599L45.7697 65.8999V70.9999H43.2097V65.8999L38.4097 57.6599H41.3297L43.3497 61.1799C43.5097 61.4599 43.6697 61.7599 44.2097 62.7999L44.4897 63.3399H44.5497L44.8497 62.7999C45.2621 61.9751 45.4432 61.6537 45.6062 61.3644L45.6067 61.3636C45.6411 61.3024 45.6748 61.2427 45.7097 61.1799L47.7497 57.6599H50.7097ZM35.9802 70.9999V57.6599H33.4202V63.1199H27.2402V57.6599H24.6802V70.9999H27.2402V65.2999H33.4202V70.9999H35.9802Z" fill="white"/>
-</svg>`;
-
-  const canvas = document.getElementById("canvas");
-
-  if (canvas) {
-    // ----------------------
-    // Three.js setup
-    // ----------------------
-
-    const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x000000, 0.0015);
-
-    const camera = new THREE.PerspectiveCamera(
-      100,
-      canvas.clientWidth / canvas.clientHeight,
-      0.1,
-      5000,
-    );
-    camera.position.z = 300;
-    camera.zoom = 6;
-    camera.updateProjectionMatrix();
-
-    const renderer = new THREE.WebGLRenderer({
-      powerPreference: "low-power",
-      alpha: true,
-    });
-    renderer.setAnimationLoop(animate);
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
-    canvas.appendChild(renderer.domElement);
-
-    // ----------------------
-    // Starfield
-    // ----------------------
-
-    // Create a group for all stars
-    const starField = new THREE.Group();
-    scene.add(starField);
-
-    // Star parameters
-    const starCount = 400;
-    const starSpeed = 12;
-    const minStarSize = 0.5;
-    const maxStarSize = 2;
-    const starDepth = 2000; // How far the stars travel
-    const centerAvoidanceRadius = 100; // Radius around center to avoid stars
-
-    // Create star material
-    const starMaterial = new THREE.MeshPhysicalMaterial({
-      color: "white",
-      emissive: "white",
-      emissiveIntensity: 10,
-      transparent: true,
-    });
-
-    // Create stars
-    const stars: THREE.Mesh[] = [];
-    for (let i = 0; i < starCount; i++) {
-      // Random star size between min and max
-      const randomSize =
-        minStarSize + Math.random() * (maxStarSize - minStarSize);
-
-      // Use a cylinder for each star, with random diameter and fixed height
-      const geometry = new THREE.CylinderGeometry(
-        randomSize,
-        randomSize,
-        16,
-        8,
-      );
-      const star = new THREE.Mesh(geometry, starMaterial);
-      star.rotation.x = Math.PI / 2; // Orient cylinder horizontally (along Z)
-
-      // Random position within a wide area, avoiding center
-      let x, y, z;
-      let distanceFromCenter;
-
-      // Keep generating positions until we find one outside the center avoidance radius
-      do {
-        x = (Math.random() - 0.5) * 1000;
-        y = (Math.random() - 0.5) * 1000;
-        z = -Math.random() * starDepth; // Start at random distances
-
-        // Calculate distance from center in x-y plane
-        distanceFromCenter = Math.sqrt(x * x + y * y);
-      } while (distanceFromCenter < centerAvoidanceRadius);
-
-      star.position.set(x, y, z);
-      stars.push(star);
-      starField.add(star);
-    }
-
-    const composer = new EffectComposer(renderer);
-
-    const resize = () => {
-      camera.aspect = canvas.clientWidth / canvas.clientHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-      renderer.setPixelRatio(window.devicePixelRatio);
-      composer.setSize(canvas.clientWidth, canvas.clientHeight);
-      composer.setPixelRatio(window.devicePixelRatio);
-    };
-    resize();
-    window.addEventListener("resize", resize);
-
-    // ----------------------
-    // SVG Logo
-    // ----------------------
-
-    const loader = new SVGLoader();
-    const svgData = loader.parse(svg);
-
-    const svgGroup = new THREE.Group();
-
-    // When importing SVGs paths are inverted on Y axis
-    // it happens in the process of mapping from 2d to 3d coordinate system
-    svgGroup.scale.y *= -1;
-
-    const material = new THREE.MeshPhysicalMaterial({
-      color: "gold",
-      emissive: "white",
-      emissiveIntensity: 2,
-      reflectivity: 1,
-      metalness: 1,
-      roughness: 0.13,
-    });
-
-    // Loop through all of the parsed paths
-    svgData.paths.forEach((path) => {
-      const shapes = SVGLoader.createShapes(path);
-
-      // Each path has array of shapes
-      shapes.forEach((shape) => {
-        // Finally we can take each shape and extrude it
-        const geometry = new THREE.ExtrudeGeometry(shape, {
-          curveSegments: 12,
-          depth: 6,
-          steps: 1,
-          bevelEnabled: false,
-        });
-
-        // Create a mesh and add it to the group
-        const mesh = new THREE.Mesh(geometry, material);
-
-        svgGroup.add(mesh);
-      });
-    });
-
-    // Get group's size
-    const box = new THREE.Box3().setFromObject(svgGroup);
-    const sizeVec = new THREE.Vector3();
-    box.getSize(sizeVec);
-
-    const yOffset = sizeVec.y / -2;
-    const xOffset = sizeVec.x / -2;
-
-    // Offset all of group's elements, to center them
-    svgGroup.children.forEach((item) => {
-      item.position.x = xOffset;
-      item.position.y = yOffset;
-    });
-
-    // Finally we add svg group to the scene
-    scene.add(svgGroup);
-
-    // ----------------------
-    // Drag controls
-    // ----------------------
-
-    new DragControls([svgGroup], camera, renderer.domElement);
-
-    // ----------------------
-    // Lighting
-    // ----------------------
-
-    const topDirectionalLightTarget = new THREE.Object3D();
-    topDirectionalLightTarget.position.set(0, -10, 0);
-    scene.add(topDirectionalLightTarget);
-
-    const topDirectionalLight = new THREE.DirectionalLight("hotpink", 1);
-    topDirectionalLight.position.set(10, 0, 100);
-    topDirectionalLight.target = topDirectionalLightTarget;
-    scene.add(topDirectionalLight);
-
-    const bottomDirectionalLightTarget = new THREE.Object3D();
-    bottomDirectionalLightTarget.position.set(0, 4, 0);
-    scene.add(bottomDirectionalLightTarget);
-
-    const bottomDirectionalLight = new THREE.DirectionalLight("hotpink", 1);
-    bottomDirectionalLight.position.set(10, 0, 100);
-    bottomDirectionalLight.target = bottomDirectionalLightTarget;
-    scene.add(bottomDirectionalLight);
-
-    // ----------------------
-    // Color Grading
-    // ----------------------
-
-    const lutPass = new LUTPass({
-      lut: undefined,
-      intensity: 0.4,
-    });
-
-    const lutLoader = new LUTCubeLoader();
-    lutLoader.load("/luts/vintage.cube", (result) => {
-      lutPass.lut = result.texture3D;
-      lutPass.enabled = true;
-    });
-
-    // ----------------------
-    // Postprocessing
-    // ----------------------
-
-    const renderPass = new RenderPass(scene, camera);
-    const bloomPass = new UnrealBloomPass(
-      new THREE.Vector2(canvas.clientWidth, canvas.clientHeight),
-      0.1,
-      0.0001,
-      0.99,
-    );
-
-    const colorTrailPass = new ColorTrailPass();
-    const outputPass = new OutputPass();
-
-    composer.addPass(renderPass);
-    composer.addPass(colorTrailPass);
-    composer.addPass(bloomPass);
-    composer.addPass(lutPass);
-    composer.addPass(outputPass);
-
-    // ----------------------
-    // Render loop
-    // ----------------------
-
-    const MIN_ROTATION_SPEED = 0.0015; // Speed when facing front
-    const MAX_ROTATION_SPEED = 0.2; // Speed when facing back
-
-    const MIN_LIGHT_INTENSITY = 0;
-    const MAX_LIGHT_INTENSITY = 1.2;
-    const LIGHT_DROPOFF = 6; // Speed of light dropoff between max and min, higher is faster
-
-    // Begin animation rotated off center
-    svgGroup.rotation.y = Math.PI / 7;
-
-    function animate() {
-      // Move stars toward camera
-      stars.forEach((star) => {
-        // Calculate current distance from center in x-y plane
-        const distanceFromCenter = Math.sqrt(
-          star.position.x * star.position.x + star.position.y * star.position.y,
-        );
-
-        // Apply slight outward drift for stars near the center
-        if (distanceFromCenter < centerAvoidanceRadius * 2) {
-          // Calculate direction vector from center to star
-          const dirX = star.position.x / distanceFromCenter;
-          const dirY = star.position.y / distanceFromCenter;
-
-          // Apply outward drift (stronger when closer to center)
-          const driftStrength =
-            (1 - distanceFromCenter / (centerAvoidanceRadius * 2)) * 0.5;
-          star.position.x += dirX * driftStrength;
-          star.position.y += dirY * driftStrength;
-        }
-
-        star.position.z += starSpeed;
-
-        // Reset stars that have passed the camera
-        if (star.position.z > 300) {
-          // Reset position, avoiding center
-          let newX, newY;
-          let distanceFromCenter;
-
-          do {
-            newX = (Math.random() - 0.5) * 1000;
-            newY = (Math.random() - 0.5) * 1000;
-            distanceFromCenter = Math.sqrt(newX * newX + newY * newY);
-          } while (distanceFromCenter < centerAvoidanceRadius);
-
-          star.position.z = -starDepth;
-          star.position.x = newX;
-          star.position.y = newY;
-        }
-      });
-
-      // Normalize rotation to 0-2π range
-      const normalizedRotation = svgGroup.rotation.y % (Math.PI * 2);
-
-      // Create a cosine-based speed curve
-      const speedFactor = (Math.cos(normalizedRotation) + 1) / 2;
-      const rotationSpeed =
-        MAX_ROTATION_SPEED -
-        speedFactor * (MAX_ROTATION_SPEED - MIN_ROTATION_SPEED);
-
-      const lightIntensity =
-        MIN_LIGHT_INTENSITY +
-        (MAX_LIGHT_INTENSITY - MIN_LIGHT_INTENSITY) *
-          Math.pow(speedFactor, LIGHT_DROPOFF);
-
-      topDirectionalLight.intensity = lightIntensity;
-      bottomDirectionalLight.intensity = lightIntensity;
-
-      svgGroup.rotation.y -= rotationSpeed;
-
-      composer.render();
-    }
-  }
-</script>
-
 <style>
   .rotating-logo {
     width: 100%;
@@ -344,3 +23,327 @@
     height: 100%;
   }
 </style>
+
+<script>
+  import * as THREE from "three";
+  import { SVGLoader } from "three/addons/loaders/SVGLoader.js";
+  import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+  import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+  import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
+  import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+  import { LUTPass } from "three/addons/postprocessing/LUTPass.js";
+  import { LUTCubeLoader } from "three/addons/loaders/LUTCubeLoader.js";
+  import { ColorTrailPass } from "../shaders/ColorTrailPass";
+  import { DragControls } from "three/examples/jsm/Addons.js";
+
+  document.addEventListener("astro:page-load", () => {
+    const svg = `<svg width="199" height="71" viewBox="0 0 199 71" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M26.5 5.5H172.5C173.466 5.5 173.834 5.50062 174.128 5.50987C184.681 5.84151 193.158 14.3189 193.49 24.8718C193.499 25.166 193.5 25.5335 193.5 26.5C193.5 27.4665 193.499 27.834 193.49 28.1282C193.158 38.6811 184.681 47.1585 174.128 47.4901C173.834 47.4994 173.466 47.5 172.5 47.5H26.5C25.5335 47.5 25.166 47.4994 24.8718 47.4901C14.3189 47.1585 5.84151 38.6811 5.50987 28.1282C5.50062 27.834 5.5 27.4665 5.5 26.5C5.5 25.5335 5.50062 25.166 5.50987 24.8718C5.84151 14.3189 14.3189 5.84151 24.8718 5.50987C25.166 5.50062 25.5335 5.5 26.5 5.5ZM0.5 26.5C0.5 25.5715 0.5 25.1073 0.512336 24.7147C0.926882 11.5236 11.5236 0.926882 24.7147 0.512336C25.1073 0.5 25.5715 0.5 26.5 0.5H172.5C173.428 0.5 173.893 0.5 174.285 0.512336C187.476 0.926882 198.073 11.5236 198.488 24.7147C198.5 25.1073 198.5 25.5715 198.5 26.5C198.5 27.4285 198.5 27.8927 198.488 28.2853C198.073 41.4764 187.476 52.0731 174.285 52.4877C173.893 52.5 173.428 52.5 172.5 52.5H26.5C25.5715 52.5 25.1073 52.5 24.7147 52.4877C11.5236 52.0731 0.926882 41.4764 0.512336 28.2853C0.5 27.8927 0.5 27.4285 0.5 26.5ZM136.984 12.6521L152.648 42.0001H163.956L180.192 12.6521H170.248L158.412 34.8281L146.84 12.6521H136.984ZM113.251 42.0001V19.9121H100.183V12.6521H135.251V19.9121H122.183V42.0001H113.251ZM76.048 19.9121V42.0001H84.98V19.9121H98.048V12.6521H62.98V19.9121H76.048ZM21.3281 42.0001V12.6521H30.2601V23.5201H50.5881V12.6521H59.5201V42.0001H50.5881V30.7801H30.2601V42.0001H21.3281ZM173.357 57.6599H170.677L168.217 65.2199C167.857 66.3199 167.777 66.5999 167.157 68.8399H167.097C166.717 67.4399 166.237 65.7799 166.037 65.2199L163.537 57.6599H160.917L165.177 70.9999H169.057L173.357 57.6599ZM155.047 59.8999V70.9999H152.487V59.8999H148.627V57.6599H158.987V59.8999H155.047ZM137.062 70.9999V59.8999H141.002V57.6599H130.642V59.8999H134.502V70.9999H137.062ZM128.616 57.6599L124.616 64.1199L128.876 70.9999H125.916L123.996 67.7999C123.556 67.0399 123.416 66.7799 122.876 65.7599L122.596 65.2399H122.556L122.116 66.0799L122.089 66.1305C121.856 66.5571 121.598 67.0305 121.136 67.7999L119.196 70.9999H116.156L120.536 64.1199L116.476 57.6599H119.476L121.276 60.6399C121.756 61.4599 121.836 61.5999 122.536 62.9599H122.576L122.836 62.4799C123.276 61.6399 123.416 61.3799 123.856 60.6399L125.636 57.6599H128.616ZM107.331 63.2399V59.7799H113.891V57.6599H104.771V70.9999H113.951V68.8799H107.331V65.1199H113.551V63.2399H107.331ZM98.2662 59.8999V70.9999H95.7062V59.8999H91.8462V57.6599H102.206V59.8999H98.2662ZM78.6987 57.6599V70.9999H81.2587V66.5599H84.8587C86.2787 66.5199 86.8987 67.1399 86.8587 68.5999V70.9999H89.4387V68.0999C89.4587 66.4799 88.6987 65.5799 87.1787 65.4999V65.3999C89.1187 65.0199 89.5787 64.2999 89.5787 61.6399C89.5787 58.6599 88.4787 57.6599 85.2587 57.6599H78.6987ZM84.8387 64.3799H81.2587V59.8599H85.0187C86.6587 59.8599 86.9787 60.2199 86.9787 62.0999C86.9787 63.2399 86.8787 63.6399 86.4587 63.9799C86.1587 64.2599 85.6387 64.3799 84.8387 64.3799ZM69.0038 59.7799V63.2399H75.2238V65.1199H69.0038V68.8799H75.6238V70.9999H66.4438V57.6599H75.5638V59.7799H69.0038ZM53.0566 57.6599V70.9999H55.6166V66.6999H58.5966C61.0166 66.6599 61.0166 66.6599 61.5566 66.4799C63.0966 66.0199 63.7166 64.7999 63.7166 62.3199C63.7166 60.6999 63.5566 59.8399 63.1166 59.0999C62.6166 58.2799 61.6966 57.7799 60.5166 57.6999C60.0166 57.6599 59.8766 57.6599 58.4566 57.6599H53.0566ZM58.4966 64.4999H55.6166V59.7799H58.7566C59.8366 59.7799 60.0766 59.8199 60.4366 59.9799C60.9566 60.2599 61.1166 60.7999 61.1166 62.2799C61.1166 64.1999 60.7566 64.4999 58.4966 64.4999ZM50.7097 57.6599L45.7697 65.8999V70.9999H43.2097V65.8999L38.4097 57.6599H41.3297L43.3497 61.1799C43.5097 61.4599 43.6697 61.7599 44.2097 62.7999L44.4897 63.3399H44.5497L44.8497 62.7999C45.2621 61.9751 45.4432 61.6537 45.6062 61.3644L45.6067 61.3636C45.6411 61.3024 45.6748 61.2427 45.7097 61.1799L47.7497 57.6599H50.7097ZM35.9802 70.9999V57.6599H33.4202V63.1199H27.2402V57.6599H24.6802V70.9999H27.2402V65.2999H33.4202V70.9999H35.9802Z" fill="white"/>
+</svg>`;
+
+    const canvas = document.getElementById("canvas");
+
+    if (canvas) {
+      // ----------------------
+      // Three.js setup
+      // ----------------------
+
+      const scene = new THREE.Scene();
+      scene.fog = new THREE.FogExp2(0x000000, 0.0015);
+
+      const camera = new THREE.PerspectiveCamera(
+        100,
+        canvas.clientWidth / canvas.clientHeight,
+        0.1,
+        5000,
+      );
+      camera.position.z = 300;
+      camera.zoom = 6;
+      camera.updateProjectionMatrix();
+
+      const renderer = new THREE.WebGLRenderer({
+        powerPreference: "low-power",
+        alpha: true,
+      });
+      renderer.setAnimationLoop(animate);
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.2;
+      canvas.appendChild(renderer.domElement);
+
+      // ----------------------
+      // Starfield
+      // ----------------------
+
+      // Create a group for all stars
+      const starField = new THREE.Group();
+      scene.add(starField);
+
+      // Star parameters
+      const starCount = 400;
+      const starSpeed = 12;
+      const minStarSize = 0.5;
+      const maxStarSize = 2;
+      const starDepth = 2000; // How far the stars travel
+      const centerAvoidanceRadius = 100; // Radius around center to avoid stars
+
+      // Create star material
+      const starMaterial = new THREE.MeshPhysicalMaterial({
+        color: "white",
+        emissive: "white",
+        emissiveIntensity: 10,
+        transparent: true,
+      });
+
+      // Create stars
+      const stars: THREE.Mesh[] = [];
+      for (let i = 0; i < starCount; i++) {
+        // Random star size between min and max
+        const randomSize =
+          minStarSize + Math.random() * (maxStarSize - minStarSize);
+
+        // Use a cylinder for each star, with random diameter and fixed height
+        const geometry = new THREE.CylinderGeometry(
+          randomSize,
+          randomSize,
+          16,
+          8,
+        );
+        const star = new THREE.Mesh(geometry, starMaterial);
+        star.rotation.x = Math.PI / 2; // Orient cylinder horizontally (along Z)
+
+        // Random position within a wide area, avoiding center
+        let x, y, z;
+        let distanceFromCenter;
+
+        // Keep generating positions until we find one outside the center avoidance radius
+        do {
+          x = (Math.random() - 0.5) * 1000;
+          y = (Math.random() - 0.5) * 1000;
+          z = -Math.random() * starDepth; // Start at random distances
+
+          // Calculate distance from center in x-y plane
+          distanceFromCenter = Math.sqrt(x * x + y * y);
+        } while (distanceFromCenter < centerAvoidanceRadius);
+
+        star.position.set(x, y, z);
+        stars.push(star);
+        starField.add(star);
+      }
+
+      const composer = new EffectComposer(renderer);
+
+      const resize = () => {
+        camera.aspect = canvas.clientWidth / canvas.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        composer.setSize(canvas.clientWidth, canvas.clientHeight);
+        composer.setPixelRatio(window.devicePixelRatio);
+      };
+      resize();
+      window.addEventListener("resize", resize);
+
+      // ----------------------
+      // SVG Logo
+      // ----------------------
+
+      const loader = new SVGLoader();
+      const svgData = loader.parse(svg);
+
+      const svgGroup = new THREE.Group();
+
+      // When importing SVGs paths are inverted on Y axis
+      // it happens in the process of mapping from 2d to 3d coordinate system
+      svgGroup.scale.y *= -1;
+
+      const material = new THREE.MeshPhysicalMaterial({
+        color: "gold",
+        emissive: "white",
+        emissiveIntensity: 2,
+        reflectivity: 1,
+        metalness: 1,
+        roughness: 0.13,
+      });
+
+      // Loop through all of the parsed paths
+      svgData.paths.forEach((path) => {
+        const shapes = SVGLoader.createShapes(path);
+
+        // Each path has array of shapes
+        shapes.forEach((shape) => {
+          // Finally we can take each shape and extrude it
+          const geometry = new THREE.ExtrudeGeometry(shape, {
+            curveSegments: 12,
+            depth: 6,
+            steps: 1,
+            bevelEnabled: false,
+          });
+
+          // Create a mesh and add it to the group
+          const mesh = new THREE.Mesh(geometry, material);
+
+          svgGroup.add(mesh);
+        });
+      });
+
+      // Get group's size
+      const box = new THREE.Box3().setFromObject(svgGroup);
+      const sizeVec = new THREE.Vector3();
+      box.getSize(sizeVec);
+
+      const yOffset = sizeVec.y / -2;
+      const xOffset = sizeVec.x / -2;
+
+      // Offset all of group's elements, to center them
+      svgGroup.children.forEach((item) => {
+        item.position.x = xOffset;
+        item.position.y = yOffset;
+      });
+
+      // Finally we add svg group to the scene
+      scene.add(svgGroup);
+
+      // ----------------------
+      // Drag controls
+      // ----------------------
+
+      new DragControls([svgGroup], camera, renderer.domElement);
+
+      // ----------------------
+      // Lighting
+      // ----------------------
+
+      const topDirectionalLightTarget = new THREE.Object3D();
+      topDirectionalLightTarget.position.set(0, -10, 0);
+      scene.add(topDirectionalLightTarget);
+
+      const topDirectionalLight = new THREE.DirectionalLight("hotpink", 1);
+      topDirectionalLight.position.set(10, 0, 100);
+      topDirectionalLight.target = topDirectionalLightTarget;
+      scene.add(topDirectionalLight);
+
+      const bottomDirectionalLightTarget = new THREE.Object3D();
+      bottomDirectionalLightTarget.position.set(0, 4, 0);
+      scene.add(bottomDirectionalLightTarget);
+
+      const bottomDirectionalLight = new THREE.DirectionalLight("hotpink", 1);
+      bottomDirectionalLight.position.set(10, 0, 100);
+      bottomDirectionalLight.target = bottomDirectionalLightTarget;
+      scene.add(bottomDirectionalLight);
+
+      // ----------------------
+      // Color Grading
+      // ----------------------
+
+      const lutPass = new LUTPass({
+        lut: undefined,
+        intensity: 0.4,
+      });
+
+      const lutLoader = new LUTCubeLoader();
+      lutLoader.load("/luts/vintage.cube", (result) => {
+        lutPass.lut = result.texture3D;
+        lutPass.enabled = true;
+      });
+
+      // ----------------------
+      // Postprocessing
+      // ----------------------
+
+      const renderPass = new RenderPass(scene, camera);
+      const bloomPass = new UnrealBloomPass(
+        new THREE.Vector2(canvas.clientWidth, canvas.clientHeight),
+        0.1,
+        0.0001,
+        0.99,
+      );
+
+      const colorTrailPass = new ColorTrailPass();
+      const outputPass = new OutputPass();
+
+      composer.addPass(renderPass);
+      composer.addPass(colorTrailPass);
+      composer.addPass(bloomPass);
+      composer.addPass(lutPass);
+      composer.addPass(outputPass);
+
+      // ----------------------
+      // Render loop
+      // ----------------------
+
+      const MIN_ROTATION_SPEED = 0.0015; // Speed when facing front
+      const MAX_ROTATION_SPEED = 0.2; // Speed when facing back
+
+      const MIN_LIGHT_INTENSITY = 0;
+      const MAX_LIGHT_INTENSITY = 1.2;
+      const LIGHT_DROPOFF = 6; // Speed of light dropoff between max and min, higher is faster
+
+      // Begin animation rotated off center
+      svgGroup.rotation.y = Math.PI / 7;
+
+      function animate() {
+        // Move stars toward camera
+        stars.forEach((star) => {
+          // Calculate current distance from center in x-y plane
+          const distanceFromCenter = Math.sqrt(
+            star.position.x * star.position.x +
+              star.position.y * star.position.y,
+          );
+
+          // Apply slight outward drift for stars near the center
+          if (distanceFromCenter < centerAvoidanceRadius * 2) {
+            // Calculate direction vector from center to star
+            const dirX = star.position.x / distanceFromCenter;
+            const dirY = star.position.y / distanceFromCenter;
+
+            // Apply outward drift (stronger when closer to center)
+            const driftStrength =
+              (1 - distanceFromCenter / (centerAvoidanceRadius * 2)) * 0.5;
+            star.position.x += dirX * driftStrength;
+            star.position.y += dirY * driftStrength;
+          }
+
+          star.position.z += starSpeed;
+
+          // Reset stars that have passed the camera
+          if (star.position.z > 300) {
+            // Reset position, avoiding center
+            let newX, newY;
+            let distanceFromCenter;
+
+            do {
+              newX = (Math.random() - 0.5) * 1000;
+              newY = (Math.random() - 0.5) * 1000;
+              distanceFromCenter = Math.sqrt(newX * newX + newY * newY);
+            } while (distanceFromCenter < centerAvoidanceRadius);
+
+            star.position.z = -starDepth;
+            star.position.x = newX;
+            star.position.y = newY;
+          }
+        });
+
+        // Normalize rotation to 0-2π range
+        const normalizedRotation = svgGroup.rotation.y % (Math.PI * 2);
+
+        // Create a cosine-based speed curve
+        const speedFactor = (Math.cos(normalizedRotation) + 1) / 2;
+        const rotationSpeed =
+          MAX_ROTATION_SPEED -
+          speedFactor * (MAX_ROTATION_SPEED - MIN_ROTATION_SPEED);
+
+        const lightIntensity =
+          MIN_LIGHT_INTENSITY +
+          (MAX_LIGHT_INTENSITY - MIN_LIGHT_INTENSITY) *
+            Math.pow(speedFactor, LIGHT_DROPOFF);
+
+        topDirectionalLight.intensity = lightIntensity;
+        bottomDirectionalLight.intensity = lightIntensity;
+
+        svgGroup.rotation.y -= rotationSpeed;
+
+        composer.render();
+      }
+    }
+  });
+</script>
