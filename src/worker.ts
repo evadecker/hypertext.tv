@@ -3,8 +3,8 @@ import { handle } from "@astrojs/cloudflare/handler";
 import type { SSRManifest } from "astro";
 import { App } from "astro/app";
 
-interface Env {
-  VisitorTracker: DurableObjectNamespace;
+export interface Env {
+  VISITOR_TRACKER: DurableObjectNamespace<VisitorTracker>;
 }
 
 interface VisitorMessage {
@@ -13,7 +13,7 @@ interface VisitorMessage {
   history?: number[];
 }
 
-class VisitorTracker extends DurableObject<Env> {
+export class VisitorTracker extends DurableObject<Env> {
   private connections: Set<WebSocket>;
   private history: number[];
   private readonly MAX_HISTORY = 8;
