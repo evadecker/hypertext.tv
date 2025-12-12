@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 
 export const GET: APIRoute = async ({ request, locals }) => {
-  const VisitorTrackerNamespace = locals.runtime.env.VisitorTracker;
+  const VisitorTrackerNamespace = locals.runtime.env.VISITOR_TRACKER;
 
   if (!VisitorTrackerNamespace) {
     return new Response("Durable Object not available", { status: 500 });

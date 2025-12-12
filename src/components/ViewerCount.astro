@@ -1,26 +1,5 @@
 ---
-import type { VisitorData } from "@types";
-
-let initialVisitorCount = 1;
-
-try {
-  const VisitorTrackerNamespace = Astro.locals.runtime?.env?.VisitorTracker;
-
-  if (VisitorTrackerNamespace) {
-    const id = VisitorTrackerNamespace.idFromName("global");
-    const stub = VisitorTrackerNamespace.get(id);
-
-    const response = await stub.fetch(new Request("http://internal/visitors"));
-
-    if (response.ok) {
-      const data = (await response.json()) as VisitorData;
-      initialVisitorCount = data.total ?? 1;
-    }
-  }
-} catch (error) {
-  // Fallback to default data if fetching fails
-  console.warn("Failed to fetch initial visitor count:", error);
-}
+const initialVisitorCount = 1;
 
 function formatCountWithLeadingZeros(count: number): string {
   const formatted = count.toString().padStart(3, "0");
@@ -34,7 +13,7 @@ function formatCountWithLeadingZeros(count: number): string {
 }
 ---
 
-<viewer-count data-initial-count={initialVisitorCount} transition:persist>
+<viewer-count transition:persist>
   <span
     class="count"
     set:html={formatCountWithLeadingZeros(initialVisitorCount)}
