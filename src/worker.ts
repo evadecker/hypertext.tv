@@ -1,27 +1,19 @@
 import { DurableObject } from "cloudflare:workers";
 import { handle } from "@astrojs/cloudflare/handler";
+import type { VisitorData } from "@types";
 import type { SSRManifest } from "astro";
 import { App } from "astro/app";
 
-interface Env {
-  VisitorTracker: DurableObjectNamespace;
+export interface Env {
+  VISITOR_TRACKER: DurableObjectNamespace<VisitorTracker>;
 }
 
-interface VisitorMessage {
-  type: "count" | "history";
-  total?: number;
-  history?: number[];
-}
-
-class VisitorTracker extends DurableObject<Env> {
+export class VisitorTracker extends DurableObject<Env> {
   private connections: Set<WebSocket>;
-  private history: number[];
-  private readonly MAX_HISTORY = 8;
 
   constructor(ctx: DurableObjectState, env: Env) {
     super(ctx, env);
     this.connections = new Set();
-    this.history = new Array(this.MAX_HISTORY).fill(1);
   }
 
   async fetch(request: Request): Promise<Response> {
@@ -42,7 +34,6 @@ class VisitorTracker extends DurableObject<Env> {
     return new Response(
       JSON.stringify({
         total: Math.max(1, this.connections.size),
-        history: this.history,
       }),
       {
         headers: {
@@ -60,14 +51,9 @@ class VisitorTracker extends DurableObject<Env> {
     // Add to connections set
     this.connections.add(websocket);
 
-    // Update history with new count
-    this.updateHistory(this.connections.size);
-
     // Send initial count to the new connection (minimum 1)
     this.sendToClient(websocket, {
-      type: "count",
       total: Math.max(1, this.connections.size),
-      history: this.history,
     });
 
     // Broadcast updated count to all connections
@@ -76,30 +62,19 @@ class VisitorTracker extends DurableObject<Env> {
     // Handle disconnection
     websocket.addEventListener("close", () => {
       this.connections.delete(websocket);
-      this.updateHistory(this.connections.size);
       this.broadcastCount();
     });
 
     websocket.addEventListener("error", () => {
       this.connections.delete(websocket);
-      this.updateHistory(this.connections.size);
       this.broadcastCount();
     });
   }
 
-  private updateHistory(count: number): void {
-    this.history.push(Math.max(1, count));
-    if (this.history.length > this.MAX_HISTORY) {
-      this.history.shift();
-    }
-  }
-
   private broadcastCount(): void {
     const actualCount = Math.max(1, this.connections.size);
-    const message: VisitorMessage = {
-      type: "count",
+    const message: VisitorData = {
       total: actualCount,
-      history: this.history,
     };
 
     const messageStr = JSON.stringify(message);
@@ -114,7 +89,7 @@ class VisitorTracker extends DurableObject<Env> {
     }
   }
 
-  private sendToClient(ws: WebSocket, message: VisitorMessage): void {
+  private sendToClient(ws: WebSocket, message: VisitorData): void {
     try {
       ws.send(JSON.stringify(message));
     } catch (e) {

@@ -36,3 +36,16 @@
 body {
   font-synthesis: none;
 }
+
+:root {
+  --phosphor-active: rgb(94, 191, 252);
+  --phosphor-inactive: color-mix(
+    in srgb,
+    var(--phosphor-active) 15%,
+    transparent
+  );
+
+  --phosphor-glow: 0 0 2px color-mix(in srgb, currentColor 50%, transparent), 0
+    0 4px color-mix(in srgb, currentColor 40%, transparent), 0 0 8px
+    color-mix(in srgb, currentColor 30%, transparent);
+}

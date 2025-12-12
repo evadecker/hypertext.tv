@@ -35,3 +35,7 @@ export type GuideData = {
   timeBlocks: string[];
   channels: ChannelData[];
 };
+
+export interface VisitorData {
+  total?: number;
+}
