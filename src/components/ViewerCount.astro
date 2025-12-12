@@ -264,6 +264,9 @@ function generateBars(history: number[]) {
   class ViewerCount extends HTMLElement {
     private visitorHistory: number[] = [];
     private messageHandler: ((data: VisitorData) => void) | null = null;
+    private currentVisitorCount: number = 1;
+    private sparklineInterval: number | null = null;
+    private readonly SPARKLINE_UPDATE_INTERVAL_MS = 5000; // 5 seconds
 
     constructor() {
       super();
@@ -275,10 +278,22 @@ function generateBars(history: number[]) {
     private createVisitorCountHandler(): (data: VisitorData) => void {
       return (data: VisitorData) => {
         if (data.type === MESSAGE_TYPE.COUNT) {
-          this.updateVisitorHistory(data.history, data.total);
-          this.updateSparkline();
-          this.updateVisitorCountDisplay(data.total ?? 0);
-          this.updateActiveState(data.total ?? 0);
+          // Update current visitor count
+          this.currentVisitorCount = data.total ?? 1;
+
+          // Update display immediately
+          this.updateVisitorCountDisplay(this.currentVisitorCount);
+          this.updateActiveState(this.currentVisitorCount);
+
+          // If server provides history, use it to initialize
+          if (
+            data.history &&
+            Array.isArray(data.history) &&
+            data.history.length > 0
+          ) {
+            this.visitorHistory = this.normalizeHistoryLength(data.history);
+            this.updateSparkline();
+          }
         }
       };
     }
@@ -309,6 +324,32 @@ function generateBars(history: number[]) {
 
     private setupSparkline(): void {
       this.updateSparkline();
+      this.startSparklineInterval();
+    }
+
+    private startSparklineInterval(): void {
+      // Clear any existing interval
+      if (this.sparklineInterval !== null) {
+        clearInterval(this.sparklineInterval);
+      }
+
+      // Add current visitor count to history every 5 seconds
+      this.sparklineInterval = window.setInterval(() => {
+        this.addDataPointToHistory(this.currentVisitorCount);
+        this.updateSparkline();
+      }, this.SPARKLINE_UPDATE_INTERVAL_MS);
+    }
+
+    private stopSparklineInterval(): void {
+      if (this.sparklineInterval !== null) {
+        clearInterval(this.sparklineInterval);
+        this.sparklineInterval = null;
+      }
+    }
+
+    private addDataPointToHistory(value: number): void {
+      // Shift history forward and add new value
+      this.visitorHistory = [...this.visitorHistory.slice(1), value];
     }
 
     private createSparklineBar(
@@ -361,56 +402,17 @@ function generateBars(history: number[]) {
       this.renderSparklineBars(trendBars, maxValue);
     }
 
-    private hasValidHistory(history: unknown): history is number[] {
-      return Array.isArray(history) && history.length > 0;
-    }
-
-    private tryParseInitialVisitorData(): number[] | null {
-      const initialData = this.dataset.initialVisitors;
-      if (!initialData) return null;
-
-      try {
-        const parsed = JSON.parse(initialData);
-        return this.hasValidHistory(parsed.history) ? parsed.history : null;
-      } catch (error) {
-        console.error("Failed to parse initial visitor data:", error);
-        return null;
-      }
-    }
-
-    private appendToHistory(currentCount: number): void {
-      this.visitorHistory = [...this.visitorHistory.slice(1), currentCount];
-    }
-
     private normalizeHistoryLength(history: number[]): number[] {
       const targetLength = SPARKLINE_CONFIG.MAX_HISTORY_POINTS;
 
       while (history.length < targetLength) {
-        history.unshift(0);
+        history.unshift(1);
       }
       while (history.length > targetLength) {
-        history.pop();
+        history.shift();
       }
 
       return history;
-    }
-
-    private updateVisitorHistory(
-      history: number[] | undefined,
-      currentCount: number | undefined,
-    ): void {
-      if (this.hasValidHistory(history)) {
-        this.visitorHistory = history;
-      } else {
-        const initialHistory = this.tryParseInitialVisitorData();
-        if (initialHistory) {
-          this.visitorHistory = initialHistory;
-          return;
-        }
-        this.appendToHistory(currentCount ?? 0);
-      }
-
-      this.visitorHistory = this.normalizeHistoryLength(this.visitorHistory);
     }
 
     private updateActiveState(count: number): void {
@@ -418,10 +420,22 @@ function generateBars(history: number[]) {
     }
 
     connectedCallback(): void {
-      // Initialize history from server-rendered data before rendering sparkline
-      const initialHistory = this.tryParseInitialVisitorData();
-      if (initialHistory) {
-        this.visitorHistory = this.normalizeHistoryLength(initialHistory);
+      // Initialize from server-rendered data
+      const initialData = this.dataset.initialVisitors;
+      if (initialData) {
+        try {
+          const parsed = JSON.parse(initialData);
+          this.currentVisitorCount = parsed.total ?? 1;
+          if (
+            parsed.history &&
+            Array.isArray(parsed.history) &&
+            parsed.history.length > 0
+          ) {
+            this.visitorHistory = this.normalizeHistoryLength(parsed.history);
+          }
+        } catch (error) {
+          console.error("Failed to parse initial visitor data:", error);
+        }
       }
 
       this.setupSparkline();
@@ -429,11 +443,15 @@ function generateBars(history: number[]) {
     }
 
     disconnectedCallback(): void {
+      // Clean up WebSocket listener
       if (this.messageHandler) {
         const globalWS = GlobalVisitorWebSocket.getInstance();
         globalWS.removeListener(this.messageHandler);
         this.messageHandler = null;
       }
+
+      // Clean up sparkline interval
+      this.stopSparklineInterval();
     }
   }
 
