@@ -1,4 +1,5 @@
 ---
+import SoundsPreloader from "src/sounds/SoundsPreloader.astro";
 import "../styles/index.css";
 
 interface Props {
@@ -63,6 +64,7 @@ const pageTitle =
 			type="font/woff2"
 			crossorigin
 		/>
+		<SoundsPreloader />
 	</head>
 	<body>
 		<slot />

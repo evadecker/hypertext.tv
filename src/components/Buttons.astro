@@ -253,6 +253,13 @@ const { prev, next } = await getPagination(channelId);
 
 <script>
   import * as Fathom from "fathom-client";
+  import {
+    playRandomClickOn,
+    playRandomClickOff,
+    playBigClickOn,
+    playBigClickOff,
+    playRandomPowerOn,
+  } from "../sounds/buttons";
 
   const powerButton = document.getElementById("power");
   const screen = document.querySelector(".screen");
@@ -308,6 +315,19 @@ const { prev, next } = await getPagination(channelId);
     channelDisplay?.setAttribute("data-power", newPowerState);
   }
 
+  function handlePowerButtonPress() {
+    const isTurningOff = screen?.getAttribute("data-power") === "on";
+    isTurningOff ? playBigClickOn() : playRandomPowerOn();
+  }
+
+  function handlePowerButtonRelease() {
+    // Only play big click release when turning off
+    const isTurningOff = screen?.getAttribute("data-power") === "on";
+    if (isTurningOff) {
+      playBigClickOff();
+    }
+  }
+
   function handleChannelButtonClick(event: Event) {
     const button = event.currentTarget as HTMLAnchorElement;
     Fathom.trackEvent(
@@ -341,11 +361,25 @@ const { prev, next } = await getPagination(channelId);
       }
     });
 
-    powerButton?.addEventListener("click", handlePowerButtonClick);
+    if (powerButton) {
+      powerButton.addEventListener("click", handlePowerButtonClick);
+      powerButton.addEventListener("pointerdown", handlePowerButtonPress);
+      powerButton.addEventListener("pointerup", handlePowerButtonRelease);
+      powerButton.addEventListener("pointercancel", handlePowerButtonRelease);
+    }
 
     channelButtons.forEach((button) => {
       button.addEventListener("click", handleChannelButtonClick);
+      button.addEventListener("pointerdown", playRandomClickOn);
+      button.addEventListener("pointerup", playRandomClickOff);
+      button.addEventListener("pointercancel", playRandomClickOff);
     });
+
+    if (menuButton) {
+      menuButton.addEventListener("pointerdown", playRandomClickOn);
+      menuButton.addEventListener("pointerup", playRandomClickOff);
+      menuButton.addEventListener("pointercancel", playRandomClickOff);
+    }
   }
 
   initButtons();
