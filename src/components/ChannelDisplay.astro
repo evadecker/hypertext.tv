@@ -1,6 +1,6 @@
 ---
-import { SPARKLINE_CONFIG, SVG_WIDTH } from "@constants/channelDisplay";
 import type { ActiveProgram } from "@types";
+import ViewerCount from "./ViewerCount.astro";
 
 interface Props {
   channelId: string;
@@ -10,34 +10,6 @@ interface Props {
 const { activeProgram } = Astro.props;
 const { program, startTime, endTime } = activeProgram ?? {};
 const { title, url } = program ?? {};
-
-const initialVisitorData = {
-  total: 1,
-  history: Array(SPARKLINE_CONFIG.MAX_HISTORY_POINTS).fill(1),
-};
-
-function generateBars(history: number[]) {
-  const SOFT_MIN = 5;
-  const maxValue = Math.max(...history, SOFT_MIN);
-
-  return history
-    .map((point, i) => {
-      const availableHeight =
-        SPARKLINE_CONFIG.HEIGHT - SPARKLINE_CONFIG.MIN_BAR_HEIGHT;
-      const scaledHeight =
-        point <= SOFT_MIN
-          ? SPARKLINE_CONFIG.MIN_BAR_HEIGHT +
-            availableHeight * (point / SOFT_MIN)
-          : SPARKLINE_CONFIG.HEIGHT *
-            (1 - (point - SOFT_MIN) / (maxValue - SOFT_MIN));
-      const barHeight = Math.max(SPARKLINE_CONFIG.MIN_BAR_HEIGHT, scaledHeight);
-      const x = i * (SPARKLINE_CONFIG.BAR_WIDTH + SPARKLINE_CONFIG.BAR_GAP);
-      const y = SPARKLINE_CONFIG.HEIGHT - barHeight;
-
-      return `<rect x="${x}" y="${y}" width="${SPARKLINE_CONFIG.BAR_WIDTH}" height="${barHeight}" rx="${SPARKLINE_CONFIG.BORDER_RADIUS}" fill="currentColor" />`;
-    })
-    .join("");
-}
 
 function getReadableTime(timeStr: string | undefined) {
   if (!timeStr) return "00:00";
@@ -60,12 +32,7 @@ const isAm = getReadableTime(endTime)?.split(" ")[1] === "AM";
 const isAiring = Boolean(startTime && endTime) && program !== null;
 ---
 
-<channel-display
-  data-title={title}
-  data-url={url}
-  data-power="on"
-  data-initial-visitors={JSON.stringify(initialVisitorData)}
->
+<channel-display data-title={title} data-url={url} data-power="on">
   <header class="display">
     <div
       class="title"
@@ -117,486 +84,12 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
           </span>
         </div>
       </div>
-      <div id="visitors" data-active="true" transition:persist>
-        <svg class="visitor-trend" width={SVG_WIDTH} height="15">
-          <g
-            class="trend-bars"
-            set:html={generateBars(initialVisitorData.history)}
-          />
-        </svg>
-        <span class="count">{initialVisitorData.total}</span> watching
-      </div>
+      <ViewerCount />
     </div>
   </header>
 </channel-display>
 
-<script>
-  import { DISPLAY_CONFIG, SPARKLINE_CONFIG } from "@constants/channelDisplay";
-
-  const WEBSOCKET_CONFIG = {
-    MAX_RECONNECT_ATTEMPTS: 10,
-    INITIAL_BACKOFF_MS: 1000,
-    BACKOFF_MULTIPLIER: 2,
-    MAX_BACKOFF_MS: 30000,
-    API_PATH: "/api/visitors",
-  } as const;
-
-  const DEV_HOSTNAMES = ["localhost", "127.0.0.1"] as const;
-
-  type VisitorData = {
-    type: string;
-    total?: number;
-    history?: number[];
-  };
-
-  class GlobalVisitorWebSocket {
-    private static instance: GlobalVisitorWebSocket | null = null;
-    private websocket: WebSocket | null = null;
-    private reconnectTimeout: number | null = null;
-    private reconnectAttempts: number = 0;
-    private isOnline: boolean = true;
-    private listeners: Set<(data: VisitorData) => void> = new Set();
-
-    private constructor() {
-      document.addEventListener("visibilitychange", () =>
-        this.handleVisibilityChange(),
-      );
-    }
-
-    static getInstance(): GlobalVisitorWebSocket {
-      if (!GlobalVisitorWebSocket.instance) {
-        GlobalVisitorWebSocket.instance = new GlobalVisitorWebSocket();
-      }
-      return GlobalVisitorWebSocket.instance;
-    }
-
-    private handleVisibilityChange(): void {
-      this.isOnline = document.visibilityState === "visible";
-      if (this.isOnline && !this.websocket) this.connect();
-    }
-
-    private isDevEnvironment(): boolean {
-      return DEV_HOSTNAMES.includes(
-        window.location.hostname as (typeof DEV_HOSTNAMES)[number],
-      );
-    }
-
-    private isConnected(): boolean {
-      return this.websocket?.readyState === WebSocket.OPEN;
-    }
-
-    private shouldAttemptConnection(): boolean {
-      return !this.isDevEnvironment() && this.isOnline;
-    }
-
-    private closeExistingConnection(): void {
-      if (this.websocket) {
-        this.websocket.close();
-        this.websocket = null;
-      }
-    }
-
-    private clearReconnectTimeout(): void {
-      if (this.reconnectTimeout !== null) {
-        clearTimeout(this.reconnectTimeout);
-        this.reconnectTimeout = null;
-      }
-    }
-
-    private getWebSocketUrl(): string {
-      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-      const host = window.location.host;
-      return `${protocol}//${host}${WEBSOCKET_CONFIG.API_PATH}`;
-    }
-
-    private notifyListeners(data: VisitorData): void {
-      this.listeners.forEach((callback) => callback(data));
-    }
-
-    private calculateBackoffDelay(): number {
-      return Math.min(
-        WEBSOCKET_CONFIG.INITIAL_BACKOFF_MS *
-          Math.pow(WEBSOCKET_CONFIG.BACKOFF_MULTIPLIER, this.reconnectAttempts),
-        WEBSOCKET_CONFIG.MAX_BACKOFF_MS,
-      );
-    }
-
-    connect(): void {
-      if (!this.shouldAttemptConnection() || this.isConnected()) return;
-
-      this.closeExistingConnection();
-      this.clearReconnectTimeout();
-
-      try {
-        this.websocket = new WebSocket(this.getWebSocketUrl());
-
-        this.websocket.addEventListener("open", () => {
-          this.reconnectAttempts = 0;
-        });
-
-        this.websocket.addEventListener("message", (event) => {
-          try {
-            const data = JSON.parse(event.data);
-            this.notifyListeners(data);
-          } catch (error) {
-            console.error("Error parsing WebSocket message:", error);
-          }
-        });
-
-        this.websocket.addEventListener("close", () => {
-          this.websocket = null;
-          this.attemptReconnect();
-        });
-
-        this.websocket.addEventListener("error", () => {
-          this.closeExistingConnection();
-        });
-      } catch (error) {
-        console.error("Failed to create WebSocket:", error);
-        this.attemptReconnect();
-      }
-    }
-
-    private attemptReconnect(): void {
-      if (!this.shouldAttemptConnection()) return;
-      if (this.reconnectAttempts >= WEBSOCKET_CONFIG.MAX_RECONNECT_ATTEMPTS)
-        return;
-
-      const delay = this.calculateBackoffDelay();
-      this.reconnectAttempts++;
-
-      this.reconnectTimeout = window.setTimeout(() => {
-        this.connect();
-      }, delay);
-    }
-
-    addListener(callback: (data: VisitorData) => void): void {
-      this.listeners.add(callback);
-    }
-
-    removeListener(callback: (data: VisitorData) => void): void {
-      this.listeners.delete(callback);
-    }
-
-    disconnect(): void {
-      this.clearReconnectTimeout();
-      this.closeExistingConnection();
-    }
-  }
-
-  const MESSAGE_TYPE = {
-    COUNT: "count",
-  } as const;
-
-  class ChannelDisplay extends HTMLElement {
-    intervalId: number | null = null;
-    timeoutId: NodeJS.Timeout | null = null;
-    private visitorHistory: number[] = [];
-    private messageHandler: ((data: VisitorData) => void) | null = null;
-
-    constructor() {
-      super();
-      this.visitorHistory = new Array(SPARKLINE_CONFIG.MAX_HISTORY_POINTS).fill(
-        SPARKLINE_CONFIG.MIN_VALUE_TO_AVOID_DIVISION_BY_ZERO,
-      );
-    }
-
-    private createVisitorCountHandler(): (data: VisitorData) => void {
-      return (data: VisitorData) => {
-        if (data.type === MESSAGE_TYPE.COUNT) {
-          this.updateVisitorHistory(data.history, data.total);
-          this.updateSparkline();
-          this.updateVisitorCountDisplay(data.total ?? 0);
-          this.updateVisitorActiveState(data.total ?? 0);
-        }
-      };
-    }
-
-    private updateVisitorCountDisplay(count: number): void {
-      const countElement = this.querySelector("#visitors .count");
-      if (countElement) {
-        countElement.textContent = count.toString();
-      }
-    }
-
-    private setupLiveUpdates(): void {
-      const globalWS = GlobalVisitorWebSocket.getInstance();
-      this.messageHandler = this.createVisitorCountHandler();
-      globalWS.addListener(this.messageHandler);
-      globalWS.connect();
-    }
-
-    private getSparklineElements(): {
-      trendBars: SVGGElement | null;
-      svgElement: SVGElement | null;
-    } {
-      return {
-        trendBars: this.querySelector(".trend-bars"),
-        svgElement: this.querySelector(".visitor-trend"),
-      };
-    }
-
-    private setupSparkline(): void {
-      this.updateSparkline();
-    }
-
-    private createSparklineBar(
-      value: number,
-      index: number,
-      maxValue: number,
-    ): SVGRectElement {
-      const percentage = value / maxValue;
-      const barHeight = Math.max(
-        SPARKLINE_CONFIG.MIN_BAR_HEIGHT,
-        SPARKLINE_CONFIG.HEIGHT * percentage,
-      );
-      const x = index * (SPARKLINE_CONFIG.BAR_WIDTH + SPARKLINE_CONFIG.BAR_GAP);
-      const y = SPARKLINE_CONFIG.HEIGHT - barHeight;
-
-      const rect = document.createElementNS(
-        SPARKLINE_CONFIG.SVG_NAMESPACE,
-        "rect",
-      ) as SVGRectElement;
-      rect.setAttribute("x", x.toString());
-      rect.setAttribute("y", y.toString());
-      rect.setAttribute("width", SPARKLINE_CONFIG.BAR_WIDTH.toString());
-      rect.setAttribute("height", barHeight.toString());
-      rect.setAttribute("rx", SPARKLINE_CONFIG.BORDER_RADIUS);
-      rect.setAttribute("fill", "currentColor");
-
-      return rect;
-    }
-
-    private renderSparklineBars(
-      trendBars: SVGGElement,
-      maxValue: number,
-    ): void {
-      trendBars.innerHTML = "";
-      this.visitorHistory.forEach((point, idx) => {
-        const bar = this.createSparklineBar(point, idx, maxValue);
-        trendBars.appendChild(bar);
-      });
-    }
-
-    private updateSparkline(): void {
-      const { trendBars, svgElement } = this.getSparklineElements();
-      if (!trendBars || !svgElement) return;
-
-      const maxValue = Math.max(
-        ...this.visitorHistory,
-        SPARKLINE_CONFIG.MIN_VALUE_TO_AVOID_DIVISION_BY_ZERO,
-      );
-
-      this.renderSparklineBars(trendBars, maxValue);
-    }
-
-    private hasValidHistory(history: unknown): history is number[] {
-      return Array.isArray(history) && history.length > 0;
-    }
-
-    private tryParseInitialVisitorData(): number[] | null {
-      const initialData = this.dataset.initialVisitors;
-      if (!initialData) return null;
-
-      try {
-        const parsed = JSON.parse(initialData);
-        return this.hasValidHistory(parsed.history) ? parsed.history : null;
-      } catch (error) {
-        console.error("Failed to parse initial visitor data:", error);
-        return null;
-      }
-    }
-
-    private appendToHistory(currentCount: number): void {
-      this.visitorHistory = [...this.visitorHistory.slice(1), currentCount];
-    }
-
-    private normalizeHistoryLength(history: number[]): number[] {
-      const targetLength = SPARKLINE_CONFIG.MAX_HISTORY_POINTS;
-
-      while (history.length < targetLength) {
-        history.unshift(0);
-      }
-      while (history.length > targetLength) {
-        history.pop();
-      }
-
-      return history;
-    }
-
-    updateVisitorHistory(
-      history: number[] | undefined,
-      currentCount: number | undefined,
-    ): void {
-      if (this.hasValidHistory(history)) {
-        this.visitorHistory = history;
-      } else {
-        const initialHistory = this.tryParseInitialVisitorData();
-        if (initialHistory) {
-          this.visitorHistory = initialHistory;
-          return;
-        }
-        this.appendToHistory(currentCount ?? 0);
-      }
-
-      this.visitorHistory = this.normalizeHistoryLength(this.visitorHistory);
-    }
-
-    updateVisitorActiveState(count: number): void {
-      const visitorsElement = this.querySelector("#visitors");
-      if (visitorsElement) {
-        visitorsElement.setAttribute("data-active", (count > 0).toString());
-      }
-    }
-
-    private shouldScrollTitle(): boolean {
-      const title = this.dataset.title;
-      const isActive = this.dataset.power === "on";
-      return Boolean(
-        title && title.length > DISPLAY_CONFIG.TITLE_MAX_CHARS && isActive,
-      );
-    }
-
-    private initializeTitleScroll(): void {
-      if (!this.shouldScrollTitle()) return;
-
-      const title = this.dataset.title!;
-      this.timeoutId = setTimeout(() => {
-        this.scrollTitle(title, DISPLAY_CONFIG.TITLE_MAX_CHARS);
-      }, DISPLAY_CONFIG.TITLE_SCROLL_START_DELAY_MS);
-    }
-
-    private shouldUpdateTimeDisplay(): boolean {
-      const timeElement = this.querySelector("time");
-      return Boolean(timeElement?.getAttribute("datetime"));
-    }
-
-    connectedCallback(): void {
-      this.initializeTitleScroll();
-
-      if (this.shouldUpdateTimeDisplay()) {
-        this.updateTimeDisplay();
-      }
-
-      this.setupSparkline();
-      this.setupLiveUpdates();
-    }
-
-    private parseUtcTimeString(timeStr: string): Date {
-      const [hours, minutes] = timeStr.split(":").map(Number);
-      const date = new Date();
-      date.setUTCHours(hours, minutes, 0, 0);
-      return date;
-    }
-
-    private formatTimeForDisplay(date: Date): { time: string; period: string } {
-      const formatted = date.toLocaleTimeString("en-US", {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-      });
-      const [time, period] = formatted.split(" ");
-      return { time, period };
-    }
-
-    private updateAmPmIndicators(isAm: boolean): void {
-      const amElement = this.querySelector(".am-pm.am");
-      const pmElement = this.querySelector(".am-pm.pm");
-
-      if (amElement && pmElement) {
-        amElement.setAttribute("data-active", isAm.toString());
-        amElement.setAttribute("aria-hidden", (!isAm).toString());
-        pmElement.setAttribute("data-active", (!isAm).toString());
-        pmElement.setAttribute("aria-hidden", isAm.toString());
-      }
-    }
-
-    updateTimeDisplay(): void {
-      const timeElement = this.querySelector("time");
-      if (!timeElement) return;
-
-      const timeStr = timeElement.getAttribute("datetime");
-      if (!timeStr) return;
-
-      const date = this.parseUtcTimeString(timeStr);
-      const { time, period } = this.formatTimeForDisplay(date);
-
-      timeElement.textContent = time;
-      this.updateAmPmIndicators(period === "AM");
-    }
-
-    disconnectedCallback() {
-      this.clearTimers();
-
-      // Remove this component's listener from the global WebSocket
-      if (this.messageHandler) {
-        const globalWS = GlobalVisitorWebSocket.getInstance();
-        globalWS.removeListener(this.messageHandler);
-        this.messageHandler = null;
-      }
-    }
-
-    clearTimers() {
-      if (this.intervalId !== null) {
-        clearInterval(this.intervalId);
-        this.intervalId = null;
-      }
-      if (this.timeoutId !== null) {
-        clearTimeout(this.timeoutId);
-        this.timeoutId = null;
-      }
-    }
-
-    scrollTitle(title: string, totalChars: number): void {
-      const titleLink = this.querySelector(".title a");
-      if (!titleLink) return;
-
-      let startIndex = 0;
-      let direction = DISPLAY_CONFIG.SCROLL_DIRECTION_FORWARD;
-      const maxIndex = Math.max(0, title.length - totalChars);
-      let pauseCount = 0;
-
-      const isAtStart = () => startIndex <= 0;
-      const isAtEnd = () => startIndex >= maxIndex;
-      const isMovingForward = () =>
-        direction === DISPLAY_CONFIG.SCROLL_DIRECTION_FORWARD;
-      const shouldReverse = () =>
-        (isAtEnd() && isMovingForward()) || (isAtStart() && !isMovingForward());
-
-      const reverseDirection = () => {
-        direction *= -1;
-        pauseCount = isMovingForward()
-          ? DISPLAY_CONFIG.TITLE_SCROLL_PAUSE_AT_START
-          : DISPLAY_CONFIG.TITLE_SCROLL_PAUSE_AT_END;
-      };
-
-      this.intervalId = setInterval(() => {
-        if (pauseCount > 0) {
-          pauseCount--;
-          return;
-        }
-
-        const visibleChars = title.slice(startIndex, startIndex + totalChars);
-        titleLink.textContent = visibleChars;
-
-        if (shouldReverse()) {
-          reverseDirection();
-          return;
-        }
-
-        startIndex += direction;
-      }, DISPLAY_CONFIG.TITLE_SCROLL_INTERVAL_MS) as unknown as number;
-    }
-  }
-
-  document.addEventListener("astro:page-load", () => {
-    if (!customElements.get("channel-display")) {
-      customElements.define("channel-display", ChannelDisplay);
-    }
-  });
-</script>
-
-<style>
+<style is:global>
   @keyframes scroll-text {
     0% {
       transform: translateX(0);
@@ -618,19 +111,7 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
     }
   }
 
-  .display {
-    --phosphor-active: rgb(94, 191, 252);
-    --phosphor-inactive: color-mix(
-      in srgb,
-      var(--phosphor-active) 15%,
-      transparent
-    );
-
-    --phosphor-glow:
-      0 0 2px color-mix(in srgb, currentColor 50%, transparent),
-      0 0 4px color-mix(in srgb, currentColor 40%, transparent),
-      0 0 8px color-mix(in srgb, currentColor 30%, transparent);
-
+  channel-display .display {
     background: black;
     border-radius: 1rem;
     height: 4rem;
@@ -732,19 +213,6 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
         animation: live-pulse 3s ease infinite;
       }
     }
-
-    #visitors {
-      display: flex;
-      align-items: center;
-      gap: 0.5em;
-    }
-
-    .visitor-trend {
-      overflow: visible;
-      position: relative;
-      /* Optical alignment */
-      transform: translateY(2px);
-    }
   }
 
   [data-power="off"] {
@@ -762,21 +230,150 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
         box-shadow: none;
         animation: none;
       }
-
-      .visitor-trend rect {
-        fill: var(--phosphor-inactive);
-        filter: none;
-      }
-    }
-  }
-
-  #visitors[data-active="true"] {
-    .visitor-trend rect {
-      filter: drop-shadow(
-          0 0 2px color-mix(in srgb, currentColor 30%, transparent)
-        )
-        drop-shadow(0 0 4px color-mix(in srgb, currentColor 20%, transparent))
-        drop-shadow(0 0 8px color-mix(in srgb, currentColor 15%, transparent));
     }
   }
 </style>
+
+<script>
+  import { DISPLAY_CONFIG } from "@constants/channelDisplay";
+
+  class ChannelDisplay extends HTMLElement {
+    intervalId: number | null = null;
+    timeoutId: NodeJS.Timeout | null = null;
+
+    private shouldScrollTitle(): boolean {
+      const title = this.dataset.title;
+      const isActive = this.dataset.power === "on";
+      return Boolean(
+        title && title.length > DISPLAY_CONFIG.TITLE_MAX_CHARS && isActive,
+      );
+    }
+
+    private initializeTitleScroll(): void {
+      if (!this.shouldScrollTitle()) return;
+
+      const title = this.dataset.title!;
+      this.timeoutId = setTimeout(() => {
+        this.scrollTitle(title, DISPLAY_CONFIG.TITLE_MAX_CHARS);
+      }, DISPLAY_CONFIG.TITLE_SCROLL_START_DELAY_MS);
+    }
+
+    private shouldUpdateTimeDisplay(): boolean {
+      const timeElement = this.querySelector("time");
+      return Boolean(timeElement?.getAttribute("datetime"));
+    }
+
+    connectedCallback(): void {
+      this.initializeTitleScroll();
+
+      if (this.shouldUpdateTimeDisplay()) {
+        this.updateTimeDisplay();
+      }
+    }
+
+    private parseUtcTimeString(timeStr: string): Date {
+      const [hours, minutes] = timeStr.split(":").map(Number);
+      const date = new Date();
+      date.setUTCHours(hours, minutes, 0, 0);
+      return date;
+    }
+
+    private formatTimeForDisplay(date: Date): { time: string; period: string } {
+      const formatted = date.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      });
+      const [time, period] = formatted.split(" ");
+      return { time, period };
+    }
+
+    private updateAmPmIndicators(isAm: boolean): void {
+      const amElement = this.querySelector(".am-pm.am");
+      const pmElement = this.querySelector(".am-pm.pm");
+
+      if (amElement && pmElement) {
+        amElement.setAttribute("data-active", isAm.toString());
+        amElement.setAttribute("aria-hidden", (!isAm).toString());
+        pmElement.setAttribute("data-active", (!isAm).toString());
+        pmElement.setAttribute("aria-hidden", isAm.toString());
+      }
+    }
+
+    updateTimeDisplay(): void {
+      const timeElement = this.querySelector("time");
+      if (!timeElement) return;
+
+      const timeStr = timeElement.getAttribute("datetime");
+      if (!timeStr) return;
+
+      const date = this.parseUtcTimeString(timeStr);
+      const { time, period } = this.formatTimeForDisplay(date);
+
+      timeElement.textContent = time;
+      this.updateAmPmIndicators(period === "AM");
+    }
+
+    disconnectedCallback() {
+      this.clearTimers();
+    }
+
+    clearTimers() {
+      if (this.intervalId !== null) {
+        clearInterval(this.intervalId);
+        this.intervalId = null;
+      }
+      if (this.timeoutId !== null) {
+        clearTimeout(this.timeoutId);
+        this.timeoutId = null;
+      }
+    }
+
+    scrollTitle(title: string, totalChars: number): void {
+      const titleLink = this.querySelector(".title a");
+      if (!titleLink) return;
+
+      let startIndex = 0;
+      let direction = DISPLAY_CONFIG.SCROLL_DIRECTION_FORWARD;
+      const maxIndex = Math.max(0, title.length - totalChars);
+      let pauseCount = 0;
+
+      const isAtStart = () => startIndex <= 0;
+      const isAtEnd = () => startIndex >= maxIndex;
+      const isMovingForward = () =>
+        direction === DISPLAY_CONFIG.SCROLL_DIRECTION_FORWARD;
+      const shouldReverse = () =>
+        (isAtEnd() && isMovingForward()) || (isAtStart() && !isMovingForward());
+
+      const reverseDirection = () => {
+        direction *= -1;
+        pauseCount = isMovingForward()
+          ? DISPLAY_CONFIG.TITLE_SCROLL_PAUSE_AT_START
+          : DISPLAY_CONFIG.TITLE_SCROLL_PAUSE_AT_END;
+      };
+
+      this.intervalId = setInterval(() => {
+        if (pauseCount > 0) {
+          pauseCount--;
+          return;
+        }
+
+        const visibleChars = title.slice(startIndex, startIndex + totalChars);
+        titleLink.textContent = visibleChars;
+
+        if (shouldReverse()) {
+          reverseDirection();
+          return;
+        }
+
+        startIndex += direction;
+      }, DISPLAY_CONFIG.TITLE_SCROLL_INTERVAL_MS) as unknown as number;
+    }
+  }
+
+  document.addEventListener("astro:page-load", () => {
+    if (!customElements.get("channel-display")) {
+      customElements.define("channel-display", ChannelDisplay);
+    }
+  });
+</script>

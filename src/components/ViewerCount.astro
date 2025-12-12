@@ -1,0 +1,411 @@
+---
+import { SPARKLINE_CONFIG, SVG_WIDTH } from "@constants/viewerCount";
+
+const initialVisitorData = {
+  total: 1,
+  history: Array(SPARKLINE_CONFIG.MAX_HISTORY_POINTS).fill(1),
+};
+
+function generateBars(history: number[]) {
+  const SOFT_MIN = 5;
+  const maxValue = Math.max(...history, SOFT_MIN);
+
+  return history
+    .map((point, i) => {
+      const availableHeight =
+        SPARKLINE_CONFIG.HEIGHT - SPARKLINE_CONFIG.MIN_BAR_HEIGHT;
+      const scaledHeight =
+        point <= SOFT_MIN
+          ? SPARKLINE_CONFIG.MIN_BAR_HEIGHT +
+            availableHeight * (point / SOFT_MIN)
+          : SPARKLINE_CONFIG.HEIGHT *
+            (1 - (point - SOFT_MIN) / (maxValue - SOFT_MIN));
+      const barHeight = Math.max(SPARKLINE_CONFIG.MIN_BAR_HEIGHT, scaledHeight);
+      const x = i * (SPARKLINE_CONFIG.BAR_WIDTH + SPARKLINE_CONFIG.BAR_GAP);
+      const y = SPARKLINE_CONFIG.HEIGHT - barHeight;
+
+      return `<rect x="${x}" y="${y}" width="${SPARKLINE_CONFIG.BAR_WIDTH}" height="${barHeight}" rx="${SPARKLINE_CONFIG.BORDER_RADIUS}" fill="currentColor" />`;
+    })
+    .join("");
+}
+---
+
+<viewer-count
+  data-initial-visitors={JSON.stringify(initialVisitorData)}
+  transition:persist
+>
+  <svg class="visitor-trend" width={SVG_WIDTH} height="15">
+    <g class="trend-bars" set:html={generateBars(initialVisitorData.history)} />
+  </svg>
+  <span class="count">{initialVisitorData.total}</span> watching
+</viewer-count>
+
+<style>
+  viewer-count {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    color: var(--phosphor-active);
+    text-shadow: var(--phosphor-glow);
+  }
+
+  .visitor-trend {
+    overflow: visible;
+    position: relative;
+    /* Optical alignment */
+    transform: translateY(2px);
+  }
+
+  viewer-count .visitor-trend rect {
+    filter: drop-shadow(
+        0 0 2px color-mix(in srgb, currentColor 30%, transparent)
+      )
+      drop-shadow(0 0 4px color-mix(in srgb, currentColor 20%, transparent))
+      drop-shadow(0 0 8px color-mix(in srgb, currentColor 15%, transparent));
+  }
+
+  :global([data-power="off"]) viewer-count {
+    color: var(--phosphor-inactive);
+    text-shadow: none;
+  }
+
+  :global([data-power="off"]) viewer-count .visitor-trend rect {
+    fill: var(--phosphor-inactive);
+    filter: none;
+  }
+</style>
+
+<script>
+  import { SPARKLINE_CONFIG } from "@constants/viewerCount";
+
+  const WEBSOCKET_CONFIG = {
+    MAX_RECONNECT_ATTEMPTS: 10,
+    INITIAL_BACKOFF_MS: 1000,
+    BACKOFF_MULTIPLIER: 2,
+    MAX_BACKOFF_MS: 30000,
+    API_PATH: "/api/visitors",
+  } as const;
+
+  const DEV_HOSTNAMES = ["localhost", "127.0.0.1"] as const;
+
+  type VisitorData = {
+    type: string;
+    total?: number;
+    history?: number[];
+  };
+
+  class GlobalVisitorWebSocket {
+    private static instance: GlobalVisitorWebSocket | null = null;
+    private websocket: WebSocket | null = null;
+    private reconnectTimeout: number | null = null;
+    private reconnectAttempts: number = 0;
+    private isOnline: boolean = true;
+    private listeners: Set<(data: VisitorData) => void> = new Set();
+
+    private constructor() {
+      document.addEventListener("visibilitychange", () =>
+        this.handleVisibilityChange(),
+      );
+    }
+
+    static getInstance(): GlobalVisitorWebSocket {
+      if (!GlobalVisitorWebSocket.instance) {
+        GlobalVisitorWebSocket.instance = new GlobalVisitorWebSocket();
+      }
+      return GlobalVisitorWebSocket.instance;
+    }
+
+    private handleVisibilityChange(): void {
+      this.isOnline = document.visibilityState === "visible";
+      if (this.isOnline && !this.websocket) this.connect();
+    }
+
+    private isDevEnvironment(): boolean {
+      return DEV_HOSTNAMES.includes(
+        window.location.hostname as (typeof DEV_HOSTNAMES)[number],
+      );
+    }
+
+    private isConnected(): boolean {
+      return this.websocket?.readyState === WebSocket.OPEN;
+    }
+
+    private shouldAttemptConnection(): boolean {
+      return !this.isDevEnvironment() && this.isOnline;
+    }
+
+    private closeExistingConnection(): void {
+      if (this.websocket) {
+        this.websocket.close();
+        this.websocket = null;
+      }
+    }
+
+    private clearReconnectTimeout(): void {
+      if (this.reconnectTimeout !== null) {
+        clearTimeout(this.reconnectTimeout);
+        this.reconnectTimeout = null;
+      }
+    }
+
+    private getWebSocketUrl(): string {
+      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+      const host = window.location.host;
+      return `${protocol}//${host}${WEBSOCKET_CONFIG.API_PATH}`;
+    }
+
+    private notifyListeners(data: VisitorData): void {
+      this.listeners.forEach((callback) => callback(data));
+    }
+
+    private calculateBackoffDelay(): number {
+      return Math.min(
+        WEBSOCKET_CONFIG.INITIAL_BACKOFF_MS *
+          Math.pow(WEBSOCKET_CONFIG.BACKOFF_MULTIPLIER, this.reconnectAttempts),
+        WEBSOCKET_CONFIG.MAX_BACKOFF_MS,
+      );
+    }
+
+    connect(): void {
+      if (!this.shouldAttemptConnection() || this.isConnected()) return;
+
+      this.closeExistingConnection();
+      this.clearReconnectTimeout();
+
+      try {
+        this.websocket = new WebSocket(this.getWebSocketUrl());
+
+        this.websocket.addEventListener("open", () => {
+          this.reconnectAttempts = 0;
+        });
+
+        this.websocket.addEventListener("message", (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            this.notifyListeners(data);
+          } catch (error) {
+            console.error("Error parsing WebSocket message:", error);
+          }
+        });
+
+        this.websocket.addEventListener("close", () => {
+          this.websocket = null;
+          this.attemptReconnect();
+        });
+
+        this.websocket.addEventListener("error", () => {
+          this.closeExistingConnection();
+        });
+      } catch (error) {
+        console.error("Failed to create WebSocket:", error);
+        this.attemptReconnect();
+      }
+    }
+
+    private attemptReconnect(): void {
+      if (!this.shouldAttemptConnection()) return;
+      if (this.reconnectAttempts >= WEBSOCKET_CONFIG.MAX_RECONNECT_ATTEMPTS)
+        return;
+
+      const delay = this.calculateBackoffDelay();
+      this.reconnectAttempts++;
+
+      this.reconnectTimeout = window.setTimeout(() => {
+        this.connect();
+      }, delay);
+    }
+
+    addListener(callback: (data: VisitorData) => void): void {
+      this.listeners.add(callback);
+    }
+
+    removeListener(callback: (data: VisitorData) => void): void {
+      this.listeners.delete(callback);
+    }
+
+    disconnect(): void {
+      this.clearReconnectTimeout();
+      this.closeExistingConnection();
+    }
+  }
+
+  const MESSAGE_TYPE = {
+    COUNT: "count",
+  } as const;
+
+  class ViewerCount extends HTMLElement {
+    private visitorHistory: number[] = [];
+    private messageHandler: ((data: VisitorData) => void) | null = null;
+
+    constructor() {
+      super();
+      this.visitorHistory = new Array(SPARKLINE_CONFIG.MAX_HISTORY_POINTS).fill(
+        SPARKLINE_CONFIG.MIN_VALUE_TO_AVOID_DIVISION_BY_ZERO,
+      );
+    }
+
+    private createVisitorCountHandler(): (data: VisitorData) => void {
+      return (data: VisitorData) => {
+        if (data.type === MESSAGE_TYPE.COUNT) {
+          this.updateVisitorHistory(data.history, data.total);
+          this.updateSparkline();
+          this.updateVisitorCountDisplay(data.total ?? 0);
+          this.updateActiveState(data.total ?? 0);
+        }
+      };
+    }
+
+    private updateVisitorCountDisplay(count: number): void {
+      const countElement = this.querySelector(".count");
+      if (countElement) {
+        countElement.textContent = count.toString();
+      }
+    }
+
+    private setupLiveUpdates(): void {
+      const globalWS = GlobalVisitorWebSocket.getInstance();
+      this.messageHandler = this.createVisitorCountHandler();
+      globalWS.addListener(this.messageHandler);
+      globalWS.connect();
+    }
+
+    private getSparklineElements(): {
+      trendBars: SVGGElement | null;
+      svgElement: SVGElement | null;
+    } {
+      return {
+        trendBars: this.querySelector(".trend-bars"),
+        svgElement: this.querySelector(".visitor-trend"),
+      };
+    }
+
+    private setupSparkline(): void {
+      this.updateSparkline();
+    }
+
+    private createSparklineBar(
+      value: number,
+      index: number,
+      maxValue: number,
+    ): SVGRectElement {
+      const percentage = value / maxValue;
+      const barHeight = Math.max(
+        SPARKLINE_CONFIG.MIN_BAR_HEIGHT,
+        SPARKLINE_CONFIG.HEIGHT * percentage,
+      );
+      const x = index * (SPARKLINE_CONFIG.BAR_WIDTH + SPARKLINE_CONFIG.BAR_GAP);
+      const y = SPARKLINE_CONFIG.HEIGHT - barHeight;
+
+      const rect = document.createElementNS(
+        SPARKLINE_CONFIG.SVG_NAMESPACE,
+        "rect",
+      ) as SVGRectElement;
+      rect.setAttribute("x", x.toString());
+      rect.setAttribute("y", y.toString());
+      rect.setAttribute("width", SPARKLINE_CONFIG.BAR_WIDTH.toString());
+      rect.setAttribute("height", barHeight.toString());
+      rect.setAttribute("rx", SPARKLINE_CONFIG.BORDER_RADIUS);
+      rect.setAttribute("fill", "currentColor");
+
+      return rect;
+    }
+
+    private renderSparklineBars(
+      trendBars: SVGGElement,
+      maxValue: number,
+    ): void {
+      trendBars.innerHTML = "";
+      this.visitorHistory.forEach((point, idx) => {
+        const bar = this.createSparklineBar(point, idx, maxValue);
+        trendBars.appendChild(bar);
+      });
+    }
+
+    private updateSparkline(): void {
+      const { trendBars, svgElement } = this.getSparklineElements();
+      if (!trendBars || !svgElement) return;
+
+      const maxValue = Math.max(
+        ...this.visitorHistory,
+        SPARKLINE_CONFIG.MIN_VALUE_TO_AVOID_DIVISION_BY_ZERO,
+      );
+
+      this.renderSparklineBars(trendBars, maxValue);
+    }
+
+    private hasValidHistory(history: unknown): history is number[] {
+      return Array.isArray(history) && history.length > 0;
+    }
+
+    private tryParseInitialVisitorData(): number[] | null {
+      const initialData = this.dataset.initialVisitors;
+      if (!initialData) return null;
+
+      try {
+        const parsed = JSON.parse(initialData);
+        return this.hasValidHistory(parsed.history) ? parsed.history : null;
+      } catch (error) {
+        console.error("Failed to parse initial visitor data:", error);
+        return null;
+      }
+    }
+
+    private appendToHistory(currentCount: number): void {
+      this.visitorHistory = [...this.visitorHistory.slice(1), currentCount];
+    }
+
+    private normalizeHistoryLength(history: number[]): number[] {
+      const targetLength = SPARKLINE_CONFIG.MAX_HISTORY_POINTS;
+
+      while (history.length < targetLength) {
+        history.unshift(0);
+      }
+      while (history.length > targetLength) {
+        history.pop();
+      }
+
+      return history;
+    }
+
+    private updateVisitorHistory(
+      history: number[] | undefined,
+      currentCount: number | undefined,
+    ): void {
+      if (this.hasValidHistory(history)) {
+        this.visitorHistory = history;
+      } else {
+        const initialHistory = this.tryParseInitialVisitorData();
+        if (initialHistory) {
+          this.visitorHistory = initialHistory;
+          return;
+        }
+        this.appendToHistory(currentCount ?? 0);
+      }
+
+      this.visitorHistory = this.normalizeHistoryLength(this.visitorHistory);
+    }
+
+    private updateActiveState(count: number): void {
+      this.setAttribute("data-active", (count > 0).toString());
+    }
+
+    connectedCallback(): void {
+      this.setupSparkline();
+      this.setupLiveUpdates();
+    }
+
+    disconnectedCallback(): void {
+      if (this.messageHandler) {
+        const globalWS = GlobalVisitorWebSocket.getInstance();
+        globalWS.removeListener(this.messageHandler);
+        this.messageHandler = null;
+      }
+    }
+  }
+
+  document.addEventListener("astro:page-load", () => {
+    if (!customElements.get("viewer-count")) {
+      customElements.define("viewer-count", ViewerCount);
+    }
+  });
+</script>
