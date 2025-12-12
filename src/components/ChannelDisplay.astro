@@ -1,4 +1,5 @@
 ---
+import { SPARKLINE_CONFIG, SVG_WIDTH } from "@constants/channelDisplay";
 import type { ActiveProgram } from "@types";
 
 interface Props {
@@ -10,36 +11,30 @@ const { activeProgram } = Astro.props;
 const { program, startTime, endTime } = activeProgram ?? {};
 const { title, url } = program ?? {};
 
-// Initial visitor data will be populated by WebSocket
-// Start at 1 because if someone is viewing this page, there's at least one visitor
-const initialVisitorData = { total: 1, history: Array(8).fill(1) };
-
-const BAR_WIDTH = 3;
-const BAR_GAP = 2;
-const SVG_HEIGHT = 10;
-const MIN_HEIGHT = 2;
-const SOFT_MIN = 5;
-
-// Calculate SVG width dynamically based on bar width and gap
-const calculateSvgWidth = (totalBars: number) => {
-  return BAR_WIDTH * totalBars + BAR_GAP * (totalBars - 1);
+const initialVisitorData = {
+  total: 1,
+  history: Array(SPARKLINE_CONFIG.MAX_HISTORY_POINTS).fill(1),
 };
 
 function generateBars(history: number[]) {
+  const SOFT_MIN = 5;
   const maxValue = Math.max(...history, SOFT_MIN);
 
   return history
     .map((point, i) => {
-      const availableHeight = SVG_HEIGHT - MIN_HEIGHT;
+      const availableHeight =
+        SPARKLINE_CONFIG.HEIGHT - SPARKLINE_CONFIG.MIN_BAR_HEIGHT;
       const scaledHeight =
         point <= SOFT_MIN
-          ? MIN_HEIGHT + availableHeight * (point / SOFT_MIN)
-          : SVG_HEIGHT * (1 - (point - SOFT_MIN) / (maxValue - SOFT_MIN));
-      const barHeight = Math.max(MIN_HEIGHT, scaledHeight);
-      const x = i * (BAR_WIDTH + BAR_GAP);
-      const y = SVG_HEIGHT - barHeight;
+          ? SPARKLINE_CONFIG.MIN_BAR_HEIGHT +
+            availableHeight * (point / SOFT_MIN)
+          : SPARKLINE_CONFIG.HEIGHT *
+            (1 - (point - SOFT_MIN) / (maxValue - SOFT_MIN));
+      const barHeight = Math.max(SPARKLINE_CONFIG.MIN_BAR_HEIGHT, scaledHeight);
+      const x = i * (SPARKLINE_CONFIG.BAR_WIDTH + SPARKLINE_CONFIG.BAR_GAP);
+      const y = SPARKLINE_CONFIG.HEIGHT - barHeight;
 
-      return `<rect x="${x}" y="${y}" width="${BAR_WIDTH}" height="${barHeight}" rx="1" fill="currentColor" />`;
+      return `<rect x="${x}" y="${y}" width="${SPARKLINE_CONFIG.BAR_WIDTH}" height="${barHeight}" rx="${SPARKLINE_CONFIG.BORDER_RADIUS}" fill="currentColor" />`;
     })
     .join("");
 }
@@ -63,8 +58,6 @@ const readableEndTime = getReadableTime(endTime)?.split(" ")[0];
 const isAm = getReadableTime(endTime)?.split(" ")[1] === "AM";
 
 const isAiring = Boolean(startTime && endTime) && program !== null;
-
-const svgWidth = calculateSvgWidth(initialVisitorData.history.length);
 ---
 
 <channel-display
@@ -125,7 +118,7 @@ const svgWidth = calculateSvgWidth(initialVisitorData.history.length);
         </div>
       </div>
       <div id="visitors" data-active="true" transition:persist>
-        <svg class="visitor-trend" width={svgWidth} height="15">
+        <svg class="visitor-trend" width={SVG_WIDTH} height="15">
           <g
             class="trend-bars"
             set:html={generateBars(initialVisitorData.history)}
@@ -138,6 +131,8 @@ const svgWidth = calculateSvgWidth(initialVisitorData.history.length);
 </channel-display>
 
 <script>
+  import { DISPLAY_CONFIG, SPARKLINE_CONFIG } from "@constants/channelDisplay";
+
   const WEBSOCKET_CONFIG = {
     MAX_RECONNECT_ATTEMPTS: 10,
     INITIAL_BACKOFF_MS: 1000,
@@ -289,27 +284,6 @@ const svgWidth = calculateSvgWidth(initialVisitorData.history.length);
     }
   }
 
-  const DISPLAY_CONFIG = {
-    TITLE_MAX_CHARS: 17,
-    TITLE_SCROLL_START_DELAY_MS: 100,
-    TITLE_SCROLL_INTERVAL_MS: 300,
-    TITLE_SCROLL_PAUSE_AT_START: 16,
-    TITLE_SCROLL_PAUSE_AT_END: 8,
-    SCROLL_DIRECTION_FORWARD: 1,
-    SCROLL_DIRECTION_BACKWARD: -1,
-  } as const;
-
-  const SPARKLINE_CONFIG = {
-    MAX_HISTORY_POINTS: 8,
-    BAR_WIDTH: 3,
-    BAR_GAP: 2,
-    HEIGHT: 10,
-    MIN_BAR_HEIGHT: 2,
-    MIN_VALUE_TO_AVOID_DIVISION_BY_ZERO: 1,
-    SVG_NAMESPACE: "http://www.w3.org/2000/svg",
-    BORDER_RADIUS: "1",
-  } as const;
-
   const MESSAGE_TYPE = {
     COUNT: "count",
   } as const;
@@ -318,8 +292,6 @@ const svgWidth = calculateSvgWidth(initialVisitorData.history.length);
     intervalId: number | null = null;
     timeoutId: NodeJS.Timeout | null = null;
     private visitorHistory: number[] = [];
-    private trendBars: SVGGElement | null = null;
-    private svgElement: SVGElement | null = null;
     private messageHandler: ((data: VisitorData) => void) | null = null;
 
     constructor() {
@@ -354,19 +326,18 @@ const svgWidth = calculateSvgWidth(initialVisitorData.history.length);
       globalWS.connect();
     }
 
-    private setupSparkline(): void {
-      this.trendBars = this.querySelector(".trend-bars");
-      this.svgElement = this.querySelector(".visitor-trend");
-      if (!this.trendBars || !this.svgElement) return;
-
-      this.updateSparkline();
+    private getSparklineElements(): {
+      trendBars: SVGGElement | null;
+      svgElement: SVGElement | null;
+    } {
+      return {
+        trendBars: this.querySelector(".trend-bars"),
+        svgElement: this.querySelector(".visitor-trend"),
+      };
     }
 
-    private calculateSvgWidth(totalBars: number): number {
-      return (
-        SPARKLINE_CONFIG.BAR_WIDTH * totalBars +
-        SPARKLINE_CONFIG.BAR_GAP * (totalBars - 1)
-      );
+    private setupSparkline(): void {
+      this.updateSparkline();
     }
 
     private createSparklineBar(
@@ -385,7 +356,7 @@ const svgWidth = calculateSvgWidth(initialVisitorData.history.length);
       const rect = document.createElementNS(
         SPARKLINE_CONFIG.SVG_NAMESPACE,
         "rect",
-      );
+      ) as SVGRectElement;
       rect.setAttribute("x", x.toString());
       rect.setAttribute("y", y.toString());
       rect.setAttribute("width", SPARKLINE_CONFIG.BAR_WIDTH.toString());
@@ -396,28 +367,27 @@ const svgWidth = calculateSvgWidth(initialVisitorData.history.length);
       return rect;
     }
 
-    private renderSparklineBars(maxValue: number): void {
-      if (!this.trendBars) return;
-
-      this.trendBars.innerHTML = "";
+    private renderSparklineBars(
+      trendBars: SVGGElement,
+      maxValue: number,
+    ): void {
+      trendBars.innerHTML = "";
       this.visitorHistory.forEach((point, idx) => {
         const bar = this.createSparklineBar(point, idx, maxValue);
-        this.trendBars?.appendChild(bar);
+        trendBars.appendChild(bar);
       });
     }
 
     private updateSparkline(): void {
-      if (!this.trendBars || !this.svgElement) return;
-
-      const svgWidth = this.calculateSvgWidth(this.visitorHistory.length);
-      this.svgElement.setAttribute("width", svgWidth.toString());
+      const { trendBars, svgElement } = this.getSparklineElements();
+      if (!trendBars || !svgElement) return;
 
       const maxValue = Math.max(
         ...this.visitorHistory,
         SPARKLINE_CONFIG.MIN_VALUE_TO_AVOID_DIVISION_BY_ZERO,
       );
 
-      this.renderSparklineBars(maxValue);
+      this.renderSparklineBars(trendBars, maxValue);
     }
 
     private hasValidHistory(history: unknown): history is number[] {
