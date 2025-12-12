@@ -3,6 +3,7 @@ import type { ActiveProgram } from "@types";
 import Buttons from "./Buttons.astro";
 import ChannelDisplay from "./ChannelDisplay.astro";
 import Logo from "./Logo.astro";
+import Speaker from "./Speaker.astro";
 
 interface Props {
   channelId: string;
@@ -20,6 +21,7 @@ const { activeProgram, channelId } = Astro.props;
     transition:persist="visitor-count"
   />
   <Logo />
+  <Speaker />
 </nav>
 
 <style>
@@ -42,25 +44,67 @@ const { activeProgram, channelId } = Astro.props;
     padding-inline: 1.5rem;
     position: relative;
 
+    .speaker {
+      display: none;
+    }
+
     @media (width < 840px) {
-      padding-inline: 1rem;
       justify-items: center;
       grid-template-areas: "buttons display";
 
       .logo {
         display: none;
       }
+
+      .buttons {
+        justify-self: flex-start;
+      }
+
+      channel-display {
+        justify-self: flex-end;
+      }
     }
 
-    @media (width < 620px) {
+    @media (width < 650px) {
+      grid-template-columns: auto 1fr auto;
+      grid-template-rows: 1fr 1fr;
+      grid-template-areas:
+        "display speaker"
+        "buttons speaker";
+      row-gap: 0.25rem;
+      column-gap: 1rem;
+      height: 10rem;
+      padding-inline-end: 0.5rem;
+      padding-block: 0.5rem;
+
+      .buttons,
+      channel-display {
+        justify-self: flex-start;
+      }
+
+      .speaker {
+        display: block;
+        max-height: 85%;
+        justify-self: flex-end;
+      }
+    }
+
+    @media (width < 480px) {
       grid-template-columns: 1fr;
       grid-template-rows: 1fr 1fr;
       grid-template-areas:
         "display"
         "buttons";
-      gap: 0.25rem;
-      height: 10rem;
-      padding-block: 0.5rem;
+      padding-inline: 0.5rem;
+
+      .buttons,
+      channel-display {
+        justify-self: center;
+      }
+
+      .speaker {
+        display: none;
+      }
     }
 
     &::after {
