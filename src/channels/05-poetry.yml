@@ -252,6 +252,9 @@ schedule:
     - "00:30":
     - "01:00":
     - "01:30":
+        title: fouuund.it
+        author: Emily Edwards
+        url: https://fouuund.it/
     - "02:00":
     - "02:30":
     - "03:00":

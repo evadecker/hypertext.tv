@@ -239,6 +239,9 @@ schedule:
         url: https://bagenzos.house/
     - "00:30":
     - "01:00":
+        title: James' Coffee Blog
+        author: James G
+        url: https://jamesg.blog/
     - "01:30":
     - "02:00":
     - "02:30":

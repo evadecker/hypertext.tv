@@ -284,7 +284,12 @@ schedule:
         url: https://nothing.mvze.net/
     - "00:30":
     - "01:00":
+        title: Po.ta.to
+        url: https://po.ta.to/
     - "01:30":
+        title: Year Progress
+        author: Andrew Conlin
+        url: https://year-progress.cnln.dev/
     - "02:00":
     - "02:30":
     - "03:00":
@@ -345,8 +350,6 @@ schedule:
     - "23:30":
   saturday:
     - "00:00":
-        title: Po.ta.to
-        url: https://po.ta.to/
     - "00:30":
     - "01:00":
     - "01:30":
@@ -444,9 +447,6 @@ schedule:
     - "12:00":
     - "12:30":
     - "13:00":
-        title: Year Progress
-        author: Andrew Conlin
-        url: https://year-progress.cnln.dev/
     - "13:30":
     - "14:00":
     - "14:30":
