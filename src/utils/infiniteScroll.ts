@@ -21,9 +21,9 @@ export function infiniteScrollLoop(
 
   const target = cloneInto || container;
 
-  if (!container || !content || !target) return;
+  if (!container || !content || !target) return () => {};
 
-  const cloned = content.cloneNode(true);
+  const cloned = content.cloneNode(true) as HTMLElement;
   target.appendChild(cloned);
 
   const threshold = Math.floor(container.clientHeight * 0.1);
@@ -40,6 +40,8 @@ export function infiniteScrollLoop(
   };
 
   container.addEventListener("scroll", handleScroll, { passive: true });
+
+  let animationFrameId: number | null = null;
 
   if (scrollSpeed) {
     let lastTime = performance.now();
@@ -90,9 +92,26 @@ export function infiniteScrollLoop(
         }
       }
 
-      requestAnimationFrame(animate);
+      animationFrameId = requestAnimationFrame(animate);
     }
 
-    requestAnimationFrame(animate);
+    animationFrameId = requestAnimationFrame(animate);
+
+    // Return cleanup function
+    return () => {
+      container.removeEventListener("scroll", handleScroll);
+      container.removeEventListener("touchstart", handleTouchStart);
+      container.removeEventListener("touchend", handleTouchEnd);
+      if (animationFrameId !== null) {
+        cancelAnimationFrame(animationFrameId);
+      }
+      cloned.remove();
+    };
   }
+
+  // Return cleanup function for non-animated scroll
+  return () => {
+    container.removeEventListener("scroll", handleScroll);
+    cloned.remove();
+  };
 }

@@ -347,6 +347,9 @@ const { timeBlocks, channels } = guideData;
 <script>
   import { infiniteScrollLoop } from "../utils/infiniteScroll";
 
+  let cleanupInfiniteScroll: (() => void) | null = null;
+  let timeUpdateInterval: number | null = null;
+
   document.addEventListener("astro:page-load", () => {
     const updateCurrentTime = () => {
       const currentTimeElement = document.getElementById("current-time");
@@ -356,7 +359,7 @@ const { timeBlocks, channels } = guideData;
       }
     };
 
-    setInterval(updateCurrentTime, 1000);
+    timeUpdateInterval = window.setInterval(updateCurrentTime, 1000);
 
     const timeBlocks = document.querySelectorAll(".time-block time");
 
@@ -369,13 +372,29 @@ const { timeBlocks, channels } = guideData;
       });
     });
 
-    const container = document.getElementById("contents")!;
-    const table = container.querySelector("table")!;
-    const content = container.querySelector("tbody")!;
+    const container = document.getElementById("contents");
+    const table = container?.querySelector("table");
+    const content = container?.querySelector("tbody");
 
-    infiniteScrollLoop(container, content, {
-      scrollSpeed: 20,
-      cloneInto: table,
-    });
+    if (container && table && content) {
+      cleanupInfiniteScroll = infiniteScrollLoop(container, content, {
+        scrollSpeed: 20,
+        cloneInto: table,
+      });
+    }
+  });
+
+  document.addEventListener("astro:before-preparation", () => {
+    // Clean up infinite scroll listeners and animation
+    if (cleanupInfiniteScroll) {
+      cleanupInfiniteScroll();
+      cleanupInfiniteScroll = null;
+    }
+
+    // Clear time update interval
+    if (timeUpdateInterval !== null) {
+      clearInterval(timeUpdateInterval);
+      timeUpdateInterval = null;
+    }
   });
 </script>

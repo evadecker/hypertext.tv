@@ -14,16 +14,20 @@ export class ViewerCount extends DurableObject<Env> {
 
     // Use Hibernatable WebSocket API
     this.ctx.acceptWebSocket(server);
-
-    // Send initial count and broadcast to all
-    const count = Math.max(1, this.ctx.getWebSockets().length);
-    server.send(count.toString());
     this.broadcast();
 
     return new Response(null, {
       status: 101,
       webSocket: client,
     });
+  }
+
+  async webSocketMessage(
+    _ws: WebSocket,
+    _message: string | ArrayBuffer,
+  ): Promise<void> {
+    // Handle any messages from clients if needed
+    // Currently not used
   }
 
   async webSocketClose(
