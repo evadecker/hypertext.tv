@@ -23,6 +23,11 @@
   "migrations": [
     {
       "tag": "v1",
+      "new_sqlite_classes": ["VisitorTracker"]
+    },
+    {
+      "tag": "v2",
+      "deleted_classes": ["VisitorTracker"],
       "new_sqlite_classes": ["ViewerCount"]
     }
   ]
