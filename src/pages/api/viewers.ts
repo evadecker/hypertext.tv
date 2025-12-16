@@ -13,7 +13,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
     return new Response("Expected Upgrade: websocket", { status: 426 });
   }
 
-  // Get the Durable Object instance (single global instance for all visitors)
+  // Get the Durable Object instance (single global instance for all viewers)
   const id = ViewerCountNamespace.idFromName("global");
   const stub = ViewerCountNamespace.get(id);
 

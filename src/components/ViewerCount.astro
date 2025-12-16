@@ -39,7 +39,7 @@
 
     connectedCallback(): void {
       const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-      const url = `${protocol}//${window.location.host}/api/visitors`;
+      const url = `${protocol}//${window.location.host}/api/viewers`;
 
       this.socket = new WebSocket(url);
 
