@@ -269,6 +269,9 @@ schedule:
     - "09:00":
     - "09:30":
     - "10:00":
+        title: Aresluna
+        author: Marcin Wichary
+        url: https://aresluna.org/
     - "10:30":
     - "11:00":
     - "11:30":

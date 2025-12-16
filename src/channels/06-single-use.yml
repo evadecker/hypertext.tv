@@ -315,6 +315,9 @@ schedule:
     - "10:30":
     - "11:00":
     - "11:30":
+        title: Text Makeup
+        author: Marcin Wichary
+        url: https://text.makeup/
     - "12:00":
     - "12:30":
     - "13:00":
@@ -326,6 +329,9 @@ schedule:
         author: Marco Land
         url: https://onoff.marco.land/
     - "15:30":
+        title: Shift Happens Typewriter Simulator
+        author: Marcin Wichary
+        url: https://shifthappens.site/typewriter/
     - "16:00":
     - "16:30":
     - "17:00":
@@ -337,6 +343,9 @@ schedule:
         author: Eva Decker
         url: https://lissajous.eva.town/
     - "19:30":
+        title: Segmented Type
+        author: Marcin Wichary
+        url: https://aresluna.org/segmented-type/
     - "20:00":
     - "20:30":
     - "21:00":
@@ -350,6 +359,9 @@ schedule:
     - "23:30":
   saturday:
     - "00:00":
+        title: Pixel Fonts
+        author: Marcin Wichary
+        url: https://aresluna.org/pixel-fonts/
     - "00:30":
     - "01:00":
     - "01:30":
