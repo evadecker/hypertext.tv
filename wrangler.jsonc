@@ -15,15 +15,15 @@
   "durable_objects": {
     "bindings": [
       {
-        "name": "VISITOR_TRACKER",
-        "class_name": "VisitorTracker"
+        "name": "VIEWER_COUNT",
+        "class_name": "ViewerCount"
       }
     ]
   },
   "migrations": [
     {
       "tag": "v1",
-      "new_sqlite_classes": ["VisitorTracker"]
+      "new_sqlite_classes": ["ViewerCount"]
     }
   ]
 }
