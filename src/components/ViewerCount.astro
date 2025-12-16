@@ -38,6 +38,11 @@
     private socket: WebSocket | null = null;
 
     connectedCallback(): void {
+      // Skip WebSocket connection in development
+      if (import.meta.env.DEV) {
+        return;
+      }
+
       const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
       const url = `${protocol}//${window.location.host}/api/viewers`;
 

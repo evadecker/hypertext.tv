@@ -85,12 +85,21 @@ const contributors: string[] = await response.json();
 <script>
   import { infiniteScrollLoop } from "@utils/infiniteScroll";
 
+  let cleanupInfiniteScroll: (() => void) | null = null;
+
   document.addEventListener("astro:page-load", () => {
     const wrapper = document.getElementById("credits");
     const content = wrapper?.querySelector(".credits-content") as HTMLElement;
 
     if (wrapper && content) {
-      infiniteScrollLoop(wrapper, content);
+      cleanupInfiniteScroll = infiniteScrollLoop(wrapper, content);
+    }
+  });
+
+  document.addEventListener("astro:before-preparation", () => {
+    if (cleanupInfiniteScroll) {
+      cleanupInfiniteScroll();
+      cleanupInfiniteScroll = null;
     }
   });
 </script>
