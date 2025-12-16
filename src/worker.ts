@@ -8,13 +8,29 @@ export interface Env {
 }
 
 export class ViewerCount extends DurableObject<Env> {
+  private lastBroadcastTime = 0;
+  private pendingBroadcast: ReturnType<typeof setTimeout> | null = null;
+  private readonly BROADCAST_THROTTLE_MS = 100; // Max 10 broadcasts per second
+
+  constructor(ctx: DurableObjectState, env: Env) {
+    super(ctx, env);
+
+    // When the Durable Object wakes from hibernation, restore WebSocket state
+    const existingConnections = this.ctx.getWebSockets();
+    if (existingConnections.length > 0) {
+      this.scheduleBroadcast();
+    }
+  }
+
   async fetch(_request: Request): Promise<Response> {
     const pair = new WebSocketPair();
     const [client, server] = Object.values(pair);
 
     // Use Hibernatable WebSocket API
     this.ctx.acceptWebSocket(server);
-    this.broadcast();
+
+    // Schedule throttled broadcast
+    this.scheduleBroadcast();
 
     return new Response(null, {
       status: 101,
@@ -36,14 +52,36 @@ export class ViewerCount extends DurableObject<Env> {
     _reason: string,
     _wasClean: boolean,
   ): Promise<void> {
-    this.broadcast();
+    this.scheduleBroadcast();
   }
 
   async webSocketError(_ws: WebSocket, _error: unknown): Promise<void> {
-    this.broadcast();
+    this.scheduleBroadcast();
+  }
+
+  private scheduleBroadcast(): void {
+    const now = Date.now();
+    const timeSinceLastBroadcast = now - this.lastBroadcastTime;
+
+    // If enough time has passed, broadcast
+    if (timeSinceLastBroadcast >= this.BROADCAST_THROTTLE_MS) {
+      this.broadcast();
+      return;
+    }
+
+    // Otherwise, schedule a broadcast if one isn't already pending
+    if (!this.pendingBroadcast) {
+      const delay = this.BROADCAST_THROTTLE_MS - timeSinceLastBroadcast;
+      this.pendingBroadcast = setTimeout(() => {
+        this.pendingBroadcast = null;
+        this.broadcast();
+      }, delay);
+    }
   }
 
   private broadcast(): void {
+    this.lastBroadcastTime = Date.now();
+
     // getWebSockets() always returns only active connections
     const connections = this.ctx.getWebSockets();
     const count = Math.max(1, connections.length);
