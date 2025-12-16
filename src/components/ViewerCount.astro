@@ -105,9 +105,4 @@
   if (!customElements.get("viewer-count")) {
     customElements.define("viewer-count", ViewerCount);
   }
-
-  document.addEventListener("astro:after-swap", () => {
-    const viewerCount = document.querySelector("viewer-count") as ViewerCount;
-    if (viewerCount) viewerCount.disconnectedCallback();
-  });
 </script>
