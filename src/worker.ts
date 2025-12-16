@@ -79,11 +79,9 @@ export class VisitorTracker extends DurableObject<Env> {
     reason: string,
     _wasClean: boolean,
   ): Promise<void> {
-    // Clean up connection
     this.connections.delete(ws);
     ws.close(code, reason);
 
-    // Rate-limited broadcast
     this.scheduleBroadcast();
   }
 
@@ -96,9 +94,7 @@ export class VisitorTracker extends DurableObject<Env> {
     const now = Date.now();
     const timeSinceLastBroadcast = now - this.lastBroadcastTime;
 
-    // Rate limiting: don't broadcast more than once per MIN_BROADCAST_INTERVAL_MS
     if (timeSinceLastBroadcast < this.MIN_BROADCAST_INTERVAL_MS) {
-      // Schedule for later if we haven't already
       if (!this.broadcastTimeout) {
         const delay = this.MIN_BROADCAST_INTERVAL_MS - timeSinceLastBroadcast;
         this.broadcastTimeout = setTimeout(() => {
@@ -109,7 +105,6 @@ export class VisitorTracker extends DurableObject<Env> {
       return;
     }
 
-    // Broadcast immediately if enough time has passed
     if (this.broadcastTimeout) {
       clearTimeout(this.broadcastTimeout);
       this.broadcastTimeout = null;
@@ -123,7 +118,6 @@ export class VisitorTracker extends DurableObject<Env> {
     const count = Math.max(1, this.connections.size);
     const messageStr = JSON.stringify({ total: count });
 
-    // Get active WebSockets and clean up closed ones
     const activeConnections = this.ctx.getWebSockets();
 
     // Update our connections set to match reality
