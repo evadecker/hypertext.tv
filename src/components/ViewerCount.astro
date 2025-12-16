@@ -36,6 +36,7 @@
 
   class ViewerCount extends HTMLElement {
     private socket: WebSocket | null = null;
+    private isConnecting = false;
 
     connectedCallback(): void {
       // Skip WebSocket connection in development
@@ -43,22 +44,53 @@
         return;
       }
 
+      // Prevent duplicate connections if connectedCallback is called multiple times
+      if (this.socket || this.isConnecting) {
+        return;
+      }
+
+      this.connect();
+    }
+
+    private connect(): void {
+      // Close any existing socket first (defensive)
+      if (this.socket) {
+        this.socket.close();
+        this.socket = null;
+      }
+
+      this.isConnecting = true;
       const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
       const url = `${protocol}//${window.location.host}/api/viewers`;
 
-      this.socket = new WebSocket(url);
+      try {
+        this.socket = new WebSocket(url);
 
-      this.socket.addEventListener("message", (event) => {
-        const count = parseInt(event.data) || 1;
-        const countElement = this.querySelector(".count");
-        if (countElement) {
-          countElement.innerHTML = formatCountWithLeadingZeros(count);
-        }
-      });
+        this.socket.addEventListener("open", () => {
+          this.isConnecting = false;
+        });
 
-      this.socket.addEventListener("close", () => {
+        this.socket.addEventListener("message", (event) => {
+          const count = parseInt(event.data) || 1;
+          const countElement = this.querySelector(".count");
+          if (countElement) {
+            countElement.innerHTML = formatCountWithLeadingZeros(count);
+          }
+        });
+
+        this.socket.addEventListener("close", () => {
+          this.socket = null;
+          this.isConnecting = false;
+        });
+
+        this.socket.addEventListener("error", () => {
+          this.socket = null;
+          this.isConnecting = false;
+        });
+      } catch (error) {
         this.socket = null;
-      });
+        this.isConnecting = false;
+      }
     }
 
     disconnectedCallback(): void {
@@ -66,10 +98,16 @@
         this.socket.close();
         this.socket = null;
       }
+      this.isConnecting = false;
     }
   }
 
   if (!customElements.get("viewer-count")) {
     customElements.define("viewer-count", ViewerCount);
   }
+
+  document.addEventListener("astro:after-swap", () => {
+    const viewerCount = document.querySelector("viewer-count") as ViewerCount;
+    if (viewerCount) viewerCount.disconnectedCallback();
+  });
 </script>
