@@ -14,7 +14,7 @@ export default defineConfig({
     imageService: "compile",
     workerEntryPoint: {
       path: "./src/worker.ts",
-      namedExports: ["VisitorTracker"],
+      namedExports: ["ViewerCount"],
     },
   }),
   prefetch: true,

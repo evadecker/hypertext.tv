@@ -4,7 +4,7 @@
 type DurableObjectNamespace = import("@cloudflare/workers-types").DurableObjectNamespace;
 
 type ENV = {
-  VISITOR_TRACKER: DurableObjectNamespace;
+  VIEWER_COUNT: DurableObjectNamespace;
 };
 
 type Runtime = import("@astrojs/cloudflare").Runtime<ENV>;

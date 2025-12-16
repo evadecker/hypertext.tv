@@ -1,23 +1,5 @@
----
-const initialVisitorCount = 1;
-
-function formatCountWithLeadingZeros(count: number): string {
-  const formatted = count.toString().padStart(3, "0");
-  const leadingZeros = formatted.match(/^0+/)?.[0] || "";
-  const actualNumber = formatted.slice(leadingZeros.length);
-
-  if (leadingZeros) {
-    return `<span class="leading-zeros">${leadingZeros}</span>${actualNumber}`;
-  }
-  return actualNumber;
-}
----
-
 <viewer-count transition:persist>
-  <span
-    class="count"
-    set:html={formatCountWithLeadingZeros(initialVisitorCount)}
-  /> watching
+  <span class="count"><span class="leading-zeros">00</span>1</span> watching
 </viewer-count>
 
 <style>
@@ -41,152 +23,44 @@ function formatCountWithLeadingZeros(count: number): string {
 </style>
 
 <script>
-  import type { VisitorData } from "@types";
+  function formatCountWithLeadingZeros(count: number): string {
+    const formatted = count.toString().padStart(3, "0");
+    const leadingZeros = formatted.match(/^0+/)?.[0] || "";
+    const actualNumber = formatted.slice(leadingZeros.length);
 
-  const WEBSOCKET_CONFIG = {
-    MAX_RECONNECT_ATTEMPTS: 10,
-    INITIAL_BACKOFF_MS: 1000,
-    BACKOFF_MULTIPLIER: 2,
-    MAX_BACKOFF_MS: 30000,
-    API_PATH: "/api/visitors",
-  } as const;
-
-  const DEV_HOSTNAMES = ["localhost", "127.0.0.1"] as const;
-
-  class GlobalVisitorWebSocket {
-    private static instance: GlobalVisitorWebSocket | null = null;
-    private websocket: WebSocket | null = null;
-    private reconnectTimeout: number | null = null;
-    private reconnectAttempts: number = 0;
-    private isOnline: boolean = true;
-    private listeners: Set<(data: VisitorData) => void> = new Set();
-
-    private constructor() {
-      document.addEventListener("visibilitychange", () =>
-        this.handleVisibilityChange(),
-      );
+    if (leadingZeros) {
+      return `<span class="leading-zeros">${leadingZeros}</span>${actualNumber}`;
     }
-
-    static getInstance(): GlobalVisitorWebSocket {
-      if (!GlobalVisitorWebSocket.instance) {
-        GlobalVisitorWebSocket.instance = new GlobalVisitorWebSocket();
-      }
-      return GlobalVisitorWebSocket.instance;
-    }
-
-    private handleVisibilityChange(): void {
-      this.isOnline = document.visibilityState === "visible";
-      if (this.isOnline && !this.websocket) this.connect();
-    }
-
-    private shouldAttemptConnection(): boolean {
-      const isDevEnvironment = DEV_HOSTNAMES.includes(
-        window.location.hostname as (typeof DEV_HOSTNAMES)[number],
-      );
-      return !isDevEnvironment && this.isOnline;
-    }
-
-    connect(): void {
-      if (!this.shouldAttemptConnection()) return;
-      if (this.websocket?.readyState === WebSocket.OPEN) return;
-
-      // Close existing connection and clear timeout
-      if (this.websocket) {
-        this.websocket.close();
-        this.websocket = null;
-      }
-      if (this.reconnectTimeout !== null) {
-        clearTimeout(this.reconnectTimeout);
-        this.reconnectTimeout = null;
-      }
-
-      try {
-        const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-        this.websocket = new WebSocket(
-          `${protocol}//${window.location.host}${WEBSOCKET_CONFIG.API_PATH}`,
-        );
-
-        this.websocket.addEventListener("open", () => {
-          this.reconnectAttempts = 0;
-        });
-
-        this.websocket.addEventListener("message", (event) => {
-          try {
-            const data = JSON.parse(event.data);
-            this.listeners.forEach((callback) => callback(data));
-          } catch (error) {
-            console.error("Error parsing WebSocket message:", error);
-          }
-        });
-
-        this.websocket.addEventListener("close", () => {
-          this.websocket = null;
-          this.attemptReconnect();
-        });
-
-        this.websocket.addEventListener("error", () => {
-          if (this.websocket) {
-            this.websocket.close();
-            this.websocket = null;
-          }
-        });
-      } catch (error) {
-        console.error("Failed to create WebSocket:", error);
-        this.attemptReconnect();
-      }
-    }
-
-    private attemptReconnect(): void {
-      if (!this.shouldAttemptConnection()) return;
-      if (this.reconnectAttempts >= WEBSOCKET_CONFIG.MAX_RECONNECT_ATTEMPTS)
-        return;
-
-      const delay = Math.min(
-        WEBSOCKET_CONFIG.INITIAL_BACKOFF_MS *
-          Math.pow(WEBSOCKET_CONFIG.BACKOFF_MULTIPLIER, this.reconnectAttempts),
-        WEBSOCKET_CONFIG.MAX_BACKOFF_MS,
-      );
-      this.reconnectAttempts++;
-
-      this.reconnectTimeout = window.setTimeout(() => {
-        this.connect();
-      }, delay);
-    }
-
-    addListener(callback: (data: VisitorData) => void): void {
-      this.listeners.add(callback);
-    }
-
-    removeListener(callback: (data: VisitorData) => void): void {
-      this.listeners.delete(callback);
-    }
+    return actualNumber;
   }
 
   class ViewerCount extends HTMLElement {
-    private messageHandler = (data: VisitorData) => {
-      const count = data.total ?? 1;
-      const formatted = count.toString().padStart(3, "0");
-      const leadingZeros = formatted.match(/^0+/)?.[0] || "";
-      const actualNumber = formatted.slice(leadingZeros.length);
-
-      const countElement = this.querySelector(".count");
-      if (countElement) {
-        if (leadingZeros) {
-          countElement.innerHTML = `<span class="leading-zeros">${leadingZeros}</span>${actualNumber}`;
-        } else {
-          countElement.textContent = actualNumber;
-        }
-      }
-    };
+    private socket: WebSocket | null = null;
 
     connectedCallback(): void {
-      const globalWS = GlobalVisitorWebSocket.getInstance();
-      globalWS.addListener(this.messageHandler);
-      globalWS.connect();
+      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+      const url = `${protocol}//${window.location.host}/api/viewers`;
+
+      this.socket = new WebSocket(url);
+
+      this.socket.addEventListener("message", (event) => {
+        const count = parseInt(event.data) || 1;
+        const countElement = this.querySelector(".count");
+        if (countElement) {
+          countElement.innerHTML = formatCountWithLeadingZeros(count);
+        }
+      });
+
+      this.socket.addEventListener("close", () => {
+        this.socket = null;
+      });
     }
 
     disconnectedCallback(): void {
-      GlobalVisitorWebSocket.getInstance().removeListener(this.messageHandler);
+      if (this.socket) {
+        this.socket.close();
+        this.socket = null;
+      }
     }
   }
 

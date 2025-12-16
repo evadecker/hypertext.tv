@@ -4,131 +4,52 @@ import type { SSRManifest } from "astro";
 import { App } from "astro/app";
 
 export interface Env {
-  VISITOR_TRACKER: DurableObjectNamespace<VisitorTracker>;
+  VIEWER_COUNT: DurableObjectNamespace<ViewerCount>;
 }
 
-export class VisitorTracker extends DurableObject<Env> {
-  private connections: Set<WebSocket>;
-  private broadcastTimeout: ReturnType<typeof setTimeout> | null = null;
-  private lastBroadcastTime = 0;
-  private readonly MIN_BROADCAST_INTERVAL_MS = 500; // Limit broadcasts to max 2 per second
+export class ViewerCount extends DurableObject<Env> {
+  async fetch(_request: Request): Promise<Response> {
+    const pair = new WebSocketPair();
+    const [client, server] = Object.values(pair);
 
-  constructor(ctx: DurableObjectState, env: Env) {
-    super(ctx, env);
-    this.connections = new Set();
+    // Use Hibernatable WebSocket API
+    this.ctx.acceptWebSocket(server);
 
-    // Enable WebSocket hibernation to reduce CPU usage
-    // Hibernation automatically manages connection state without keeping event listeners active
-    this.ctx.blockConcurrencyWhile(async () => {
-      // Allow hibernation when no active processing
+    // Send initial count and broadcast to all
+    const count = Math.max(1, this.ctx.getWebSockets().length);
+    server.send(count.toString());
+    this.broadcast();
+
+    return new Response(null, {
+      status: 101,
+      webSocket: client,
     });
   }
 
-  async fetch(request: Request): Promise<Response> {
-    try {
-      // Handle WebSocket upgrade
-      if (request.headers.get("Upgrade") === "websocket") {
-        const pair = new WebSocketPair();
-        const [client, server] = Object.values(pair);
-
-        // Use hibernatable WebSocket API
-        this.ctx.acceptWebSocket(server);
-        this.connections.add(server);
-
-        // Send initial count
-        const count = Math.max(1, this.connections.size);
-        server.send(JSON.stringify({ total: count }));
-
-        // Schedule broadcast with rate limiting
-        this.scheduleBroadcast();
-
-        return new Response(null, {
-          status: 101,
-          webSocket: client,
-        });
-      }
-
-      // HTTP fallback - return current count (minimum 1)
-      return new Response(
-        JSON.stringify({
-          total: Math.max(1, this.connections.size),
-        }),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
-            "Cache-Control": "no-cache",
-          },
-        },
-      );
-    } catch (error) {
-      return new Response("Error", { status: 500 });
-    }
-  }
-
-  async webSocketMessage(
-    _ws: WebSocket,
-    _message: string | ArrayBuffer,
-  ): Promise<void> {
-    // Handle any incoming messages if needed (currently not used)
-  }
-
   async webSocketClose(
-    ws: WebSocket,
-    code: number,
-    reason: string,
+    _ws: WebSocket,
+    _code: number,
+    _reason: string,
     _wasClean: boolean,
   ): Promise<void> {
-    this.connections.delete(ws);
-    ws.close(code, reason);
-
-    this.scheduleBroadcast();
+    this.broadcast();
   }
 
-  async webSocketError(ws: WebSocket, _error: unknown): Promise<void> {
-    this.connections.delete(ws);
-    ws.close(1011, "WebSocket error");
+  async webSocketError(_ws: WebSocket, _error: unknown): Promise<void> {
+    this.broadcast();
   }
 
-  private scheduleBroadcast(): void {
-    const now = Date.now();
-    const timeSinceLastBroadcast = now - this.lastBroadcastTime;
+  private broadcast(): void {
+    // getWebSockets() always returns only active connections
+    const connections = this.ctx.getWebSockets();
+    const count = Math.max(1, connections.length);
+    const message = count.toString();
 
-    if (timeSinceLastBroadcast < this.MIN_BROADCAST_INTERVAL_MS) {
-      if (!this.broadcastTimeout) {
-        const delay = this.MIN_BROADCAST_INTERVAL_MS - timeSinceLastBroadcast;
-        this.broadcastTimeout = setTimeout(() => {
-          this.broadcastCount();
-          this.broadcastTimeout = null;
-        }, delay);
-      }
-      return;
-    }
-
-    if (this.broadcastTimeout) {
-      clearTimeout(this.broadcastTimeout);
-      this.broadcastTimeout = null;
-    }
-    this.broadcastCount();
-  }
-
-  private broadcastCount(): void {
-    this.lastBroadcastTime = Date.now();
-
-    const count = Math.max(1, this.connections.size);
-    const messageStr = JSON.stringify({ total: count });
-
-    const activeConnections = this.ctx.getWebSockets();
-
-    // Update our connections set to match reality
-    this.connections.clear();
-
-    for (const ws of activeConnections) {
-      this.connections.add(ws);
+    for (const conn of connections) {
       try {
-        ws.send(messageStr);
+        conn.send(message);
       } catch {
-        // Failed connections are automatically cleaned up by hibernation API
+        // Cloudflare will automatically clean up failed connections
       }
     }
   }
@@ -149,6 +70,6 @@ export function createExports(manifest: SSRManifest) {
         return handle(manifest, app, request, env, ctx);
       },
     } satisfies ExportedHandler<Env>,
-    VisitorTracker: VisitorTracker,
+    ViewerCount: ViewerCount,
   };
 }
