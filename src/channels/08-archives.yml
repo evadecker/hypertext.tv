@@ -384,6 +384,8 @@ schedule:
         url: https://consumed.today/
     - "12:30":
     - "13:00":
+        title: The 120 Minutes Archive
+        url: https://120minutes.org/
     - "13:30":
     - "14:00":
     - "14:30":
@@ -396,6 +398,9 @@ schedule:
     - "17:00":
     - "17:30":
     - "18:00":
+        title: Weight Watchers Recipe Cards 1974
+        author: Wendy McClure
+        url: https://www.candyboots.com/wwcards.html
     - "18:30":
         title: Arabic Design Archive
         author: Design Repository
@@ -407,11 +412,16 @@ schedule:
     - "21:00":
     - "21:30":
     - "22:00":
+        title: The Peculiar Manicule
+        url: https://www.peculiarmanicule.com/
     - "22:30":
     - "23:00":
     - "23:30":
   sunday:
     - "00:00":
+        title: Guidebook Gallery
+        author: Marcin Wichary
+        url: https://guidebookgallery.org/
     - "00:30":
     - "01:00":
     - "01:30":
@@ -451,6 +461,9 @@ schedule:
     - "13:30":
     - "14:00":
     - "14:30":
+        title: Ian's Shoelace Site
+        author: Ian Fieggen
+        url: https://www.fieggen.com/shoelace/
     - "15:00":
     - "15:30":
     - "16:00":
