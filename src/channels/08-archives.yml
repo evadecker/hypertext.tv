@@ -3,6 +3,9 @@ name: Archives
 schedule:
   monday:
     - "00:00":
+        title: UbuWeb
+        author: Kenneth Goldsmith
+        url: https://www.ubu.com/
     - "00:30":
     - "01:00":
     - "01:30":
@@ -251,29 +254,51 @@ schedule:
     - "23:30":
   friday:
     - "00:00":
+        title: The Hydrant Directory
+        author: day lane
+        url: https://www.dayroselane.com/hydrants
     - "00:30":
+        title: Written in Stone
+        author: Ashur Cabrera
+        url: https://writteninstone.photo/
     - "01:00":
+        title: Big Box Collection
+        author: Benjamin Wimmer
+        url: https://bigboxcollection.com/Shelf
     - "01:30":
+        title: Electronic Plastic
+        author: Jaro Gielens
+        url: https://www.electronicplastic.com/totals
     - "02:00":
+        title: Art of the Title
+        author: Lola Landekic
+        url: https://www.artofthetitle.com/titles/
     - "02:30":
     - "03:00":
+        title: 3 3/4 In. Archives
+        author: Kevin Lentz
+        url: https://www.toymania.com/334archives/
     - "03:30":
+        title: NYC Gate Stickers
+        author: day lane
+        url: https://www.dayroselane.com/gate-stickers
     - "04:00":
     - "04:30":
-        title: Exercise Book Archive
-        url: https://www.exercisebookarchive.org/
     - "05:00":
     - "05:30":
+        title: Unparalleled Misalignments
+        author: Ricki Heicklen
+        url: https://rickiheicklen.com/unparalleled-misalignments.html
     - "06:00":
     - "06:30":
     - "07:00":
     - "07:30":
     - "08:00":
     - "08:30":
+        title: Pixel Joint
+        author: Pixel Joint
+        url: https://pixeljoint.com/
     - "09:00":
-        title: The Hydrant Directory
-        author: day lane
-        url: https://www.dayroselane.com/hydrants
     - "09:30":
     - "10:00":
     - "10:30":
@@ -311,6 +336,8 @@ schedule:
     - "20:30":
     - "21:00":
     - "21:30":
+        title: The Fighters Generation Characters
+        url: https://www.fightersgeneration.com/characters.html
     - "22:00":
     - "22:30":
     - "23:00":
@@ -326,6 +353,9 @@ schedule:
     - "02:00":
     - "02:30":
     - "03:00":
+        title: Amiga Graphics Archive
+        author: Daniel Kürsten (LyCheSis)
+        url: https://amiga.lychesis.net/
     - "03:30":
     - "04:00":
     - "04:30":
@@ -424,9 +454,6 @@ schedule:
     - "15:00":
     - "15:30":
     - "16:00":
-        title: Unparalleled Misalignments
-        author: Ricki Heicklen
-        url: https://rickiheicklen.com/unparalleled-misalignments.html
     - "16:30":
     - "17:00":
     - "17:30":
