@@ -12,11 +12,8 @@ export class ViewerCount extends DurableObject<Env> {
     const pair = new WebSocketPair();
     const [client, server] = Object.values(pair);
 
-    // Use Hibernatable WebSocket API - accept the WebSocket
+    // Use Hibernatable WebSocket API
     this.ctx.acceptWebSocket(server);
-
-    // After accepting, broadcast to all connections (including this new one)
-    // The broadcast will send the updated count to everyone
     this.broadcast();
 
     return new Response(null, {
@@ -30,7 +27,7 @@ export class ViewerCount extends DurableObject<Env> {
     _message: string | ArrayBuffer,
   ): Promise<void> {
     // Handle any messages from clients if needed
-    // Currently not used, but available for future functionality
+    // Currently not used
   }
 
   async webSocketClose(
@@ -39,14 +36,10 @@ export class ViewerCount extends DurableObject<Env> {
     _reason: string,
     _wasClean: boolean,
   ): Promise<void> {
-    // WebSocket is already closed when this handler is called
-    // Just update the count for remaining viewers
     this.broadcast();
   }
 
   async webSocketError(_ws: WebSocket, _error: unknown): Promise<void> {
-    // WebSocket will be closed automatically by Cloudflare
-    // Just update the count for remaining viewers
     this.broadcast();
   }
 
