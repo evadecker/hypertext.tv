@@ -55,6 +55,9 @@ schedule:
     - "16:00":
     - "16:30":
     - "17:00":
+        title: David Umoru
+        author: David Umoru
+        url: https://davidumoru.me/
     - "17:30":
     - "18:00":
         title: alienmelon
