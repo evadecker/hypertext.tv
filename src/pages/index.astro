@@ -383,8 +383,6 @@ const { timeBlocks, channels } = guideData;
       if (!href) return;
 
       row.addEventListener("click", () => {
-        // Allow text selection without navigation
-        if (window.getSelection()?.toString()) return;
         navigate(href);
       });
 
