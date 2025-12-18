@@ -20,8 +20,6 @@ schedule:
     - "06:00":
     - "06:30":
     - "07:00":
-        title: Canned Tuna
-        url: https://canned-tuna.com/
     - "07:30":
     - "08:00":
     - "08:30":
@@ -233,6 +231,8 @@ schedule:
         url: https://www.dodiy.org/
     - "00:30":
     - "01:00":
+        title: Canned Tuna
+        url: https://canned-tuna.com/
     - "01:30":
     - "02:00":
     - "02:30":
