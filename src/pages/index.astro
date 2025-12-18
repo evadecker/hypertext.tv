@@ -60,25 +60,30 @@ const { timeBlocks, channels } = guideData;
             <tbody>
               {
                 channels.map(({ channel, blocks }) => (
-                  <tr>
+                  <tr
+                    data-href={`/ch/${channel.slug}`}
+                    tabindex="0"
+                    role="link"
+                    aria-label={`Go to ${channel.name}`}
+                  >
                     <th>
-                      <a class="channel-info" href={`/ch/${channel.slug}`}>
+                      <div class="channel-info">
                         <span class="channel-number">{channel.slug}</span>
                         <span class="channel-name">{channel.name}</span>
-                      </a>
+                      </div>
                     </th>
                     {blocks.map(
                       ({ title, span, continuesBefore, continuesAfter }) => (
                         <td colspan={span}>
                           <div class="program-info" data-empty={!title}>
                             {title && (
-                              <a
+                              <div
                                 class="program-contents"
                                 data-continues-before={continuesBefore}
                                 data-continues-after={continuesAfter}
                               >
                                 {title}
-                              </a>
+                              </div>
                             )}
                           </div>
                         </td>
@@ -133,6 +138,24 @@ const { timeBlocks, channels } = guideData;
   .container {
     width: clamp(640px, 100%, 1024px);
     margin: 0 auto;
+  }
+
+  @media (hover: hover) {
+    tbody:has(tr:hover) tr,
+    tbody:has(tr:focus) tr {
+      opacity: 0.5;
+    }
+
+    tbody tr {
+      cursor: pointer;
+      transition: opacity 0.15s ease;
+
+      &:hover,
+      &:focus {
+        opacity: 1;
+        outline: none;
+      }
+    }
   }
 
   table {
@@ -351,6 +374,38 @@ const { timeBlocks, channels } = guideData;
   let timeUpdateInterval: number | null = null;
 
   document.addEventListener("astro:page-load", () => {
+    // Handle clickable rows
+    const clickableRows = document.querySelectorAll("tbody tr[data-href]");
+
+    clickableRows.forEach((row) => {
+      const href = row.getAttribute("data-href");
+      if (!href) return;
+
+      row.addEventListener("click", (e: Event) => {
+        const mouseEvent = e as MouseEvent;
+        // Allow text selection without navigation
+        if (window.getSelection()?.toString()) return;
+
+        if (mouseEvent.metaKey || mouseEvent.ctrlKey) {
+          window.open(href, "_blank");
+        } else {
+          window.location.href = href;
+        }
+      });
+
+      row.addEventListener("keydown", (e: Event) => {
+        const keyEvent = e as KeyboardEvent;
+        if (keyEvent.key === "Enter" || keyEvent.key === " ") {
+          keyEvent.preventDefault();
+          if (keyEvent.metaKey || keyEvent.ctrlKey) {
+            window.open(href, "_blank");
+          } else {
+            window.location.href = href;
+          }
+        }
+      });
+    });
+
     const updateCurrentTime = () => {
       const currentTimeElement = document.getElementById("current-time");
       if (currentTimeElement) {
