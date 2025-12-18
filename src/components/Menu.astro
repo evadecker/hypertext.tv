@@ -15,6 +15,13 @@
       data-on="true"
       data-setting="scanlines">Scanlines</button
     >
+    <button
+      role="menuitem"
+      tabindex="0"
+      type="button"
+      data-on="true"
+      data-setting="sound">Sound</button
+    >
     <label role="menuitem" tabindex="-1">
       <span>Brightness</span>
       <input type="range" min="-3" max="3" value="0" name="brightness" />
@@ -37,12 +44,6 @@
     </label>
     <hr />
     <a
-      href="/"
-      role="menuitem"
-      tabindex="-1"
-      onclick="fathom.trackEvent('menu: click tv guide')">TV Guide</a
-    >
-    <a
       href="/test"
       role="menuitem"
       tabindex="-1"
@@ -54,18 +55,11 @@
       tabindex="-1"
       onclick="fathom.trackEvent('menu: click credits')">Credits</a
     >
-    <hr />
     <a
       href="https://github.com/evadecker/hypertext.tv"
       role="menuitem"
       tabindex="-1"
-      onclick="fathom.trackEvent('menu: click add website')">Add a website</a
-    >
-    <a
-      href="https://github.com/evadecker/hypertext.tv/issues"
-      role="menuitem"
-      tabindex="-1"
-      onclick="fathom.trackEvent('menu: click report issue')">Report an issue</a
+      onclick="fathom.trackEvent('menu: click contribute')">Contribute</a
     >
     <hr />
     <button role="menuitem" tabindex="-1" type="button">Exit menu</button>
@@ -213,6 +207,14 @@
             defaultValue: "true",
             eventName: "scanlineToggle",
             eventProperty: "scanlines",
+            type: "toggle",
+          },
+          {
+            name: "sound",
+            localStorageKey: "sound",
+            defaultValue: "true",
+            eventName: "soundToggle",
+            eventProperty: "sound",
             type: "toggle",
           },
           {
@@ -529,6 +531,21 @@
 
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape") closeMenu();
+    });
+
+    // Handle sound toggle
+    menu?.addEventListener("soundToggle", (event: Event) => {
+      const customEvent = event as CustomEvent;
+      const isOn = customEvent.detail.sound === "true";
+
+      // Dynamically import and toggle sound
+      import("../sounds/buttons").then((buttonSounds) => {
+        if (isOn) {
+          buttonSounds.unmute();
+        } else {
+          buttonSounds.mute();
+        }
+      });
     });
   });
 </script>

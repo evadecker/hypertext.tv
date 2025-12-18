@@ -66,3 +66,13 @@ export const playBigClickOff = (): number => buttonSfx.play("bigclick1off");
 /** Play a random power on sound effect. */
 export const playRandomPowerOn = (): number =>
   buttonSfx.play(`poweron${nextPowerOn()}`);
+
+/** Mute all button sounds. */
+export const mute = (): void => {
+  buttonSfx.mute(true);
+};
+
+/** Unmute all button sounds. */
+export const unmute = (): void => {
+  buttonSfx.mute(false);
+};

@@ -1,6 +1,5 @@
 ---
 import type { ActiveProgram } from "@types";
-import ViewerCount from "./ViewerCount.astro";
 
 interface Props {
   channelId: string;
@@ -33,204 +32,134 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
 ---
 
 <channel-display data-title={title} data-url={url} data-power="on">
-  <header class="display">
-    <div
-      class="title"
-      data-title={title}
-      data-scroll={Boolean((title?.length ?? 0) > 17)}
-    >
-      <span class="title-contents">
+  <svg
+    width="328"
+    height="64"
+    viewBox="0 0 328 64"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <rect width="328" height="64" rx="16" fill="#0E0E0E" class="display"></rect>
+    <g class="title">
+      <text
+        x="18"
+        y="34"
+        class="title-background"
+        fill="#283741"
+        fill-opacity="0.6"
+        font-size="21">#################</text
+      >
+      <text x="18" y="34" class="title-contents" fill="#5EBFFD" font-size="21">
         {
-          program && program.url ? (
-            <a href={url}>{title?.slice(0, 17)}</a>
-          ) : program ? (
-            <span>{title?.slice(0, 17)}</span>
+          program && title ? (
+            url ? (
+              <a href={url}>{title.slice(0, 17).toUpperCase()}</a>
+            ) : (
+              <tspan>{title.slice(0, 17).toUpperCase()}</tspan>
+            )
           ) : (
-            <span>Nothing scheduled</span>
+            <tspan>NOTHING SCHEDULED</tspan>
           )
         }
-      </span>
-      <span class="title-background" aria-hidden="true">#################</span>
-    </div>
-
-    <div class="secondary">
-      <div class="airing-container">
-        <div
-          class="airing"
-          data-active={isAiring || title === "What's Airing Now"}
-          transition:persist
+      </text>
+    </g>
+    <g class="secondary">
+      <circle
+        cx="21"
+        cy="48"
+        r="3"
+        fill="#283741"
+        fill-opacity="0.6"
+        class="airing-indicator"
+        data-active={isAiring}></circle>
+      <text
+        x="30"
+        y="52"
+        class="airing-text"
+        fill="#283741"
+        fill-opacity="0.6"
+        font-size="12"
+        letter-spacing="1.3"
+      >
+        <tspan class="live" data-active={isAiring}>LIVE</tspan>
+        <tspan class="until" data-active={isAiring}>UNTIL</tspan>
+        <tspan class="time" data-active={isAiring}>{readableEndTime}</tspan>
+        <tspan
+          class="am-pm am"
+          data-active={Boolean(isAm && isAiring)}
+          aria-hidden={Boolean(!isAm || !isAiring)}
         >
-          <div class="airing-indicator" transition:persist></div>
-          Live
-        </div>
-        <div class="times">
-          <span data-active={isAiring}>Until</span>
-          <time datetime={endTime} data-active={isAiring}>
-            {readableEndTime}
-          </time>
-          <span
-            class="am-pm am"
-            data-active={Boolean(isAm && isAiring)}
-            aria-hidden={Boolean(!isAm || !isAiring)}
-          >
-            AM
-          </span>
-          <span
-            class="am-pm pm"
-            data-active={Boolean(!isAm && isAiring)}
-            aria-hidden={Boolean(isAm || !isAiring)}
-          >
-            PM
-          </span>
-        </div>
-      </div>
-      <ViewerCount />
-    </div>
-  </header>
+          AM
+        </tspan>
+        <tspan
+          class="am-pm pm"
+          data-active={Boolean(!isAm && isAiring)}
+          aria-hidden={Boolean(isAm || !isAiring)}
+        >
+          PM
+        </tspan>
+      </text>
+      <text
+        class="viewer-count"
+        fill="#283741"
+        fill-opacity="0.6"
+        font-size="12"
+        letter-spacing="1.3"
+        x="308"
+        y="52"
+        text-anchor="end"
+      >
+        <tspan class="leading-zeros">00</tspan><tspan class="count">1</tspan>
+        <tspan>WATCHING</tspan>
+      </text>
+    </g>
+  </svg>
 </channel-display>
 
-<style is:global>
-  @keyframes scroll-text {
-    0% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(-100%);
-    }
-  }
-
-  @keyframes live-pulse {
-    0% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.5;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
-
-  channel-display .display {
-    background: black;
-    border-radius: 1rem;
-    height: 4rem;
-    width: 20rem;
-    font-size: 1.3rem;
-    padding-inline: 1rem;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    gap: 0.5rem;
-    box-shadow: 0 2px 1px rgba(255, 255, 255, 0.1);
+<style>
+  .display {
+    filter: drop-shadow(0 2px 1px rgba(255, 255, 255, 0.1));
     user-select: none;
-    line-height: 1;
-    overflow: hidden;
-    text-transform: uppercase;
+    transition: fill 0.1s ease;
+  }
+
+  .title {
+    font-family: "DSEG 14", monospace;
 
     a {
-      color: var(--phosphor-active);
-      text-decoration: none;
+      border-radius: 0.2rem;
     }
+  }
 
-    .title {
-      font-family: "DSEG 14", monospace;
-      font-weight: 400;
-      color: var(--phosphor-active);
-      text-shadow: var(--phosphor-glow);
-      text-wrap: nowrap;
-      line-height: 1;
-      display: flex;
-      align-items: center;
-      gap: 0.5em;
+  .airing-indicator,
+  .live {
+    --phosphor-active: rgb(255, 100, 100);
+    fill: var(--phosphor-inactive);
+  }
 
-      &[data-scroll="true"] a {
-        white-space: pre;
-      }
-
-      a {
-        border-radius: 0.2rem;
-      }
-    }
-
-    .title-contents {
-      position: absolute;
-      z-index: 1;
-    }
-
-    .title-background {
-      color: var(--phosphor-inactive);
-      opacity: 0.6;
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    .secondary {
-      color: color-mix(in srgb, var(--phosphor-active) 40%, transparent);
-      font-size: 0.55em;
-      margin-bottom: -0.4rem;
-      display: flex;
-      justify-content: space-between;
-      width: 100%;
-      letter-spacing: 0.1em;
-      white-space: nowrap;
-    }
-
-    .airing {
-      --phosphor-active: rgb(255, 100, 100);
-      color: var(--phosphor-inactive);
-      display: flex;
-      align-items: center;
-    }
+  [data-active="true"] {
+    fill: var(--phosphor-active);
+    fill-opacity: 1;
 
     .airing-indicator {
-      content: "";
-      display: inline-block;
-      width: 0.5em;
-      height: 0.5em;
-      background: var(--phosphor-inactive);
-      border-radius: 50%;
-      margin-right: 0.5em;
-      transform: translateY(-0.05em);
+      background: var(--phosphor-active);
     }
+  }
 
-    .airing-container {
-      display: flex;
-      align-items: center;
-      gap: 0.5em;
-    }
-
-    .times {
-      color: var(--phosphor-inactive);
-    }
-
-    [data-active="true"] {
-      color: var(--phosphor-active);
-      text-shadow: var(--phosphor-glow);
-
-      .airing-indicator {
-        background: var(--phosphor-active);
-        box-shadow: var(--phosphor-glow);
-      }
-    }
+  [data-power="on"] .viewer-count :not(.leading-zeros) {
+    fill: var(--phosphor-active);
+    fill-opacity: 1;
   }
 
   [data-power="off"] {
     .title-contents {
-      opacity: 0;
+      fill-opacity: 0;
       pointer-events: none;
     }
 
     [data-active="true"] {
-      color: var(--phosphor-inactive);
-      text-shadow: none;
-
-      .airing-indicator {
-        background: var(--phosphor-inactive);
-        box-shadow: none;
-        animation: none;
-      }
+      fill: var(--phosphor-inactive);
+      fill-opacity: 0.6;
     }
   }
 </style>
@@ -241,6 +170,8 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
   class ChannelDisplay extends HTMLElement {
     intervalId: number | null = null;
     timeoutId: NodeJS.Timeout | null = null;
+    private socket: WebSocket | null = null;
+    private isConnecting = false;
 
     private shouldScrollTitle(): boolean {
       const title = this.dataset.title;
@@ -270,6 +201,9 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
       if (this.shouldUpdateTimeDisplay()) {
         this.updateTimeDisplay();
       }
+
+      // Initialize viewer count WebSocket
+      this.connectViewerCount();
     }
 
     private parseUtcTimeString(timeStr: string): Date {
@@ -279,7 +213,10 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
       return date;
     }
 
-    private formatTimeForDisplay(date: Date): { time: string; period: string } {
+    private formatTimeForDisplay(date: Date): {
+      time: string;
+      period: string;
+    } {
       const formatted = date.toLocaleTimeString("en-US", {
         hour: "2-digit",
         minute: "2-digit",
@@ -317,6 +254,7 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
 
     disconnectedCallback() {
       this.clearTimers();
+      this.disconnectViewerCount();
     }
 
     clearTimers() {
@@ -327,6 +265,80 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
       if (this.timeoutId !== null) {
         clearTimeout(this.timeoutId);
         this.timeoutId = null;
+      }
+    }
+
+    private connectViewerCount(): void {
+      // Skip WebSocket connection in development
+      if (import.meta.env.DEV) {
+        return;
+      }
+
+      // Prevent duplicate connections - close existing socket if any
+      if (this.socket) {
+        this.socket.close();
+        this.socket = null;
+      }
+
+      if (this.isConnecting) {
+        return;
+      }
+
+      this.isConnecting = true;
+      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+      const url = `${protocol}//${window.location.host}/api/viewers`;
+
+      try {
+        this.socket = new WebSocket(url);
+
+        this.socket.addEventListener("open", () => {
+          this.isConnecting = false;
+        });
+
+        this.socket.addEventListener("message", (event) => {
+          const count = parseInt(event.data) || 1;
+          this.updateViewerCount(count);
+        });
+
+        this.socket.addEventListener("close", () => {
+          this.socket = null;
+          this.isConnecting = false;
+        });
+
+        this.socket.addEventListener("error", () => {
+          this.socket = null;
+          this.isConnecting = false;
+        });
+      } catch (error) {
+        this.socket = null;
+        this.isConnecting = false;
+      }
+    }
+
+    private disconnectViewerCount(): void {
+      if (this.socket) {
+        this.socket.close();
+        this.socket = null;
+      }
+      this.isConnecting = false;
+    }
+
+    private updateViewerCount(count: number): void {
+      const formatted = count.toString().padStart(3, "0");
+      const leadingZeros = formatted.match(/^0+/)?.[0] || "";
+      const actualNumber = formatted.slice(leadingZeros.length);
+
+      const leadingZerosElement = this.querySelector(
+        ".viewer-count .leading-zeros",
+      );
+      const countElement = this.querySelector(".viewer-count .count");
+
+      if (leadingZerosElement) {
+        leadingZerosElement.textContent = leadingZeros;
+      }
+
+      if (countElement) {
+        countElement.textContent = actualNumber;
       }
     }
 
@@ -359,7 +371,9 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
           return;
         }
 
-        const visibleChars = title.slice(startIndex, startIndex + totalChars);
+        const visibleChars = title
+          .slice(startIndex, startIndex + totalChars)
+          .toUpperCase();
         titleLink.textContent = visibleChars;
 
         if (shouldReverse()) {
