@@ -40,7 +40,6 @@ const { timeBlocks, channels } = guideData;
               <tr>
                 <th>
                   <time datetime={new Date().toISOString()} id="current-time">
-                    {new Date().toLocaleTimeString()}
                   </time>
                 </th>
                 {
@@ -403,6 +402,8 @@ const { timeBlocks, channels } = guideData;
       }
     };
 
+    // Update immediately on page load
+    updateCurrentTime();
     timeUpdateInterval = window.setInterval(updateCurrentTime, 1000);
 
     const timeBlocks = document.querySelectorAll(".time-block time");

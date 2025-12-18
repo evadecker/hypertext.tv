@@ -10,24 +10,6 @@ const { activeProgram } = Astro.props;
 const { program, startTime, endTime } = activeProgram ?? {};
 const { title, url } = program ?? {};
 
-function getReadableTime(timeStr: string | undefined) {
-  if (!timeStr) return "00:00";
-
-  // Create a new date and set it to the time from the string
-  const [hours, minutes] = timeStr.split(":").map(Number);
-  const date = new Date();
-  date.setUTCHours(hours, minutes, 0, 0);
-
-  return date.toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
-}
-
-const readableEndTime = getReadableTime(endTime)?.split(" ")[0];
-const isAm = getReadableTime(endTime)?.split(" ")[1] === "AM";
-
 const hasProgram = program !== null;
 const hasTiming = Boolean(startTime && endTime) && program !== null;
 ---
@@ -84,21 +66,13 @@ const hasTiming = Boolean(startTime && endTime) && program !== null;
       >
         <tspan class="live" data-active={hasProgram}>LIVE</tspan>
         <tspan class="until" data-active={hasTiming}>UNTIL</tspan>
-        <tspan class="time" data-active={hasTiming} data-datetime={endTime}
-          >{readableEndTime}</tspan
-        >
-        <tspan
-          class="am-pm am"
-          data-active={Boolean(isAm && hasTiming)}
-          aria-hidden={Boolean(!isAm || !hasTiming)}
-        >
+        <tspan class="time" data-active={hasTiming} data-datetime={endTime}>
+          00:00
+        </tspan>
+        <tspan class="am-pm am" data-active="false" aria-hidden="true">
           AM
         </tspan>
-        <tspan
-          class="am-pm pm"
-          data-active={Boolean(!isAm && hasTiming)}
-          aria-hidden={Boolean(isAm || !hasTiming)}
-        >
+        <tspan class="am-pm pm" data-active="false" aria-hidden="true">
           PM
         </tspan>
       </text>
@@ -199,8 +173,8 @@ const hasTiming = Boolean(startTime && endTime) && program !== null;
     }
 
     private shouldUpdateTimeDisplay(): boolean {
-      const timeElement = this.querySelector("time");
-      return Boolean(timeElement?.getAttribute("datetime"));
+      const timeElement = this.querySelector(".time");
+      return Boolean(timeElement?.getAttribute("data-datetime"));
     }
 
     connectedCallback(): void {
