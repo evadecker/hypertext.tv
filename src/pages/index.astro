@@ -379,13 +379,11 @@ const { timeBlocks, channels } = guideData;
       const href = row.getAttribute("data-href");
       if (!href) return;
 
-      // Handle clicks
       row.addEventListener("click", (e: Event) => {
         const mouseEvent = e as MouseEvent;
         // Allow text selection without navigation
         if (window.getSelection()?.toString()) return;
 
-        // Open in new tab if Cmd/Ctrl+Click
         if (mouseEvent.metaKey || mouseEvent.ctrlKey) {
           window.open(href, "_blank");
         } else {
@@ -393,12 +391,10 @@ const { timeBlocks, channels } = guideData;
         }
       });
 
-      // Handle keyboard (Enter and Space)
       row.addEventListener("keydown", (e: Event) => {
         const keyEvent = e as KeyboardEvent;
         if (keyEvent.key === "Enter" || keyEvent.key === " ") {
           keyEvent.preventDefault();
-          // Open in new tab if Cmd/Ctrl+Enter/Space
           if (keyEvent.metaKey || keyEvent.ctrlKey) {
             window.open(href, "_blank");
           } else {
