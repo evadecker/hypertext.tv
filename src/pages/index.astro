@@ -374,25 +374,35 @@ const { timeBlocks, channels } = guideData;
   let timeUpdateInterval: number | null = null;
 
   document.addEventListener("astro:page-load", () => {
-    // Handle clickable rows
-    const clickableRows = document.querySelectorAll("tbody tr[data-href]");
-
-    clickableRows.forEach((row) => {
-      const href = row.getAttribute("data-href");
-      if (!href) return;
-
-      row.addEventListener("click", () => {
-        navigate(href);
-      });
-
-      row.addEventListener("keydown", (e: Event) => {
-        const keyEvent = e as KeyboardEvent;
-        if (keyEvent.key === "Enter" || keyEvent.key === " ") {
-          keyEvent.preventDefault();
-          navigate(href);
+    // Handle clickable rows using event delegation
+    const guideTable = document.querySelector("table");
+    if (guideTable) {
+      guideTable.addEventListener("click", (e: Event) => {
+        const target = e.target as HTMLElement;
+        const row = target.closest("tr[data-href]");
+        if (row) {
+          const href = row.getAttribute("data-href");
+          if (href) {
+            navigate(href);
+          }
         }
       });
-    });
+
+      guideTable.addEventListener("keydown", (e: Event) => {
+        const keyEvent = e as KeyboardEvent;
+        if (keyEvent.key === "Enter" || keyEvent.key === " ") {
+          const target = e.target as HTMLElement;
+          const row = target.closest("tr[data-href]");
+          if (row) {
+            keyEvent.preventDefault();
+            const href = row.getAttribute("data-href");
+            if (href) {
+              navigate(href);
+            }
+          }
+        }
+      });
+    }
 
     const updateCurrentTime = () => {
       const currentTimeElement = document.getElementById("current-time");
