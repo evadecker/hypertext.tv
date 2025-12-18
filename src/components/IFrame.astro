@@ -42,8 +42,14 @@ const { src }: Props = Astro.props;
 </style>
 
 <script>
-  document.addEventListener("astro:page-load", () => {
+  const handleIframeLoad = () => {
     const canvas = document.getElementById("static") as HTMLCanvasElement;
+    const iframe = document.querySelector(".iframe");
+
+    // If iframe is already loaded, don't start static
+    if (iframe?.classList.contains("loaded")) {
+      return;
+    }
 
     if (canvas) {
       const ctx = canvas.getContext("2d");
@@ -87,14 +93,18 @@ const { src }: Props = Astro.props;
       animate();
     }
 
-    const iframe = document.querySelector(".iframe");
-
     if (iframe) {
       iframe.addEventListener("load", () => {
         iframe.classList.add("loaded");
         // Remove background static
-        canvas.remove();
+        canvas?.remove();
       });
     }
-  });
+  };
+
+  // Handle on direct navigation
+  handleIframeLoad();
+
+  // Handle on client router
+  document.addEventListener("astro:page-load", handleIframeLoad);
 </script>

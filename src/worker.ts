@@ -84,7 +84,7 @@ export class ViewerCount extends DurableObject<Env> {
 
     // getWebSockets() always returns only active connections
     const connections = this.ctx.getWebSockets();
-    const count = Math.max(1, connections.length);
+    const count = Math.min(999, Math.max(1, connections.length));
     const message = count.toString();
 
     for (const conn of connections) {
