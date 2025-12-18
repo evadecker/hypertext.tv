@@ -368,6 +368,7 @@ const { timeBlocks, channels } = guideData;
 </style>
 
 <script>
+  import { navigate } from "astro:transitions/client";
   import { infiniteScrollLoop } from "../utils/infiniteScroll";
 
   let cleanupInfiniteScroll: (() => void) | null = null;
@@ -381,27 +382,15 @@ const { timeBlocks, channels } = guideData;
       const href = row.getAttribute("data-href");
       if (!href) return;
 
-      row.addEventListener("click", (e: Event) => {
-        const mouseEvent = e as MouseEvent;
-        // Allow text selection without navigation
-        if (window.getSelection()?.toString()) return;
-
-        if (mouseEvent.metaKey || mouseEvent.ctrlKey) {
-          window.open(href, "_blank");
-        } else {
-          window.location.href = href;
-        }
+      row.addEventListener("click", () => {
+        navigate(href);
       });
 
       row.addEventListener("keydown", (e: Event) => {
         const keyEvent = e as KeyboardEvent;
         if (keyEvent.key === "Enter" || keyEvent.key === " ") {
           keyEvent.preventDefault();
-          if (keyEvent.metaKey || keyEvent.ctrlKey) {
-            window.open(href, "_blank");
-          } else {
-            window.location.href = href;
-          }
+          navigate(href);
         }
       });
     });
@@ -439,7 +428,7 @@ const { timeBlocks, channels } = guideData;
     }
   });
 
-  document.addEventListener("astro:before-preparation", () => {
+  document.addEventListener("astro:before-swap", () => {
     // Clean up infinite scroll listeners and animation
     if (cleanupInfiniteScroll) {
       cleanupInfiniteScroll();
