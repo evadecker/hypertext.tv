@@ -48,8 +48,6 @@ schedule:
     - "15:30":
     - "16:00":
     - "16:30":
-        title: Rothko.me
-        url: https://rothko.me/
     - "17:00":
     - "17:30":
     - "18:00":
@@ -277,10 +275,14 @@ schedule:
     - "23:30":
   friday:
     - "00:00":
-        title: HYPERSENSITIVE
-        author: Eva Decker
-        url: https://hypersensitive.eva.town/
+        title: Unseen Garden
+        author: 
+          - Chris Hamamoto
+          - Federico Perez Villoro
+        url: https://www.unseen.garden/
     - "00:30":
+        title: Rothko.me
+        url: https://rothko.me/
     - "01:00":
     - "01:30":
     - "02:00":
@@ -331,11 +333,9 @@ schedule:
     - "16:30":
     - "17:00":
     - "17:30":
-        title: Unseen Garden
-        author: 
-          - Chris Hamamoto
-          - Federico Perez Villoro
-        url: https://www.unseen.garden/
+        title: HYPERSENSITIVE
+        author: Eva Decker
+        url: https://hypersensitive.eva.town/
     - "18:00":
     - "18:30":
     - "19:00":

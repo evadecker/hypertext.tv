@@ -8,7 +8,7 @@ export function findActiveProgram(
 
   // Get current day's schedule
   const dayOfWeek = currentTime
-    .toLocaleDateString("en-US", { weekday: "long" })
+    .toLocaleDateString("en-US", { weekday: "long", timeZone: "UTC" })
     .toLowerCase() as keyof typeof schedule;
 
   const timeSlots = schedule[dayOfWeek];
@@ -20,6 +20,7 @@ export function findActiveProgram(
       hour12: false,
       hour: "2-digit",
       minute: "2-digit",
+      timeZone: "UTC",
     })
     .replace(/^24:/, "00:");
 
