@@ -84,7 +84,9 @@ const hasTiming = Boolean(startTime && endTime) && program !== null;
       >
         <tspan class="live" data-active={hasProgram}>LIVE</tspan>
         <tspan class="until" data-active={hasTiming}>UNTIL</tspan>
-        <tspan class="time" data-active={hasTiming}>{readableEndTime}</tspan>
+        <tspan class="time" data-active={hasTiming} data-datetime={endTime}
+          >{readableEndTime}</tspan
+        >
         <tspan
           class="am-pm am"
           data-active={Boolean(isAm && hasTiming)}
@@ -245,10 +247,10 @@ const hasTiming = Boolean(startTime && endTime) && program !== null;
     }
 
     updateTimeDisplay(): void {
-      const timeElement = this.querySelector("time");
+      const timeElement = this.querySelector(".time");
       if (!timeElement) return;
 
-      const timeStr = timeElement.getAttribute("datetime");
+      const timeStr = timeElement.getAttribute("data-datetime");
       if (!timeStr) return;
 
       const date = this.parseUtcTimeString(timeStr);

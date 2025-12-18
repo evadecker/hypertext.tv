@@ -96,7 +96,7 @@ const contributors: string[] = await response.json();
     }
   });
 
-  document.addEventListener("astro:before-preparation", () => {
+  document.addEventListener("astro:before-swap", () => {
     if (cleanupInfiniteScroll) {
       cleanupInfiniteScroll();
       cleanupInfiniteScroll = null;
