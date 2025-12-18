@@ -117,6 +117,10 @@ const isAiring = Boolean(startTime && endTime) && program !== null;
 </channel-display>
 
 <style>
+  channel-display svg {
+    overflow: visible;
+  }
+
   .display {
     filter: drop-shadow(0 2px 1px rgba(255, 255, 255, 0.1));
     user-select: none;
