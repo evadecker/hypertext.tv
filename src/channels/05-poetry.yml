@@ -220,6 +220,9 @@ schedule:
     - "10:30":
     - "11:00":
     - "11:30":
+        title: revisiting
+        author: Aidan Strong
+        url: https://revisiting.aidanstrong.info
     - "12:00":
     - "12:30":
     - "13:00":
