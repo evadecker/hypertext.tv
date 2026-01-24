@@ -216,6 +216,8 @@ schedule:
     - "14:30":
     - "15:00":
     - "15:30":
+        title: Ritual Engineer
+        url: https://ritual.engineer/
     - "16:00":
     - "16:30":
     - "17:00":

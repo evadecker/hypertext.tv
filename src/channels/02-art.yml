@@ -265,6 +265,7 @@ schedule:
     - "18:30":
     - "19:00":
     - "19:30":
+    - "20:00":
         title: Silk
         author: Yuri Vishnevsky
         url: https://silk.art/
