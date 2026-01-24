@@ -369,6 +369,9 @@ schedule:
     - "07:00":
     - "07:30":
     - "08:00":
+        title: The Art of Roland-Garros
+        author: Juan Buis
+        url: https://www.garros.gallery/
     - "08:30":
     - "09:00":
     - "09:30":
@@ -394,6 +397,9 @@ schedule:
     - "15:00":
     - "15:30":
     - "16:00":
+        title: Public Domain Film Quote Search
+        author: Stefan Bohacek
+        url: https://public-domain-film-quote-search.stefanbohacek.com/
     - "16:30":
     - "17:00":
     - "17:30":

@@ -17,6 +17,9 @@ schedule:
     - "05:00":
     - "05:30":
     - "06:00":
+        title: Enclose Horse
+        author: Shivers
+        url: https://enclose.horse/
     - "06:30":
     - "07:00":
     - "07:30":
@@ -41,6 +44,9 @@ schedule:
     - "15:30":
     - "16:00":
     - "16:30":
+        title: Mind Palace
+        author: Adam Aaronson
+        url: https://mindpalace.fun/
     - "17:00":
     - "17:30":
     - "18:00":
@@ -70,6 +76,9 @@ schedule:
     - "04:00":
     - "04:30":
     - "05:00":
+        title: Build My Transit
+        author: Jingsi Zhu
+        url: https://buildmytransit.nyc/
     - "05:30":
     - "06:00":
     - "06:30":
@@ -98,9 +107,15 @@ schedule:
     - "16:30":
     - "17:00":
     - "17:30":
+        title: Is My Blue Your Blue
+        author: Patrick Mineault
+        url: https://ismy.blue/
     - "18:00":
     - "18:30":
     - "19:00":
+        title: Rugb
+        author: Marcos Acosta
+        url: https://rugb.app/
     - "19:30":
     - "20:00":
     - "20:30":
@@ -129,11 +144,19 @@ schedule:
     - "05:00":
     - "05:30":
     - "06:00":
+        title: Is This Nicki Minaj?
+        author:
+          - Lemon
+          - kentrick lobstar
+        url: https://isthisnickiminaj.com/
     - "06:30":
     - "07:00":
     - "07:30":
     - "08:00":
     - "08:30":
+        title: No More Billionaires
+        author: Lemon
+        url: https://kinda.fun/guillotine
     - "09:00":
     - "09:30":
     - "10:00":
@@ -208,6 +231,9 @@ schedule:
     - "11:00":
     - "11:30":
     - "12:00":
+        title: Damn Dog
+        author: Lemon
+        url: https://damn.dog/
     - "12:30":
     - "13:00":
     - "13:30":

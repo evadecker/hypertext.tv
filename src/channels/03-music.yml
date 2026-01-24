@@ -396,6 +396,9 @@ schedule:
     - "09:00":
     - "09:30":
     - "10:00":
+        title: Ldial
+        author: Adam D. Scott
+        url: https://www.ldial.org/
     - "10:30":
     - "11:00":
     - "11:30":
@@ -409,6 +412,9 @@ schedule:
     - "15:30":
     - "16:00":
     - "16:30":
+        title: Binary Piano
+        author: Tim Holman
+        url: https://binarypiano.com/
     - "17:00":
     - "17:30":
     - "18:00":

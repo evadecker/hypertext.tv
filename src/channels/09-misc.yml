@@ -139,6 +139,9 @@ schedule:
     - "08:00":
     - "08:30":
     - "09:00":
+        title: Get Full Year
+        author: Shayan
+        url: https://getfullyear.com/
     - "09:30":
     - "10:00":
     - "10:30":
@@ -160,6 +163,9 @@ schedule:
     - "17:00":
     - "17:30":
     - "18:00":
+        title: Just The Browser
+        author: Corbin Davenport
+        url: https://justthebrowser.com/
     - "18:30":
     - "19:00":
     - "19:30":
@@ -184,6 +190,8 @@ schedule:
     - "03:30":
     - "04:00":
     - "04:30":
+        title: Lumon Industries
+        url: https://lumon-industries.com/
     - "05:00":
     - "05:30":
     - "06:00":
@@ -208,6 +216,8 @@ schedule:
     - "14:30":
     - "15:00":
     - "15:30":
+        title: Ritual Engineer
+        url: https://ritual.engineer/
     - "16:00":
     - "16:30":
     - "17:00":
