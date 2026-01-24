@@ -412,6 +412,9 @@ schedule:
     - "15:30":
     - "16:00":
     - "16:30":
+        title: Binary Piano
+        author: Tim Holman
+        url: https://binarypiano.com/
     - "17:00":
     - "17:30":
     - "18:00":
