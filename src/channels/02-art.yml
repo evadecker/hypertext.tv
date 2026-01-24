@@ -265,7 +265,9 @@ schedule:
     - "18:30":
     - "19:00":
     - "19:30":
-    - "20:00":
+        title: Silk
+        author: Yuri Vishnevsky
+        url: https://silk.art/
     - "20:30":
     - "21:00":
     - "21:30":
@@ -427,6 +429,9 @@ schedule:
     - "04:00":
     - "04:30":
     - "05:00":
+        title: Cursor Museum
+        author: Terkel Gjervig
+        url: https://cursormuseum.com/
     - "05:30":
     - "06:00":
     - "06:30":

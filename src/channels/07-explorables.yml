@@ -424,6 +424,9 @@ schedule:
     - "01:00":
     - "01:30":
     - "02:00":
+        title: How Browsers Work
+        author: Dmytro Krasun
+        url: https://howbrowserswork.com/
     - "02:30":
     - "03:00":
     - "03:30":
@@ -431,6 +434,9 @@ schedule:
     - "04:30":
     - "05:00":
     - "05:30":
+        title: WikiPulse
+        author: Yuri Vishnevsky
+        url: https://wikipulse.com/wiki/
     - "06:00":
     - "06:30":
     - "07:00":

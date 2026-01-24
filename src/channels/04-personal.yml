@@ -51,6 +51,9 @@ schedule:
     - "14:00":
     - "14:30":
     - "15:00":
+        title: Parker Higgins
+        author: Parker Higgins
+        url: https://parkerhiggins.net/
     - "15:30":
     - "16:00":
     - "16:30":
@@ -69,6 +72,9 @@ schedule:
     - "20:00":
     - "20:30":
     - "21:00":
+        title: Terkel
+        author: Terkel Gjervig
+        url: https://terkel.com/
     - "21:30":
     - "22:00":
     - "22:30":
@@ -85,6 +91,9 @@ schedule:
     - "00:30":
     - "01:00":
     - "01:30":
+        title: Lemon
+        author: Lemon
+        url: https://ahoylemon.xyz/
     - "02:00":
     - "02:30":
     - "03:00":
@@ -319,6 +328,9 @@ schedule:
     - "00:30":
     - "01:00":
     - "01:30":
+        title: ficd.sh
+        author: David Fichtinger
+        url: https://ficd.sh/
     - "02:00":
     - "02:30":
     - "03:00":
@@ -344,6 +356,9 @@ schedule:
     - "11:30":
     - "12:00":
     - "12:30":
+        title: Yuri Vishnevsky
+        author: Yuri Vishnevsky
+        url: https://yuri.is/
     - "13:00":
     - "13:30":
     - "14:00":
@@ -399,6 +414,9 @@ schedule:
     - "08:30":
     - "09:00":
     - "09:30":
+        title: samwho
+        author: Sam Rose
+        url: https://samwho.dev/
     - "10:00":
     - "10:30":
     - "11:00":
