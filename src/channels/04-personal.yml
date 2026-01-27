@@ -119,6 +119,9 @@ schedule:
     - "08:30":
     - "09:00":
     - "09:30":
+        title: Blake Andrews
+        author: Blake Andrews
+        url: https://pbjabcusa.com/
     - "10:00":
     - "10:30":
     - "11:00":

@@ -13,8 +13,14 @@ schedule:
     - "02:30":
     - "03:00":
     - "03:30":
+        title: Whimsical GIFs
+        author: Blake Andrews
+        url: https://pbjabcusa.com/gifs/hello
     - "04:00":
     - "04:30":
+        title: Drawings
+        author: Blake Andrews
+        url: https://pbjabcusa.com/drawings/drawings
     - "05:00":
     - "05:30":
     - "06:00":
