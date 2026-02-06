@@ -11,9 +11,6 @@ schedule:
         author: Packard Bell 95
         url: https://packardbell95.com/fortune/
     - "01:00":
-        title: Tawantin Trail
-        author: Kevin Cadena
-        url: https://kevincadena.com/tawantin-trail/
     - "01:30":
     - "02:00":
     - "02:30":
@@ -27,6 +24,9 @@ schedule:
         url: https://ncase.me/crowds/
     - "05:30":
     - "06:00":
+        title: Tawantin Trail
+        author: Kevin Cadena
+        url: https://kevincadena.com/tawantin-trail/
     - "06:30":
     - "07:00":
     - "07:30":
