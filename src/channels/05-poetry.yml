@@ -184,6 +184,9 @@ schedule:
     - "18:30":
     - "19:00":
     - "19:30":
+        title: Angel In Latency
+        author: Grace Dignazio
+        url: https://thehtml.review/05/angel-in-latency/
     - "20:00":
     - "20:30":
     - "21:00":
@@ -202,6 +205,11 @@ schedule:
     - "01:30":
     - "02:00":
     - "02:30":
+        title: Consumables
+        author:
+          - Vinh Mai Nguyễn
+          - Coumbah Sidibé
+        url: https://thehtml.review/05/consumables/
     - "03:00":
     - "03:30":
     - "04:00":
@@ -209,6 +217,11 @@ schedule:
     - "05:00":
     - "05:30":
     - "06:00":
+        title: Meanders
+        author:
+          - Allison Chan
+          - Shelby Wilson
+        url: https://thehtml.review/05/meanders/
     - "06:30":
     - "07:00":
     - "07:30":
@@ -229,18 +242,27 @@ schedule:
     - "13:30":
     - "14:00":
     - "14:30":
+        title: From Mine To Yours
+        author: Queenie Wu
+        url: https://thehtml.review/05/from-mine-to-yours/
     - "15:00":
     - "15:30":
     - "16:00":
     - "16:30":
     - "17:00":
     - "17:30":
+        title: Banner Highway 01
+        author: Switcheristic Telecommunications
+        url: https://highway-01.banner-depot-2000.net/
     - "18:00":
     - "18:30":
     - "19:00":
     - "19:30":
     - "20:00":
     - "20:30":
+        title: Tell umma I'm walking to Baekdusan
+        author: Anne Lee Steele
+        url: https://thehtml.review/05/tell-umma-im-walking-to-baekdusan/
     - "21:00":
     - "21:30":
     - "22:00":
