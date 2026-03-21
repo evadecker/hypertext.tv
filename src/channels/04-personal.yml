@@ -134,6 +134,9 @@ schedule:
     - "13:00":
     - "13:30":
     - "14:00":
+        title: Richard Lewei Huang
+        author: Richard Lewei Huang
+        url: https://lewei.me/
     - "14:30":
     - "15:00":
     - "15:30":
@@ -144,6 +147,9 @@ schedule:
     - "16:30":
     - "17:00":
     - "17:30":
+        title: Anne Lee Steele
+        author: Anne Lee Steele
+        url: https://www.aleesteele.com/
     - "18:00":
     - "18:30":
     - "19:00":
@@ -153,6 +159,9 @@ schedule:
     - "19:30":
     - "20:00":
     - "20:30":
+        title: Queenie Wu
+        author: Queenie Wu
+        url: https://www.queeniwu.com/
     - "21:00":
     - "21:30":
     - "22:00":
@@ -231,6 +240,9 @@ schedule:
     - "17:30":
     - "18:00":
     - "18:30":
+        title: Kay Zeng
+        author: Kay Zeng
+        url: https://www.kayzeng.com/
     - "19:00":
     - "19:30":
     - "20:00":
@@ -244,6 +256,9 @@ schedule:
     - "21:00":
     - "21:30":
     - "22:00":
+        title: Shelby Wilson
+        author: Shelby Wilson
+        url: https://shelby.cool/
     - "22:30":
     - "23:00":
     - "23:30":
@@ -310,6 +325,9 @@ schedule:
     - "17:30":
     - "18:00":
     - "18:30":
+        title: Yufeng Zhao
+        author: Yufeng Zhao
+        url: https://www.yufengzhao.com/
     - "19:00":
     - "19:30":
     - "20:00":
@@ -339,6 +357,9 @@ schedule:
     - "03:00":
     - "03:30":
     - "04:00":
+        title: Allison Chan
+        author: Allison Chan
+        url: https://allisonchan.info/
     - "04:30":
     - "05:00":
     - "05:30":
@@ -355,6 +376,9 @@ schedule:
     - "09:30":
     - "10:00":
     - "10:30":
+        title: Helen Shewolfe Tseng
+        author: Helen Shewolfe Tseng
+        url: https://helentseng.com/
     - "11:00":
     - "11:30":
     - "12:00":
@@ -469,6 +493,9 @@ schedule:
     - "02:30":
     - "03:00":
     - "03:30":
+        title: Nicci Yin
+        author: Nicci Yin
+        url: https://www.nicciyin.com/
     - "04:00":
     - "04:30":
     - "05:00":

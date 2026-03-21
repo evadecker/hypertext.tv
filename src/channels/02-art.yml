@@ -53,6 +53,9 @@ schedule:
     - "15:00":
     - "15:30":
     - "16:00":
+        title: Aligned Waters
+        author: Yufeng Zhao
+        url: https://aligned-waters.yufeng.place/
     - "16:30":
     - "17:00":
     - "17:30":
@@ -79,6 +82,9 @@ schedule:
     - "01:30":
     - "02:00":
     - "02:30":
+        title: Afterimages
+        author: Nicci Yin
+        url: https://afterimages.nicciyin.com/
     - "03:00":
     - "03:30":
     - "04:00":
@@ -166,6 +172,9 @@ schedule:
     - "05:00":
     - "05:30":
     - "06:00":
+        title: Photographic Memory
+        author: Connie Liu
+        url: https://photos.connie.surf/
     - "06:30":
     - "07:00":
     - "07:30":
