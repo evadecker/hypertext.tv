@@ -22,8 +22,8 @@ You can! Check out the [contribution guide](/CONTRIBUTING.md).
 
 ## Accessibility Statement
 
-This site aims to conform to the Level AA accessibility standards outlined in the [WCAG 2.2 specification](https://www.w3.org/TR/WCAG22/). If you experience an issue with accessing any part of this site, please [file an issue](https://github.com/evadecker/hypertext.tv/issues) and I’ll do my best to correct it.
+This site aims to conform to the Level AA accessibility standards outlined in the [WCAG 2.2 specification](https://www.w3.org/TR/WCAG22/). If you experience an issue with accessing any part of this site, please [file an issue](https://github.com/kydecker/hypertext.tv/issues) and I’ll do my best to correct it.
 
 ## Credit
 
-Hypertext TV was created by [Eva Decker](https://eva.town) at the [School for Poetic Computation](https://sfpc.study/) during the 2025 class _The Browser is Already a Game Engine_ with [Everest Pipkin](https://everest-pipkin.com/). [View full site credits.](https://hypertext.tv/credits)
+Hypertext TV was created by [Ky Decker](https://ky.fyi) at the [School for Poetic Computation](https://sfpc.study/) during the 2025 class _The Browser is Already a Game Engine_ with [Everest Pipkin](https://everest-pipkin.com/). [View full site credits.](https://hypertext.tv/credits)

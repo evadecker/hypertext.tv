@@ -15,13 +15,13 @@ We'll air [handmade websites](https://luckysoap.com/statements/handmadeweb.html)
 > 4. No AI-generated content
 > 5. No insecure sites (sites must use the `https://` protocol)
 
-Right now, all sites on HTTV must be in English. However, there is an open [discussion](https://github.com/evadecker/hypertext.tv/discussions/64) about accepting non-English sites. If you have a site in a language other than English which you want to submit, please [add it to the discussion thread](https://github.com/evadecker/hypertext.tv/discussions/64) so I can gauge interest.
+Right now, all sites on HTTV must be in English. However, there is an open [discussion](https://github.com/kydecker/hypertext.tv/discussions/64) about accepting non-English sites. If you have a site in a language other than English which you want to submit, please [add it to the discussion thread](https://github.com/kydecker/hypertext.tv/discussions/64) so I can gauge interest.
 
 ## How do I add my site?
 
 Create a pull request against this repository by [forking it](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project) or by editing the file from the GitHub interface.
 
-1. Go to [src/channels](https://github.com/evadecker/hypertext.tv/tree/main/src/channels).
+1. Go to [src/channels](https://github.com/kydecker/hypertext.tv/tree/main/src/channels).
 2. This folder contains `.yml` files which define the airing schedule for each channel: games, art, music, personal, poetry, single-use, explorables, archives, and misc. Select a channel for your site and open its `.yml` file.
 3. Find a day and time within `schedule` for your website to air.
 4. Add your site details. For example:
@@ -32,9 +32,9 @@ Create a pull request against this repository by [forking it](https://docs.githu
       title: Design Is 
       # (Optional) Your name, nickname, or handle
       # To be displayed on the credits page
-      author: Eva Decker 
+      author: Ky Decker 
       # A link to your website, using https://
-      url: https://design.eva.town 
+      url: https://design.ky.fyi
 
       # Important: YAML is whitespace-sensitive.
       # Make sure your entries are indented 2 spaces beneath the time block!
@@ -76,4 +76,4 @@ If you have multiple sites that meet the criteria, please do!
 
 ## I have a site I want to add, but I'm not sure how to submit through GitHub. Is there another way?
 
-Send me an email (hey@evadecker.com) with your website, channel, and requested time, and I'll add it!
+Send me an email (hi@ky.fyi) with your website, channel, and requested time, and I'll add it!

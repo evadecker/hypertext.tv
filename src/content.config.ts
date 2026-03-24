@@ -10,7 +10,7 @@ const program = z.object({
 
   /**
    * The person or username of the contributor
-   * @example "Eva Decker"
+   * @example "Ky Decker"
    */
   author: z.union([z.string(), z.array(z.string())]).optional(),
 
