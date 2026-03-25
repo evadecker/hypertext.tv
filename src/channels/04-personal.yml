@@ -393,6 +393,9 @@ schedule:
     - "15:00":
     - "15:30":
     - "16:00":
+        title: rwblickhan.org
+        author: R.W. Blickhan
+        url: https://rwblickhan.org
     - "16:30":
     - "17:00":
     - "17:30":
