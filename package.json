@@ -21,7 +21,7 @@
     "@astrojs/cloudflare": "^12.6.12",
     "@astrojs/mdx": "^4.2.2",
     "@astrojs/sitemap": "^3.3.0",
-    "astro": "^5.15.9",
+    "astro": "^5.18.1",
     "fathom-client": "^3.7.2",
     "howler": "^2.2.4",
     "three": "^0.174.0",
@@ -37,6 +37,6 @@
     "cssnano": "^7.0.6",
     "husky": "^9.1.7",
     "sharp": "^0.34.0",
-    "wrangler": "^4.65.0"
+    "wrangler": "^4.66.0"
   }
 }
