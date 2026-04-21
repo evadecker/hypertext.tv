@@ -100,8 +100,6 @@ schedule:
     - "13:30":
     - "14:00":
     - "14:30":
-        title: Booklet Library
-        url: https://bookletlibrary.org/
     - "15:00":
     - "15:30":
     - "16:00":
